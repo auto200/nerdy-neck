@@ -28,7 +28,19 @@ const body = {
   rightElbow: 8,
   rightWrist: 10,
 };
-}
+const degreeBetweenPoints = (
+  a: Vector2D,
+  b: Vector2D,
+  round: boolean = true
+) => {
+  const dy = Math.abs(a.y - b.y);
+  const dx = Math.abs(a.x - b.x);
+  const deg = Math.abs(90 - Math.atan2(dy, dx) * (180 / Math.PI));
+  if (round) {
+    return Math.round(deg);
+  }
+  return deg;
+};
 
 const drawPoint = (
   ctx: CanvasRenderingContext2D,
@@ -87,17 +99,11 @@ const Canvas = ({ pose, width, height }: Props) => {
     const shoulderPos = pose.keypoints[body.rightShoulder].position;
     drawLine(ctx, earPos, shoulderPos, "aqua");
 
-    //third triangle corner
+    //triangle third corner
     const corner = { x: earPos.x, y: shoulderPos.y };
     drawPoint(ctx, corner, "red");
 
-    //build triangle
-    const a = earPos.y - corner.y;
-    const b = corner.x - shoulderPos.x;
-    const c = Math.sqrt(a ** 2 + b ** 2);
-    const alfa = (Math.asin(a / c) * 180) / Math.PI;
-    let angle = Math.round(Math.abs(Math.abs(alfa) - 90));
-
+    let angle = degreeBetweenPoints(earPos, shoulderPos);
     if (corner.x < shoulderPos.x) {
       angle = -angle;
     }
