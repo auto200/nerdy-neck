@@ -15,6 +15,8 @@ function App() {
   const [running, setRunning] = useState<boolean>(false);
   const mediaRef = useRef<HTMLVideoElement>(null);
   const runningRef = useRef(running);
+  const [getPoseIntervalTimeout, setGetPoseIntervalTimeout] = useState("1000");
+  const getPoseIntervalRef = useRef<number>();
 
   useEffect(() => {
     const init = async () => {
@@ -24,13 +26,7 @@ function App() {
         setCams(cams);
         setCam(cams[0]);
 
-        setNet(
-          await posenet.load({
-            architecture: "ResNet50",
-            outputStride: 32,
-            inputResolution: { width: WIDTH, height: HEIGHT },
-          })
-        );
+        setNet(await posenet.load());
       } catch (err) {
         console.log(err);
       }
@@ -72,15 +68,14 @@ function App() {
       } catch (err) {
         console.log(err);
       }
-
-      if (runningRef.current) {
-        requestAnimationFrame(getPose);
-      }
     };
-
-    getPose();
+    clearInterval(getPoseIntervalRef.current);
+    getPoseIntervalRef.current = window.setInterval(
+      getPose,
+      Number(getPoseIntervalTimeout)
+    );
     // setInterval(getPose, 3000);
-  }, [running]);
+  }, [running, getPoseIntervalTimeout]);
 
   return (
     <>
@@ -115,6 +110,16 @@ function App() {
       >
         {running ? "STOP" : "START"}
       </button>
+      <div>
+        <h3>config:</h3>
+        <label>
+          frequency{" "}
+          <input
+            value={getPoseIntervalTimeout}
+            onChange={(e) => setGetPoseIntervalTimeout(e.target.value)}
+          />
+        </label>
+      </div>
     </>
   );
 }
