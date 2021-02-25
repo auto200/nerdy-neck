@@ -21,38 +21,50 @@ import { useEffect, useRef } from "react";
 // 15	leftAnkle
 // 16	rightAnkle
 
+const leftBodySide = [3, 5];
+const body = {
+  rightEar: 4,
+  rightShoulder: 6,
+  rightElbow: 8,
+  rightWrist: 10,
+};
+}
+
+const drawPoint = (
+  ctx: CanvasRenderingContext2D,
+  point: Vector2D,
+  color: string,
+  roundPoints: boolean = true
+) => {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  if (roundPoints) {
+    ctx.arc(Math.round(point.x), Math.round(point.y), 5, 0, 2 * Math.PI);
+  } else {
+    ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+  }
+  ctx.fill();
+};
+
+const drawLine = (
+  ctx: CanvasRenderingContext2D,
+  start: Vector2D,
+  end: Vector2D,
+  color: string
+) => {
+  ctx.beginPath();
+  ctx.moveTo(start.x, start.y);
+  ctx.lineTo(end.x, end.y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+};
+
 interface Props {
   pose: Pose | undefined;
   width: number;
   height: number;
 }
-
-const leftBodySide = [3, 5];
-const rightBodySide = [4, 6];
-
-const drawPoint = (
-  ctx: CanvasRenderingContext2D,
-  { x, y }: Vector2D,
-  color: string
-) => {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(Math.round(x), Math.round(y), 5, 0, 2 * Math.PI);
-  ctx.fill();
-};
-const drawLine = (
-  ctx: CanvasRenderingContext2D,
-  { x: startX, y: startY }: Vector2D,
-  { x: endX, y: endY }: Vector2D,
-  color: string
-) => {
-  ctx.beginPath();
-  ctx.moveTo(startX, startY);
-  ctx.lineTo(endX, endY);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-};
 
 const Canvas = ({ pose, width, height }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,14 +77,14 @@ const Canvas = ({ pose, width, height }: Props) => {
     ctx.clearRect(0, 0, width, height);
 
     //draw points
-    for (const key of rightBodySide) {
+    for (const key of Object.values(body)) {
       const point = pose.keypoints[key].position;
       drawPoint(ctx, point, "aqua");
     }
 
     //draw ear-shoulder line
-    const earPos = pose.keypoints[4].position;
-    const shoulderPos = pose.keypoints[6].position;
+    const earPos = pose.keypoints[body.rightEar].position;
+    const shoulderPos = pose.keypoints[body.rightShoulder].position;
     drawLine(ctx, earPos, shoulderPos, "aqua");
 
     //third triangle corner
@@ -103,6 +115,13 @@ const Canvas = ({ pose, width, height }: Props) => {
     ctx.font = `${fontSize}px serif`;
     ctx.fillStyle = "aqua"; // TODO: change color based on value
     ctx.fillText(angle.toString(), textX, textY);
+
+    //check elbow angle
+    const elbowPos = pose.keypoints[body.rightElbow].position;
+    const wristPos = pose.keypoints[body.rightWrist].position;
+    drawLine(ctx, shoulderPos, elbowPos, "red");
+    drawLine(ctx, elbowPos, wristPos, "red");
+    drawLine(ctx, wristPos, shoulderPos, "aqua");
   }, [pose]);
 
   return (
