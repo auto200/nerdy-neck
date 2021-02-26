@@ -1,6 +1,6 @@
 import { Vector2D } from "@tensorflow-models/posenet/dist/types";
 
-export const degreeBetweenPoints = (
+export const angleBetweenPoints = (
   a: Vector2D,
   b: Vector2D,
   round: boolean = true
@@ -34,12 +34,13 @@ export const drawLine = (
   ctx: CanvasRenderingContext2D,
   start: Vector2D,
   end: Vector2D,
-  color: string
+  color: string,
+  lineWidth: number = 2
 ) => {
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
   ctx.lineTo(end.x, end.y);
   ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = lineWidth;
   ctx.stroke();
 };

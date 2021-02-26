@@ -1,6 +1,6 @@
 import { Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef } from "react";
-import { degreeBetweenPoints, drawLine, drawPoint } from "./utils";
+import { angleBetweenPoints, drawLine, drawPoint } from "./utils";
 
 //keypoints[]
 // 0	nose
@@ -60,9 +60,9 @@ const Canvas = ({ pose, width, height }: Props) => {
     const corner = { x: earPos.x, y: shoulderPos.y };
     drawPoint(ctx, corner, "red");
 
-    let angle = degreeBetweenPoints(earPos, shoulderPos);
+    let headShoulderAngle = angleBetweenPoints(earPos, shoulderPos);
     if (corner.x < shoulderPos.x) {
-      angle = -angle;
+      headShoulderAngle = -headShoulderAngle;
     }
 
     //connect third corner with shoulder and ear
@@ -76,8 +76,8 @@ const Canvas = ({ pose, width, height }: Props) => {
     const textX = earPos.x - (earPos.x - shoulderPos.x) / 2 + margin;
     const textY = earPos.y - (earPos.y - shoulderPos.y) / 2 + lineHeight;
     ctx.font = `${fontSize}px serif`;
-    ctx.fillStyle = "aqua"; // TODO: change color based on value
-    ctx.fillText(angle.toString(), textX, textY);
+    ctx.fillStyle = "aqua"; // TODO?: change color based on value
+    ctx.fillText(headShoulderAngle.toString(), textX, textY);
 
     //check elbow angle
     const elbowPos = pose.keypoints[body.rightElbow].position;
@@ -85,6 +85,16 @@ const Canvas = ({ pose, width, height }: Props) => {
     drawLine(ctx, shoulderPos, elbowPos, "red");
     drawLine(ctx, elbowPos, wristPos, "red");
     drawLine(ctx, wristPos, shoulderPos, "aqua");
+
+    const wristShoulderAngle = angleBetweenPoints(wristPos, shoulderPos);
+
+    const text2X =
+      shoulderPos.x - (shoulderPos.x - wristPos.x) / 2 + margin + 5;
+    const text2Y =
+      shoulderPos.y - (shoulderPos.y - wristPos.y) / 2 + lineHeight - 5;
+    ctx.font = `${fontSize}px serif`;
+    ctx.fillStyle = "aqua"; // TODO: change color based on value
+    ctx.fillText(wristShoulderAngle.toString(), text2X, text2Y);
   }, [pose]);
 
   return (
