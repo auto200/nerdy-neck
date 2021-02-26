@@ -2,6 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import * as posenet from "@tensorflow-models/posenet";
 import Canvas from "./components/Canvas";
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Select,
+  Switch,
+  VStack,
+} from "@chakra-ui/react";
+import { Config, defaultConfig } from "./utils/config/config";
 
 const WIDTH = 600;
 const HEIGHT = 500;
@@ -15,8 +29,8 @@ function App() {
   const [running, setRunning] = useState<boolean>(false);
   const mediaRef = useRef<HTMLVideoElement>(null);
   const runningRef = useRef(running);
-  const [getPoseIntervalTimeout, setGetPoseIntervalTimeout] = useState("1000");
   const getPoseIntervalRef = useRef<number>();
+  const [config, setConfig] = useState<Config>(defaultConfig);
 
   useEffect(() => {
     const init = async () => {
@@ -59,6 +73,7 @@ function App() {
 
   useEffect(() => {
     runningRef.current = running;
+    clearInterval(getPoseIntervalRef.current);
     if (!running || !net) return;
 
     const getPose = async () => {
@@ -69,17 +84,16 @@ function App() {
         console.log(err);
       }
     };
-    clearInterval(getPoseIntervalRef.current);
+
     getPoseIntervalRef.current = window.setInterval(
       getPose,
-      Number(getPoseIntervalTimeout)
+      Number(config.getPoseFrequency)
     );
-    // setInterval(getPose, 3000);
-  }, [running, getPoseIntervalTimeout]);
+  }, [running, config.getPoseFrequency]);
 
   return (
-    <>
-      <div style={{ position: "relative", width: WIDTH, height: HEIGHT }}>
+    <Flex flexWrap="wrap">
+      <Box pos="relative">
         <Canvas pose={pose} width={WIDTH} height={HEIGHT} />
         <video
           autoPlay
@@ -88,39 +102,162 @@ function App() {
           height={HEIGHT}
           onLoadedMetadata={() => setMediaLoaded(true)}
         />
-      </div>
-      {cams?.length && (
-        <select
-          value={cam?.label}
-          onChange={(e) => {
-            const cam = cams.find(({ label }) => label === e.target.value);
-            cam && setCam(cam);
-          }}
-        >
-          {cams.map(({ label }) => (
-            <option key={label} value={label}>
-              {label}
-            </option>
-          ))}
-        </select>
-      )}
-      <button
-        disabled={!net || !mediaRef.current || !mediaLoaded}
-        onClick={() => setRunning((x) => !x)}
-      >
-        {running ? "STOP" : "START"}
-      </button>
-      <div>
-        <h3>config:</h3>
-        <label>
-          frequency{" "}
-          <input
-            value={getPoseIntervalTimeout}
-            onChange={(e) => setGetPoseIntervalTimeout(e.target.value)}
-          />
-        </label>
-      </div>
-    </>
+        <Flex>
+          {cams?.length && (
+            <Select
+              w="60"
+              value={cam?.label}
+              onChange={(e) => {
+                const cam = cams.find(({ label }) => label === e.target.value);
+                cam && setCam(cam);
+              }}
+            >
+              {cams.map(({ label }) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+          )}
+          <Button
+            disabled={!net || !mediaRef.current || !mediaLoaded}
+            onClick={() => setRunning((x) => !x)}
+          >
+            {running ? "STOP" : "START"}
+          </Button>
+        </Flex>
+      </Box>
+
+      <VStack p="5">
+        <Heading as="h1">config:</Heading>
+        <Box>
+          <FormControl mt="6" mb="6">
+            <FormLabel htmlFor="body-side-switch" m="0">
+              body side
+            </FormLabel>
+            <Box>
+              Left
+              <Switch
+                id="body-side-switch"
+                ml="1"
+                mr="1"
+                isChecked={config.bodySide === "right"}
+                onChange={() =>
+                  setConfig({
+                    ...config,
+                    bodySide: config.bodySide === "left" ? "right" : "left",
+                  })
+                }
+                sx={{
+                  "& span[data-checked]": {
+                    background: "rgba(255, 255, 255, 0.24)",
+                  },
+                  "& span[data-checked] span": {
+                    background: "white",
+                  },
+                }}
+              />
+              Right
+            </Box>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel htmlFor="frequency">frequency</FormLabel>
+            <Input
+              id="frequency"
+              value={config.getPoseFrequency.toString()}
+              onChange={(e) => {
+                setConfig({
+                  ...config,
+                  getPoseFrequency: Number(e.target.value),
+                });
+              }}
+            />
+          </FormControl>
+
+          <FormControl display="flex" alignItems="center" mt="6">
+            <Switch
+              id="body-side-switch"
+              mr="1"
+              isChecked={config.earShoulderMonitoring.enabled}
+              onChange={() =>
+                setConfig({
+                  ...config,
+                  earShoulderMonitoring: {
+                    ...config.earShoulderMonitoring,
+                    enabled: !config.earShoulderMonitoring.enabled,
+                  },
+                })
+              }
+            />
+            <FormLabel htmlFor="body-side-switch" m="0">
+              ear-shoulder angle monitoring
+            </FormLabel>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="ear-shoulder-angle" m="0">
+              desired angle
+            </FormLabel>
+            <Input id="ear-shoulder-angle" mr="1" />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="ear-shoulder-tolerance" m="0">
+              tolerance
+            </FormLabel>
+            <Input id="ear-shoulder-tolerance" mr="1" />
+          </FormControl>
+
+          <FormControl display="flex" alignItems="center" mt="6">
+            <Switch
+              id="shoulder-wrist-switch"
+              mr="1"
+              isChecked={config.shoulderWristMonitoring.enabled}
+              onChange={() =>
+                setConfig({
+                  ...config,
+                  shoulderWristMonitoring: {
+                    ...config.shoulderWristMonitoring,
+                    enabled: !config.shoulderWristMonitoring.enabled,
+                  },
+                })
+              }
+            />
+            <FormLabel htmlFor="shoulder-wrist-switch" m="0">
+              shoulder-wrist angle monitoring
+            </FormLabel>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="shoulder-wrist-angle" m="0">
+              desired angle
+            </FormLabel>
+            <Input id="shoulder-wrist-angle" mr="1" />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="shoulder-wrist-tolerance" m="0">
+              tolerance
+            </FormLabel>
+            <Input id="shoulder-wrist-tolerance" mr="1" />
+          </FormControl>
+
+          <FormControl display="flex" alignItems="center" mt="6">
+            <Switch
+              id="ban-knee-and-ankle-switch"
+              mr="1"
+              isChecked={config.banKneeAndAnkle}
+              onChange={() =>
+                setConfig({
+                  ...config,
+                  banKneeAndAnkle: !config.banKneeAndAnkle,
+                })
+              }
+            />
+            <FormLabel htmlFor="ban-knee-and-ankle-switch" m="0">
+              ban-knee-and-ankle
+            </FormLabel>
+          </FormControl>
+        </Box>
+      </VStack>
+    </Flex>
   );
 }
 
