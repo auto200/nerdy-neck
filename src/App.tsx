@@ -5,7 +5,6 @@ import Canvas from "./components/Canvas";
 import {
   Box,
   Button,
-  Divider,
   Flex,
   FormControl,
   FormLabel,
@@ -15,7 +14,7 @@ import {
   Switch,
   VStack,
 } from "@chakra-ui/react";
-import { Config, defaultConfig } from "./utils/config/config";
+import { useConfig } from "./contexts/Config";
 
 const WIDTH = 600;
 const HEIGHT = 500;
@@ -30,7 +29,7 @@ function App() {
   const mediaRef = useRef<HTMLVideoElement>(null);
   const runningRef = useRef(running);
   const getPoseIntervalRef = useRef<number>();
-  const [config, setConfig] = useState<Config>(defaultConfig);
+  const { config, dispatch: dispatchConfig } = useConfig();
 
   useEffect(() => {
     const init = async () => {
@@ -139,15 +138,10 @@ function App() {
               Left
               <Switch
                 id="body-side-switch"
-                ml="1"
-                mr="1"
+                ml="2"
+                mr="2"
                 isChecked={config.bodySide === "right"}
-                onChange={() =>
-                  setConfig({
-                    ...config,
-                    bodySide: config.bodySide === "left" ? "right" : "left",
-                  })
-                }
+                onChange={() => dispatchConfig({ type: "TOGGLE_BODY_SIDE" })}
                 sx={{
                   "& span[data-checked]": {
                     background: "rgba(255, 255, 255, 0.24)",
@@ -166,31 +160,27 @@ function App() {
             <Input
               id="frequency"
               value={config.getPoseFrequency.toString()}
-              onChange={(e) => {
-                setConfig({
-                  ...config,
-                  getPoseFrequency: Number(e.target.value),
-                });
-              }}
+              onChange={(e) =>
+                dispatchConfig({
+                  type: "SET_GET_POSE_FREQUENCY",
+                  payload: Number(e.target.value),
+                })
+              }
             />
           </FormControl>
 
           <FormControl display="flex" alignItems="center" mt="6">
             <Switch
-              id="body-side-switch"
+              id="ear-shoulder-monitoring-switch"
               mr="1"
               isChecked={config.earShoulderMonitoring.enabled}
               onChange={() =>
-                setConfig({
-                  ...config,
-                  earShoulderMonitoring: {
-                    ...config.earShoulderMonitoring,
-                    enabled: !config.earShoulderMonitoring.enabled,
-                  },
+                dispatchConfig({
+                  type: "TOGGLE_EAR_SHOULDER_MONITORING",
                 })
               }
             />
-            <FormLabel htmlFor="body-side-switch" m="0">
+            <FormLabel htmlFor="ear-shoulder-monitoring-switch" m="0">
               ear-shoulder angle monitoring
             </FormLabel>
           </FormControl>
@@ -213,12 +203,8 @@ function App() {
               mr="1"
               isChecked={config.shoulderWristMonitoring.enabled}
               onChange={() =>
-                setConfig({
-                  ...config,
-                  shoulderWristMonitoring: {
-                    ...config.shoulderWristMonitoring,
-                    enabled: !config.shoulderWristMonitoring.enabled,
-                  },
+                dispatchConfig({
+                  type: "TOGGLE_SHOULDER_WRIST_MONITORING",
                 })
               }
             />
@@ -245,9 +231,8 @@ function App() {
               mr="1"
               isChecked={config.banKneeAndAnkle}
               onChange={() =>
-                setConfig({
-                  ...config,
-                  banKneeAndAnkle: !config.banKneeAndAnkle,
+                dispatchConfig({
+                  type: "TOGGLE_BAN_KNEE_AND_ANKLE",
                 })
               }
             />

@@ -5,12 +5,15 @@ import App from "./App";
 import "./index.css";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import theme from "./utils/theme";
+import ConfigContext from "./contexts/Config";
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <App />
+      <ConfigContext>
+        <App />
+      </ConfigContext>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")
