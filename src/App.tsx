@@ -9,7 +9,8 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  Input,
+  NumberInput,
+  NumberInputField,
   Select,
   Switch,
   VStack,
@@ -73,7 +74,7 @@ function App() {
   useEffect(() => {
     runningRef.current = running;
     clearInterval(getPoseIntervalRef.current);
-    if (!running || !net) return;
+    if (!running || !net || !mediaRef.current) return;
 
     const getPose = async () => {
       try {
@@ -127,7 +128,7 @@ function App() {
         </Flex>
       </Box>
 
-      <VStack p="5">
+      <VStack p="5" pt="0">
         <Heading as="h1">config:</Heading>
         <Box>
           <FormControl mt="6" mb="6">
@@ -146,8 +147,11 @@ function App() {
                   "& span[data-checked]": {
                     background: "rgba(255, 255, 255, 0.24)",
                   },
+                  "& span span": {
+                    background: "blue.200",
+                  },
                   "& span[data-checked] span": {
-                    background: "white",
+                    background: "blue.200",
                   },
                 }}
               />
@@ -155,91 +159,94 @@ function App() {
             </Box>
           </FormControl>
 
-          <FormControl>
-            <FormLabel htmlFor="frequency">frequency</FormLabel>
-            <Input
-              id="frequency"
-              value={config.getPoseFrequency.toString()}
-              onChange={(e) =>
-                dispatchConfig({
-                  type: "SET_GET_POSE_FREQUENCY",
-                  payload: Number(e.target.value),
-                })
-              }
-            />
-          </FormControl>
+          <CustomInput
+            id="frequency"
+            label="frequency"
+            value={config.getPoseFrequency.toString()}
+            onChange={(val) =>
+              dispatchConfig({
+                type: "SET_GET_POSE_FREQUENCY",
+                payload: val,
+              })
+            }
+          />
 
-          <FormControl display="flex" alignItems="center" mt="6">
-            <Switch
-              id="ear-shoulder-monitoring-switch"
-              mr="1"
-              isChecked={config.earShoulderMonitoring.enabled}
-              onChange={() =>
-                dispatchConfig({
-                  type: "TOGGLE_EAR_SHOULDER_MONITORING",
-                })
-              }
-            />
-            <FormLabel htmlFor="ear-shoulder-monitoring-switch" m="0">
-              ear-shoulder angle monitoring
-            </FormLabel>
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="ear-shoulder-angle" m="0">
-              desired angle
-            </FormLabel>
-            <Input id="ear-shoulder-angle" mr="1" />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="ear-shoulder-tolerance" m="0">
-              tolerance
-            </FormLabel>
-            <Input id="ear-shoulder-tolerance" mr="1" />
-          </FormControl>
+          <CustomSwitch
+            id="ear-shoulder-monitoring-switch"
+            label="ear-shoulder angle monitoring"
+            isChecked={config.earShoulderMonitoring.enabled}
+            onChange={() =>
+              dispatchConfig({
+                type: "TOGGLE_EAR_SHOULDER_MONITORING",
+              })
+            }
+          />
+          <CustomInput
+            id="ear-shoulder-angle"
+            label="desired angle"
+            value={config.earShoulderMonitoring.angle}
+            onChange={(val) =>
+              dispatchConfig({
+                type: "SET_EAR_SHOULDER_ANGLE",
+                payload: val,
+              })
+            }
+          />
+          <CustomInput
+            id="ear-shoulder-tolerance"
+            label="tolerance"
+            value={config.earShoulderMonitoring.tolerance}
+            onChange={(val) =>
+              dispatchConfig({
+                type: "SET_EAR_SHOULDER_TOLERANCE",
+                payload: val,
+              })
+            }
+          />
 
-          <FormControl display="flex" alignItems="center" mt="6">
-            <Switch
-              id="shoulder-wrist-switch"
-              mr="1"
-              isChecked={config.shoulderWristMonitoring.enabled}
-              onChange={() =>
-                dispatchConfig({
-                  type: "TOGGLE_SHOULDER_WRIST_MONITORING",
-                })
-              }
-            />
-            <FormLabel htmlFor="shoulder-wrist-switch" m="0">
-              shoulder-wrist angle monitoring
-            </FormLabel>
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="shoulder-wrist-angle" m="0">
-              desired angle
-            </FormLabel>
-            <Input id="shoulder-wrist-angle" mr="1" />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="shoulder-wrist-tolerance" m="0">
-              tolerance
-            </FormLabel>
-            <Input id="shoulder-wrist-tolerance" mr="1" />
-          </FormControl>
+          <CustomSwitch
+            id="shoulder-wrist-switch"
+            label="shoulder-wrist angle monitoring"
+            isChecked={config.shoulderWristMonitoring.enabled}
+            onChange={() =>
+              dispatchConfig({
+                type: "TOGGLE_SHOULDER_WRIST_MONITORING",
+              })
+            }
+          />
+          <CustomInput
+            id="shoulder-wrist-angle"
+            label="desired angle"
+            value={config.shoulderWristMonitoring.angle}
+            onChange={(val) =>
+              dispatchConfig({
+                type: "SET_SHOULDER_WRIST_ANGLE",
+                payload: val,
+              })
+            }
+          />
+          <CustomInput
+            id="shoulder-wrist-tolerance"
+            label="tolerance"
+            value={config.shoulderWristMonitoring.tolerance}
+            onChange={(val) =>
+              dispatchConfig({
+                type: "SET_SHOULDER_WRIST_TOLERANCE",
+                payload: val,
+              })
+            }
+          />
 
-          <FormControl display="flex" alignItems="center" mt="6">
-            <Switch
-              id="ban-knee-and-ankle-switch"
-              mr="1"
-              isChecked={config.banKneeAndAnkle}
-              onChange={() =>
-                dispatchConfig({
-                  type: "TOGGLE_BAN_KNEE_AND_ANKLE",
-                })
-              }
-            />
-            <FormLabel htmlFor="ban-knee-and-ankle-switch" m="0">
-              ban-knee-and-ankle
-            </FormLabel>
-          </FormControl>
+          <CustomSwitch
+            id="ban-knee-and-ankle-switch"
+            label="ban-knee-and-ankle"
+            isChecked={config.banKneeAndAnkle}
+            onChange={() =>
+              dispatchConfig({
+                type: "TOGGLE_BAN_KNEE_AND_ANKLE",
+              })
+            }
+          />
         </Box>
       </VStack>
     </Flex>
@@ -247,3 +254,54 @@ function App() {
 }
 
 export default App;
+
+const CustomSwitch = ({
+  id,
+  label,
+  ...rest
+}: {
+  id: string;
+  label: string;
+  [rest: string]: any;
+}) => {
+  return (
+    <FormControl display="flex" alignItems="center" mt="6">
+      <Switch id={id} mr="1" {...rest} />
+      <FormLabel htmlFor={id} m="0">
+        ban-knee-and-ankle
+      </FormLabel>
+    </FormControl>
+  );
+};
+
+const CustomInput = ({
+  id,
+  label,
+  value,
+  onChange,
+  ...rest
+}: {
+  id: string;
+  label: string;
+  value: string | number;
+  onChange: (valueAsString: string, valueAsNumber: number) => void;
+  [rest: string]: any;
+}) => {
+  return (
+    <FormControl>
+      <FormLabel htmlFor={id} m="0">
+        {label}
+      </FormLabel>
+      <NumberInput
+        id={id}
+        mr="1"
+        value={value}
+        onChange={onChange}
+        {...rest}
+        min={0}
+      >
+        <NumberInputField />
+      </NumberInput>
+    </FormControl>
+  );
+};
