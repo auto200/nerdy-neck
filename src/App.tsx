@@ -133,7 +133,7 @@ function App() {
         <Box>
           <FormControl mt="6" mb="6">
             <FormLabel htmlFor="body-side-switch" m="0">
-              body side
+              Body side
             </FormLabel>
             <Box>
               Left
@@ -161,8 +161,9 @@ function App() {
 
           <CustomInput
             id="frequency"
-            label="frequency"
-            value={config.getPoseFrequency.toString()}
+            label="Check pose interval"
+            value={config.getPoseFrequency}
+            addDegreeSign={false}
             onChange={(val) =>
               dispatchConfig({
                 type: "SET_GET_POSE_FREQUENCY",
@@ -173,7 +174,7 @@ function App() {
 
           <CustomSwitch
             id="ear-shoulder-monitoring-switch"
-            label="ear-shoulder angle monitoring"
+            label="Ear-shoulder angle monitoring"
             isChecked={config.earShoulderMonitoring.enabled}
             onChange={() =>
               dispatchConfig({
@@ -183,7 +184,7 @@ function App() {
           />
           <CustomInput
             id="ear-shoulder-angle"
-            label="desired angle"
+            label="Desired angle"
             value={config.earShoulderMonitoring.angle}
             onChange={(val) =>
               dispatchConfig({
@@ -194,7 +195,7 @@ function App() {
           />
           <CustomInput
             id="ear-shoulder-tolerance"
-            label="tolerance"
+            label="Tolerance"
             value={config.earShoulderMonitoring.tolerance}
             onChange={(val) =>
               dispatchConfig({
@@ -206,7 +207,7 @@ function App() {
 
           <CustomSwitch
             id="shoulder-wrist-switch"
-            label="shoulder-wrist angle monitoring"
+            label="Shoulder-wrist angle monitoring"
             isChecked={config.shoulderWristMonitoring.enabled}
             onChange={() =>
               dispatchConfig({
@@ -216,7 +217,7 @@ function App() {
           />
           <CustomInput
             id="shoulder-wrist-angle"
-            label="desired angle"
+            label="Desired angle"
             value={config.shoulderWristMonitoring.angle}
             onChange={(val) =>
               dispatchConfig({
@@ -227,7 +228,7 @@ function App() {
           />
           <CustomInput
             id="shoulder-wrist-tolerance"
-            label="tolerance"
+            label="Tolerance"
             value={config.shoulderWristMonitoring.tolerance}
             onChange={(val) =>
               dispatchConfig({
@@ -239,7 +240,7 @@ function App() {
 
           <CustomSwitch
             id="ban-knee-and-ankle-switch"
-            label="ban-knee-and-ankle"
+            label="Ban-knee-and-ankle"
             isChecked={config.banKneeAndAnkle}
             onChange={() =>
               dispatchConfig({
@@ -268,7 +269,7 @@ const CustomSwitch = ({
     <FormControl display="flex" alignItems="center" mt="6">
       <Switch id={id} mr="1" {...rest} />
       <FormLabel htmlFor={id} m="0">
-        ban-knee-and-ankle
+        {label}
       </FormLabel>
     </FormControl>
   );
@@ -279,12 +280,14 @@ const CustomInput = ({
   label,
   value,
   onChange,
+  addDegreeSign = true,
   ...rest
 }: {
   id: string;
   label: string;
   value: string | number;
   onChange: (valueAsString: string, valueAsNumber: number) => void;
+  addDegreeSign?: boolean;
   [rest: string]: any;
 }) => {
   return (
@@ -295,7 +298,7 @@ const CustomInput = ({
       <NumberInput
         id={id}
         mr="1"
-        value={value}
+        value={value + `${addDegreeSign ? "°" : ""}`}
         onChange={onChange}
         {...rest}
         min={0}
