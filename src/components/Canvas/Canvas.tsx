@@ -1,5 +1,6 @@
 import { Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef } from "react";
+import { useConfig } from "../../contexts/Config";
 import { angleBetweenPoints, drawLine, drawPoint } from "./utils";
 
 //keypoints[]
@@ -21,12 +22,27 @@ import { angleBetweenPoints, drawLine, drawPoint } from "./utils";
 // 15	leftAnkle
 // 16	rightAnkle
 
-const leftBodySide = [3, 5];
-const body = {
-  rightEar: 4,
-  rightShoulder: 6,
-  rightElbow: 8,
-  rightWrist: 10,
+const fullBody = {
+  left: {
+    // eye: 1,
+    ear: 3,
+    shoulder: 5,
+    elbow: 7,
+    wrist: 9,
+    hip: 11,
+    knee: 13,
+    ankle: 15,
+  },
+  right: {
+    // eye: 2,
+    ear: 4,
+    shoulder: 6,
+    elbow: 8,
+    wrist: 10,
+    hip: 12,
+    knee: 14,
+    ankle: 16,
+  },
 };
 
 interface Props {
@@ -37,33 +53,35 @@ interface Props {
 
 const Canvas = ({ pose, width, height }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { config } = useConfig();
 
   useEffect(() => {
     if (!pose || !canvasRef.current) return;
 
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
+    const body = fullBody[config.bodySide];
     ctx.clearRect(0, 0, width, height);
+    console.log(pose);
 
     //draw points
     for (const key of Object.values(body)) {
-      const point = pose.keypoints[key].position;
-      drawPoint(ctx, point, "aqua");
+      const { position, score } = pose.keypoints[key];
+      if (score >= config.minKeypointScore) {
+        drawPoint(ctx, position, "aqua");
+      }
     }
 
     //draw ear-shoulder line
-    const earPos = pose.keypoints[body.rightEar].position;
-    const shoulderPos = pose.keypoints[body.rightShoulder].position;
+    const earPos = pose.keypoints[body.ear].position;
+    const shoulderPos = pose.keypoints[body.shoulder].position;
     drawLine(ctx, earPos, shoulderPos, "aqua");
 
     //triangle third corner
     const corner = { x: earPos.x, y: shoulderPos.y };
     drawPoint(ctx, corner, "red");
 
-    let headShoulderAngle = angleBetweenPoints(earPos, shoulderPos);
-    if (corner.x < shoulderPos.x) {
-      headShoulderAngle = -headShoulderAngle;
-    }
+    const headShoulderAngle = angleBetweenPoints(earPos, shoulderPos);
 
     //connect third corner with shoulder and ear
     drawLine(ctx, corner, shoulderPos, "red");
@@ -80,8 +98,8 @@ const Canvas = ({ pose, width, height }: Props) => {
     ctx.fillText(headShoulderAngle.toString(), textX, textY);
 
     //check elbow angle
-    const elbowPos = pose.keypoints[body.rightElbow].position;
-    const wristPos = pose.keypoints[body.rightWrist].position;
+    const elbowPos = pose.keypoints[body.elbow].position;
+    const wristPos = pose.keypoints[body.wrist].position;
     drawLine(ctx, shoulderPos, elbowPos, "red");
     drawLine(ctx, elbowPos, wristPos, "red");
     drawLine(ctx, wristPos, shoulderPos, "aqua");

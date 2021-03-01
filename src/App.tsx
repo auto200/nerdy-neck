@@ -118,6 +118,7 @@ function App() {
           </Button>
         </Flex>
       </Box>
+      {/* config ui */}
       <Config />
     </Flex>
   );

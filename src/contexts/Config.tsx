@@ -15,6 +15,7 @@ export interface Config {
     tolerance: string;
   };
   banKneeAndAnkle: boolean;
+  minKeypointScore: number;
 }
 
 export const initialConfig: Config = {
@@ -31,6 +32,7 @@ export const initialConfig: Config = {
     tolerance: "10",
   },
   banKneeAndAnkle: false,
+  minKeypointScore: 0.6,
 };
 
 const configContext = createContext<{
