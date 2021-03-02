@@ -5,6 +5,7 @@ import Canvas from "./components/Canvas";
 import { Box, Button, Flex, Select } from "@chakra-ui/react";
 import { useConfig } from "./contexts/Config";
 import Config from "./components/Config";
+import GithubLink from "./components/GithubLink";
 
 const WIDTH = 600;
 const HEIGHT = 500;
@@ -82,6 +83,7 @@ function App() {
 
   return (
     <Flex flexWrap="wrap">
+      <GithubLink />
       <Box pos="relative">
         <Canvas pose={pose} width={WIDTH} height={HEIGHT} />
         <video
