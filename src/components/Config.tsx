@@ -130,7 +130,7 @@ const Config = () => {
         <CustomInput
           id="ear-shoulder-angle"
           label="Desired angle"
-          value={config.earShoulderMonitoring.angle}
+          value={config.earShoulderMonitoring.desiredAngle}
           onChange={(val) =>
             dispatchConfig({
               type: "SET_EAR_SHOULDER_ANGLE",
@@ -163,7 +163,7 @@ const Config = () => {
         <CustomInput
           id="shoulder-wrist-angle"
           label="Desired angle"
-          value={config.shoulderWristMonitoring.angle}
+          value={config.shoulderWristMonitoring.desiredAngle}
           onChange={(val) =>
             dispatchConfig({
               type: "SET_SHOULDER_WRIST_ANGLE",

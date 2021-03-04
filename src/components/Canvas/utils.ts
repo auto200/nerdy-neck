@@ -79,3 +79,17 @@ export const placeTextBetweenTwoPoints = ({
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 };
+
+export const numberInTolerance = (
+  number: number,
+  tolerance: number,
+  middlepoint: number
+) => {
+  if (number < middlepoint - tolerance) {
+    return false;
+  }
+  if (number > middlepoint + tolerance) {
+    return false;
+  }
+  return true;
+};

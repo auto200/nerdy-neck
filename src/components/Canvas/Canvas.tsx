@@ -1,10 +1,12 @@
 import { Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef } from "react";
 import { useConfig } from "../../contexts/Config";
+import { POSE_ERRORS } from "../../utils/constants";
 import {
   angleBetweenPoints,
   drawLine,
   drawPoint,
+  numberInTolerance,
   placeTextBetweenTwoPoints,
 } from "./utils";
 
@@ -60,9 +62,10 @@ interface Props {
   pose: Pose | undefined;
   width: number;
   height: number;
+  setPoseErrors: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const Canvas = ({ pose, width, height }: Props) => {
+const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { config } = useConfig();
 
@@ -71,6 +74,8 @@ const Canvas = ({ pose, width, height }: Props) => {
 
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
+
+    const errors: string[] = [];
 
     const body = FULL_BODY[config.bodySide];
     ctx.clearRect(0, 0, width, height);
@@ -91,15 +96,21 @@ const Canvas = ({ pose, width, height }: Props) => {
       drawLine(ctx, triangle3rdCorner, earPos, LINE_COLOR);
       drawPoint(ctx, triangle3rdCorner, LINE_COLOR);
 
+      const angle = angleBetweenPoints(earPos, shoulderPos);
       placeTextBetweenTwoPoints({
         ctx: ctx,
-        text: angleBetweenPoints(earPos, shoulderPos).toString(),
+        text: angle.toString(),
         color: KEYPOINT_COLOR,
         start: earPos,
         end: shoulderPos,
         shiftX: TEXT_MARGIN,
         shiftY: TEXT_LINE_HEIGHT,
       });
+
+      const { tolerance, desiredAngle } = config.earShoulderMonitoring;
+      if (!numberInTolerance(angle, Number(tolerance), Number(desiredAngle))) {
+        errors.push(POSE_ERRORS.EAR_SHOULDER);
+      }
     }
 
     const elbowShoulderAndWristVisible = [
@@ -118,15 +129,30 @@ const Canvas = ({ pose, width, height }: Props) => {
       drawLine(ctx, elbowPos, wristPos, LINE_COLOR);
       drawLine(ctx, wristPos, shoulderPos, KEYPOINT_COLOR);
 
+      const angle = angleBetweenPoints(wristPos, shoulderPos);
       placeTextBetweenTwoPoints({
         ctx: ctx,
-        text: angleBetweenPoints(wristPos, shoulderPos).toString(),
+        text: angle.toString(),
         color: KEYPOINT_COLOR,
         start: shoulderPos,
         end: wristPos,
         shiftX: TEXT_MARGIN,
         shiftY: TEXT_LINE_HEIGHT,
       });
+
+      const { tolerance, desiredAngle } = config.shoulderWristMonitoring;
+      if (!numberInTolerance(angle, Number(tolerance), Number(desiredAngle))) {
+        errors.push(POSE_ERRORS.SHOULER_WRIST);
+      }
+    }
+
+    const kneeOrAnkleVisible = [
+      pose.keypoints[body.knee],
+      pose.keypoints[body.ankle],
+    ].some(({ score }) => score >= config.minKeypointScore);
+
+    if (config.banKneeAndAnkle && kneeOrAnkleVisible) {
+      errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
     }
 
     //draw keypoints last to place them on top of the lines
@@ -136,6 +162,8 @@ const Canvas = ({ pose, width, height }: Props) => {
         drawPoint(ctx, position, KEYPOINT_COLOR);
       }
     }
+
+    setPoseErrors(errors);
   }, [pose]);
 
   return (

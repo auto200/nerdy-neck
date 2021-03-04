@@ -6,12 +6,12 @@ export interface Config {
   bodySide: "left" | "right";
   earShoulderMonitoring: {
     enabled: boolean;
-    angle: string;
+    desiredAngle: string;
     tolerance: string;
   };
   shoulderWristMonitoring: {
     enabled: boolean;
-    angle: string;
+    desiredAngle: string;
     tolerance: string;
   };
   banKneeAndAnkle: boolean;
@@ -23,12 +23,12 @@ export const initialConfig: Config = {
   bodySide: "right",
   earShoulderMonitoring: {
     enabled: true,
-    angle: "15",
+    desiredAngle: "15",
     tolerance: "5",
   },
   shoulderWristMonitoring: {
     enabled: true,
-    angle: "45",
+    desiredAngle: "45",
     tolerance: "10",
   },
   banKneeAndAnkle: false,
@@ -72,7 +72,7 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
     case "SET_EAR_SHOULDER_ANGLE": {
-      config.earShoulderMonitoring.angle = action.payload;
+      config.earShoulderMonitoring.desiredAngle = action.payload;
       return;
     }
     case "SET_EAR_SHOULDER_TOLERANCE": {
@@ -86,7 +86,7 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
     case "SET_SHOULDER_WRIST_ANGLE": {
-      config.shoulderWristMonitoring.angle = action.payload;
+      config.shoulderWristMonitoring.desiredAngle = action.payload;
       return;
     }
     case "SET_SHOULDER_WRIST_TOLERANCE": {

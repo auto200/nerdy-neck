@@ -18,6 +18,8 @@ function App() {
   const [pose, setPose] = useState<Pose>();
   const [running, setRunning] = useState<boolean>(false);
   const { config } = useConfig();
+  const [poseErrors, setPoseErrors] = useState<string[]>([]);
+  console.log(poseErrors);
 
   const mediaRef = useRef<HTMLVideoElement>(null);
   const runningRef = useRef(running);
@@ -86,7 +88,12 @@ function App() {
       <GithubLink />
       <Box>
         <Box pos="relative" minW={WIDTH} minH={HEIGHT}>
-          <Canvas pose={pose} width={WIDTH} height={HEIGHT} />
+          <Canvas
+            pose={pose}
+            width={WIDTH}
+            height={HEIGHT}
+            setPoseErrors={setPoseErrors}
+          />
           <video
             autoPlay
             ref={mediaRef}
@@ -94,6 +101,18 @@ function App() {
             height={HEIGHT}
             onLoadedMetadata={() => setMediaLoaded(true)}
           />
+          <Box pos="absolute" top="0" left="2">
+            {poseErrors.map((err) => (
+              <Box
+                color="red.500"
+                fontSize="3xl"
+                fontWeight="bold"
+                sx={{ "-webkit-text-stroke": "1px black" }}
+              >
+                {err}
+              </Box>
+            ))}
+          </Box>
         </Box>
         <Flex>
           {cams?.length ? (
