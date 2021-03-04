@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import { load as loadPosenet, PoseNet, Pose } from "@tensorflow-models/posenet";
 import Canvas from "./components/Canvas";
-import { Box, Button, Flex, Select } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Select } from "@chakra-ui/react";
 import { useConfig } from "./contexts/Config";
 import Config from "./components/Config";
 import GithubLink from "./components/GithubLink";
@@ -84,40 +84,48 @@ function App() {
   return (
     <Flex flexWrap="wrap">
       <GithubLink />
-      <Box pos="relative">
-        <Canvas pose={pose} width={WIDTH} height={HEIGHT} />
-        <video
-          autoPlay
-          ref={mediaRef}
-          width={WIDTH}
-          height={HEIGHT}
-          onLoadedMetadata={() => setMediaLoaded(true)}
-        />
+      <Box>
+        <Box pos="relative" minW={WIDTH} minH={HEIGHT}>
+          <Canvas pose={pose} width={WIDTH} height={HEIGHT} />
+          <video
+            autoPlay
+            ref={mediaRef}
+            width={WIDTH}
+            height={HEIGHT}
+            onLoadedMetadata={() => setMediaLoaded(true)}
+          />
+        </Box>
         <Flex>
-          {cams?.length && (
-            <Select
-              w="60"
-              value={cams[currentCamIndex]?.label}
-              onChange={(e) => {
-                const cam = cams.findIndex(
-                  ({ label }) => label === e.target.value
-                );
-                cam && setCurrentCamIndex(cam);
-              }}
-            >
-              {cams.map(({ label }) => (
-                <option key={label} value={label}>
-                  {label}
-                </option>
-              ))}
-            </Select>
+          {cams?.length ? (
+            <>
+              <Select
+                w="60"
+                value={cams[currentCamIndex]?.label}
+                onChange={(e) => {
+                  const cam = cams.findIndex(
+                    ({ label }) => label === e.target.value
+                  );
+                  cam && setCurrentCamIndex(cam);
+                }}
+              >
+                {cams.map(({ label }) => (
+                  <option key={label} value={label}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+              <Button
+                disabled={!net || !mediaRef.current || !mediaLoaded}
+                onClick={() => setRunning((x) => !x)}
+              >
+                {running ? "STOP" : "START"}
+              </Button>
+            </>
+          ) : (
+            <Heading variant="h1" color="yellow.400">
+              Did not find any video devides
+            </Heading>
           )}
-          <Button
-            disabled={!net || !mediaRef.current || !mediaLoaded}
-            onClick={() => setRunning((x) => !x)}
-          >
-            {running ? "STOP" : "START"}
-          </Button>
         </Flex>
       </Box>
       {/* config ui */}
