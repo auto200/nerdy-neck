@@ -1,7 +1,12 @@
 import { Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef } from "react";
 import { useConfig } from "../../contexts/Config";
-import { angleBetweenPoints, drawLine, drawPoint } from "./utils";
+import {
+  angleBetweenPoints,
+  drawLine,
+  drawPoint,
+  placeTextBetweenTwoPoints,
+} from "./utils";
 
 //keypoints[]
 // 0	nose
@@ -22,7 +27,7 @@ import { angleBetweenPoints, drawLine, drawPoint } from "./utils";
 // 15	leftAnkle
 // 16	rightAnkle
 
-const fullBody = {
+const FULL_BODY = {
   left: {
     // eye: 1,
     ear: 3,
@@ -45,6 +50,12 @@ const fullBody = {
   },
 };
 
+const FONT_SIZE = 48;
+const TEXT_MARGIN = FONT_SIZE * 0.2;
+const TEXT_LINE_HEIGHT = FONT_SIZE / 3;
+const KEYPOINT_COLOR = "aqua";
+const LINE_COLOR = "red";
+
 interface Props {
   pose: Pose | undefined;
   width: number;
@@ -60,59 +71,71 @@ const Canvas = ({ pose, width, height }: Props) => {
 
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
-    const body = fullBody[config.bodySide];
-    ctx.clearRect(0, 0, width, height);
-    console.log(pose);
 
-    //draw points
+    const body = FULL_BODY[config.bodySide];
+    ctx.clearRect(0, 0, width, height);
+
+    const earAndShoulderVisible = [
+      pose.keypoints[body.ear],
+      pose.keypoints[body.shoulder],
+    ].every(({ score }) => score >= config.minKeypointScore);
+
+    //check ear-shoulder angle
+    if (config.earShoulderMonitoring && earAndShoulderVisible) {
+      const earPos = pose.keypoints[body.ear].position;
+      const shoulderPos = pose.keypoints[body.shoulder].position;
+      const triangle3rdCorner = { x: earPos.x, y: shoulderPos.y };
+
+      drawLine(ctx, earPos, shoulderPos, KEYPOINT_COLOR);
+      drawLine(ctx, triangle3rdCorner, shoulderPos, LINE_COLOR);
+      drawLine(ctx, triangle3rdCorner, earPos, LINE_COLOR);
+      drawPoint(ctx, triangle3rdCorner, LINE_COLOR);
+
+      placeTextBetweenTwoPoints({
+        ctx: ctx,
+        text: angleBetweenPoints(earPos, shoulderPos).toString(),
+        color: KEYPOINT_COLOR,
+        start: earPos,
+        end: shoulderPos,
+        shiftX: TEXT_MARGIN,
+        shiftY: TEXT_LINE_HEIGHT,
+      });
+    }
+
+    const elbowShoulderAndWristVisible = [
+      pose.keypoints[body.elbow],
+      pose.keypoints[body.shoulder],
+      pose.keypoints[body.wrist],
+    ].every(({ score }) => score >= config.minKeypointScore);
+
+    //check elbow angle
+    if (config.shoulderWristMonitoring && elbowShoulderAndWristVisible) {
+      const shoulderPos = pose.keypoints[body.shoulder].position;
+      const elbowPos = pose.keypoints[body.elbow].position;
+      const wristPos = pose.keypoints[body.wrist].position;
+
+      drawLine(ctx, shoulderPos, elbowPos, LINE_COLOR);
+      drawLine(ctx, elbowPos, wristPos, LINE_COLOR);
+      drawLine(ctx, wristPos, shoulderPos, KEYPOINT_COLOR);
+
+      placeTextBetweenTwoPoints({
+        ctx: ctx,
+        text: angleBetweenPoints(wristPos, shoulderPos).toString(),
+        color: KEYPOINT_COLOR,
+        start: shoulderPos,
+        end: wristPos,
+        shiftX: TEXT_MARGIN,
+        shiftY: TEXT_LINE_HEIGHT,
+      });
+    }
+
+    //draw keypoints last to place them on top of the lines
     for (const key of Object.values(body)) {
       const { position, score } = pose.keypoints[key];
       if (score >= config.minKeypointScore) {
-        drawPoint(ctx, position, "aqua");
+        drawPoint(ctx, position, KEYPOINT_COLOR);
       }
     }
-
-    //draw ear-shoulder line
-    const earPos = pose.keypoints[body.ear].position;
-    const shoulderPos = pose.keypoints[body.shoulder].position;
-    drawLine(ctx, earPos, shoulderPos, "aqua");
-
-    //triangle third corner
-    const corner = { x: earPos.x, y: shoulderPos.y };
-    drawPoint(ctx, corner, "red");
-
-    const headShoulderAngle = angleBetweenPoints(earPos, shoulderPos);
-
-    //connect third corner with shoulder and ear
-    drawLine(ctx, corner, shoulderPos, "red");
-    drawLine(ctx, corner, earPos, "red");
-
-    //display current angle between ear and shoulder
-    const fontSize = 48;
-    const margin = fontSize * 0.1;
-    const lineHeight = fontSize / 3;
-    const textX = earPos.x - (earPos.x - shoulderPos.x) / 2 + margin;
-    const textY = earPos.y - (earPos.y - shoulderPos.y) / 2 + lineHeight;
-    ctx.font = `${fontSize}px serif`;
-    ctx.fillStyle = "aqua"; // TODO?: change color based on value
-    ctx.fillText(headShoulderAngle.toString(), textX, textY);
-
-    //check elbow angle
-    const elbowPos = pose.keypoints[body.elbow].position;
-    const wristPos = pose.keypoints[body.wrist].position;
-    drawLine(ctx, shoulderPos, elbowPos, "red");
-    drawLine(ctx, elbowPos, wristPos, "red");
-    drawLine(ctx, wristPos, shoulderPos, "aqua");
-
-    const wristShoulderAngle = angleBetweenPoints(wristPos, shoulderPos);
-
-    const text2X =
-      shoulderPos.x - (shoulderPos.x - wristPos.x) / 2 + margin + 5;
-    const text2Y =
-      shoulderPos.y - (shoulderPos.y - wristPos.y) / 2 + lineHeight - 5;
-    ctx.font = `${fontSize}px serif`;
-    ctx.fillStyle = "aqua"; // TODO: change color based on value
-    ctx.fillText(wristShoulderAngle.toString(), text2X, text2Y);
   }, [pose]);
 
   return (
