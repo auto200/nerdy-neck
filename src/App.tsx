@@ -10,9 +10,29 @@ import GithubLink from "./components/GithubLink";
 const WIDTH = 600;
 const HEIGHT = 500;
 
+const promptCameraPemission = () => {
+  window.navigator.mediaDevices.getUserMedia({
+    video: true,
+  });
+};
+
+const getCams = async () => {
+  const devices = await window.navigator.mediaDevices.enumerateDevices();
+  const cams = devices.filter(
+    ({ kind, deviceId, label }) => kind === "videoinput" && deviceId && label
+  );
+  return cams;
+};
+
 function App() {
+  const [camPermissionGranted, setCamPermissionGranted] = useState<boolean>(
+    false
+  );
   const [cams, setCams] = useState<MediaDeviceInfo[]>();
-  const [currentCamIndex, setCurrentCamIndex] = useState<number>(0);
+  const [currentCamIndex, setCurrentCamIndex] = useState<number>(() => {
+    const stored = Number(window.localStorage.getItem("currentCamIndex"));
+    return !isNaN(stored) ? stored : 0;
+  });
   const [net, setNet] = useState<PoseNet>();
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [pose, setPose] = useState<Pose>();
@@ -27,12 +47,28 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const cams = devices.filter(
-          ({ kind, deviceId, label }) =>
-            kind === "videoinput" && deviceId && label
-        );
-        setCams(cams);
+        //tested on chrome, 4sure not working on firefox
+        const camPermission = await window.navigator.permissions.query({
+          name: "camera",
+        });
+
+        if (camPermission.state === "granted") {
+          setCamPermissionGranted(true);
+          setCams(await getCams());
+        } else {
+          promptCameraPemission();
+        }
+
+        camPermission.addEventListener("change", async function () {
+          if (this.state === "granted") {
+            setCamPermissionGranted(true);
+            setCams(await getCams());
+          } else {
+            setCamPermissionGranted(false);
+          }
+        });
+
+        getCams();
 
         setNet(await loadPosenet());
       } catch (err) {
@@ -44,7 +80,7 @@ function App() {
 
   useEffect(() => {
     const getStream = async () => {
-      if (!cams) return;
+      if (!camPermissionGranted || !cams) return;
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -63,7 +99,7 @@ function App() {
       }
     };
     getStream();
-  }, [cams, currentCamIndex]);
+  }, [cams, currentCamIndex, camPermissionGranted]);
 
   useEffect(() => {
     runningRef.current = running;
@@ -84,6 +120,10 @@ function App() {
       Number(config.getPoseInterval)
     );
   }, [running, config.getPoseInterval]);
+
+  useEffect(() => {
+    window.localStorage.setItem("currentCamIndex", currentCamIndex.toString());
+  }, [currentCamIndex]);
 
   return (
     <Flex flexWrap="wrap">
@@ -118,7 +158,7 @@ function App() {
           </Box>
         </Box>
         <Flex>
-          {cams?.length ? (
+          {!!cams?.length && (
             <>
               <Select
                 w="60"
@@ -137,15 +177,18 @@ function App() {
                 ))}
               </Select>
               <Button
-                disabled={!net || !mediaRef.current || !mediaLoaded}
+                disabled={
+                  !running && (!net || !mediaRef.current || !mediaLoaded)
+                }
                 onClick={() => setRunning((x) => !x)}
               >
                 {running ? "STOP" : "START"}
               </Button>
             </>
-          ) : (
+          )}
+          {!camPermissionGranted && (
             <Heading variant="h1" color="yellow.400">
-              Did not find any video devices
+              You need to grant permission to use your cam
             </Heading>
           )}
         </Flex>
