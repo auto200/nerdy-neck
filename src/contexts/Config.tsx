@@ -2,7 +2,7 @@ import React, { createContext, useContext } from "react";
 import { useImmerReducer } from "../utils/hooks/useImmerReducer";
 
 export interface Config {
-  getPoseFrequency: string;
+  getPoseInterval: string;
   bodySide: "left" | "right";
   earShoulderMonitoring: {
     enabled: boolean;
@@ -19,7 +19,7 @@ export interface Config {
 }
 
 export const initialConfig: Config = {
-  getPoseFrequency: "1000",
+  getPoseInterval: "1000",
   bodySide: "right",
   earShoulderMonitoring: {
     enabled: true,
@@ -44,7 +44,7 @@ const configContext = createContext<{
 });
 
 export type Action =
-  | { type: "SET_GET_POSE_FREQUENCY"; payload: string }
+  | { type: "SET_GET_POSE_INTERVAL"; payload: string }
   | { type: "TOGGLE_BODY_SIDE" }
   | { type: "TOGGLE_EAR_SHOULDER_MONITORING" }
   | { type: "SET_EAR_SHOULDER_ANGLE"; payload: string }
@@ -61,8 +61,8 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
 
-    case "SET_GET_POSE_FREQUENCY": {
-      config.getPoseFrequency = action.payload;
+    case "SET_GET_POSE_INTERVAL": {
+      config.getPoseInterval = action.payload;
       return;
     }
 

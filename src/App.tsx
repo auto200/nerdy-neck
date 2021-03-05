@@ -78,9 +78,9 @@ function App() {
 
     getPoseIntervalRef.current = window.setInterval(
       getPose,
-      Number(config.getPoseFrequency)
+      Number(config.getPoseInterval)
     );
-  }, [running, config.getPoseFrequency]);
+  }, [running, config.getPoseInterval]);
 
   return (
     <Flex flexWrap="wrap">
@@ -142,7 +142,7 @@ function App() {
             </>
           ) : (
             <Heading variant="h1" color="yellow.400">
-              Did not find any video devides
+              Did not find any video devices
             </Heading>
           )}
         </Flex>
