@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { useImmerReducer } from "../utils/hooks/useImmerReducer";
 
 export interface Config {
@@ -106,8 +106,19 @@ const reducer = (config: Config, action: Action) => {
 const ConfigContextProvider: React.FC = ({ children }) => {
   const [config, dispatch] = useImmerReducer<Config, Action>(
     reducer,
-    initialConfig
+    initialConfig,
+    () => {
+      const configStr = window.localStorage.getItem("config");
+      return configStr ? JSON.parse(configStr) : initialConfig;
+    }
   );
+
+  useEffect(() => {
+    try {
+      const configStr = JSON.stringify(config);
+      window.localStorage.setItem("config", configStr);
+    } catch (err) {}
+  }, [config]);
 
   const values = {
     config,
