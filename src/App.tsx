@@ -19,7 +19,6 @@ function App() {
   const [running, setRunning] = useState<boolean>(false);
   const { config } = useConfig();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
-  console.log(poseErrors);
 
   const mediaRef = useRef<HTMLVideoElement>(null);
   const runningRef = useRef(running);
@@ -102,12 +101,13 @@ function App() {
             onLoadedMetadata={() => setMediaLoaded(true)}
           />
           <Box pos="absolute" top="0" left="2">
-            {poseErrors.map((err) => (
+            {poseErrors.map((err, i) => (
               <Box
+                key={i}
                 color="red.500"
                 fontSize="3xl"
                 fontWeight="bold"
-                sx={{ "-webkit-text-stroke": "1px black" }}
+                sx={{ WebkitTextStroke: "1px rgba(0, 0, 0, 0.7)" }}
               >
                 {err}
               </Box>
