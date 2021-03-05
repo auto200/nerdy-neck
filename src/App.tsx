@@ -29,7 +29,8 @@ function App() {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const cams = devices.filter(
-          ({ kind, deviceId }) => kind === "videoinput" && deviceId
+          ({ kind, deviceId, label }) =>
+            kind === "videoinput" && deviceId && label
         );
         setCams(cams);
 
@@ -121,16 +122,16 @@ function App() {
             <>
               <Select
                 w="60"
-                value={cams[currentCamIndex]?.label}
+                value={cams[currentCamIndex]?.deviceId}
                 onChange={(e) => {
-                  const cam = cams.findIndex(
-                    ({ label }) => label === e.target.value
+                  const camIndex = cams.findIndex(
+                    ({ deviceId }) => deviceId === e.target.value
                   );
-                  cam && setCurrentCamIndex(cam);
+                  camIndex > -1 && setCurrentCamIndex(camIndex);
                 }}
               >
-                {cams.map(({ label }) => (
-                  <option key={label} value={label}>
+                {cams.map(({ label, deviceId }) => (
+                  <option key={deviceId} value={deviceId}>
                     {label}
                   </option>
                 ))}
