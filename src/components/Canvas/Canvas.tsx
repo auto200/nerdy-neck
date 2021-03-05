@@ -86,7 +86,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     ].every(({ score }) => score >= config.minKeypointScore);
 
     //check ear-shoulder angle
-    if (config.earShoulderMonitoring && earAndShoulderVisible) {
+    if (config.earShoulderMonitoring.enabled && earAndShoulderVisible) {
       const earPos = pose.keypoints[body.ear].position;
       const shoulderPos = pose.keypoints[body.shoulder].position;
       const triangle3rdCorner = { x: earPos.x, y: shoulderPos.y };
@@ -120,7 +120,10 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     ].every(({ score }) => score >= config.minKeypointScore);
 
     //check elbow angle
-    if (config.shoulderWristMonitoring && elbowShoulderAndWristVisible) {
+    if (
+      config.shoulderWristMonitoring.enabled &&
+      elbowShoulderAndWristVisible
+    ) {
       const shoulderPos = pose.keypoints[body.shoulder].position;
       const elbowPos = pose.keypoints[body.elbow].position;
       const wristPos = pose.keypoints[body.wrist].position;
