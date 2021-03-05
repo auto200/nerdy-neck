@@ -28,7 +28,9 @@ function App() {
     const init = async () => {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        const cams = devices.filter(({ kind }) => kind === "videoinput");
+        const cams = devices.filter(
+          ({ kind, deviceId }) => kind === "videoinput" && deviceId
+        );
         setCams(cams);
 
         setNet(await loadPosenet());
