@@ -29,16 +29,13 @@ import {
 // 15	leftAnkle
 // 16	rightAnkle
 
-const FULL_BODY = {
+const UPPER_BODY = {
   left: {
     // eye: 1,
     ear: 3,
     shoulder: 5,
     elbow: 7,
     wrist: 9,
-    hip: 11,
-    knee: 13,
-    ankle: 15,
   },
   right: {
     // eye: 2,
@@ -46,10 +43,15 @@ const FULL_BODY = {
     shoulder: 6,
     elbow: 8,
     wrist: 10,
-    hip: 12,
-    knee: 14,
-    ankle: 16,
   },
+};
+const LOWER_BODY = {
+  // leftHip: 11,
+  // rightHip: 12,
+  leftKnee: 13,
+  rightKnee: 14,
+  leftAnkle: 15,
+  rightAnkle: 16,
 };
 
 const FONT_SIZE = 48;
@@ -77,7 +79,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
 
     const errors: string[] = [];
 
-    const body = FULL_BODY[config.bodySide];
+    const body = UPPER_BODY[config.bodySide];
     ctx.clearRect(0, 0, width, height);
 
     const earAndShoulderVisible = [
@@ -93,7 +95,6 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       let lineColor = KEYPOINT_COLOR;
 
       const neckAngle = angleBetweenPoints(earPos, shoulderPos);
-
       const { tolerance, desiredAngle } = config.neckMonitoring;
       if (
         !numberInTolerance(neckAngle, Number(desiredAngle), Number(tolerance))
@@ -134,7 +135,6 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       const elbowAngle =
         angleBetweenPoints(shoulderPos, elbowPos) +
         angleBetweenPoints(elbowPos, wristPos);
-
       const { tolerance, desiredAngle } = config.elbowMonitoring;
       if (
         !numberInTolerance(elbowAngle, Number(desiredAngle), Number(tolerance))
@@ -152,15 +152,14 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       ctx.fillText(elbowAngle.toString(), elbowPos.x + 10, elbowPos.y - 10);
     }
 
-    const kneeOrAnkleVisible = [
-      pose.keypoints[body.knee],
-      pose.keypoints[body.ankle],
-    ].some(({ score }) => score >= config.minKeypointScore);
+    const kneeOrAnkleVisible = Object.values(LOWER_BODY).some(
+      (part) => pose.keypoints[part].score >= 0.2
+    );
 
     if (config.banKneeAndAnkle && kneeOrAnkleVisible) {
       errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
     }
-    console.log(pose.keypoints[body.knee].score);
+
     //draw keypoints last to place them on top of the lines
     for (const key of Object.values(body)) {
       const { position, score } = pose.keypoints[key];
