@@ -1,13 +1,20 @@
 import {
   Box,
+  Center,
   chakra,
   Collapse,
+  Divider,
   FormControl,
   FormLabel,
   Heading,
   NumberInput,
   NumberInputField,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
   Switch,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
@@ -70,7 +77,7 @@ const Config = () => {
   const { config, dispatch: dispatchConfig } = useConfig();
 
   return (
-    <VStack p="5" pt="0">
+    <VStack p="5" pt="0" ml="2">
       <Heading as="h1">config:</Heading>
       <Box>
         <FormControl mt="6" mb="6">
@@ -117,6 +124,75 @@ const Config = () => {
             })
           }
         />
+
+        <CustomSwitch
+          id="score-sliders"
+          label="Show Additional settings"
+          isChecked={config.keypointScoreSlidersShown}
+          onChange={() =>
+            dispatchConfig({
+              type: "TOGGLE_KEYPOINT_SCORE_SLIDERS_SHOWN",
+            })
+          }
+        />
+        <Collapse in={config.keypointScoreSlidersShown}>
+          <Box p="2" maxW="220px">
+            <Tooltip label="ear, shoulder, elbow and wrist" placement="top">
+              <Box>
+                Upper body detection threshold{" "}
+                <Box as="span" fontWeight="bold">
+                  | {config.minUpperBodyKeypointScore}
+                </Box>
+              </Box>
+            </Tooltip>
+            <Slider
+              value={config.minUpperBodyKeypointScore}
+              onChange={(val) =>
+                dispatchConfig({
+                  type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE",
+                  payload: val,
+                })
+              }
+              aria-label="Upper body detection threshold slider"
+              min={0}
+              max={1}
+              step={0.05}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+            <Tooltip label="knees and angles" placement="top">
+              <Box>
+                Lower body detection threshold{" "}
+                <Box as="span" fontWeight="bold">
+                  | {config.minLowerBodyKeypointScore}
+                </Box>
+              </Box>
+            </Tooltip>
+            <Slider
+              value={config.minLowerBodyKeypointScore}
+              onChange={(val) =>
+                dispatchConfig({
+                  type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE",
+                  payload: val,
+                })
+              }
+              aria-label="Lower body detection threshold slider"
+              min={0}
+              max={1}
+              step={0.05}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </Box>
+        </Collapse>
+
+        <Divider height="5" />
 
         <CustomSwitch
           id="neck-monitoring-switch"
