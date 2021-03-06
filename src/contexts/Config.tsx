@@ -2,14 +2,14 @@ import React, { createContext, useContext, useEffect } from "react";
 import { useImmerReducer } from "../utils/hooks/useImmerReducer";
 
 export interface Config {
-  getPoseInterval: string;
+  getPoseIntervalInS: string;
   bodySide: "left" | "right";
-  earShoulderMonitoring: {
+  neckMonitoring: {
     enabled: boolean;
     desiredAngle: string;
     tolerance: string;
   };
-  shoulderWristMonitoring: {
+  elbowMonitoring: {
     enabled: boolean;
     desiredAngle: string;
     tolerance: string;
@@ -19,16 +19,16 @@ export interface Config {
 }
 
 export const initialConfig: Config = {
-  getPoseInterval: "1000",
+  getPoseIntervalInS: "1",
   bodySide: "right",
-  earShoulderMonitoring: {
+  neckMonitoring: {
     enabled: true,
     desiredAngle: "15",
     tolerance: "5",
   },
-  shoulderWristMonitoring: {
+  elbowMonitoring: {
     enabled: true,
-    desiredAngle: "45",
+    desiredAngle: "90",
     tolerance: "10",
   },
   banKneeAndAnkle: false,
@@ -44,14 +44,14 @@ const configContext = createContext<{
 });
 
 export type Action =
-  | { type: "SET_GET_POSE_INTERVAL"; payload: string }
+  | { type: "SET_GET_POSE_INTERVAL_IN_S"; payload: string }
   | { type: "TOGGLE_BODY_SIDE" }
-  | { type: "TOGGLE_EAR_SHOULDER_MONITORING" }
-  | { type: "SET_EAR_SHOULDER_ANGLE"; payload: string }
-  | { type: "SET_EAR_SHOULDER_TOLERANCE"; payload: string }
-  | { type: "TOGGLE_SHOULDER_WRIST_MONITORING" }
-  | { type: "SET_SHOULDER_WRIST_ANGLE"; payload: string }
-  | { type: "SET_SHOULDER_WRIST_TOLERANCE"; payload: string }
+  | { type: "TOGGLE_NECK_MONITORING" }
+  | { type: "SET_NECK_ANGLE"; payload: string }
+  | { type: "SET_NECK_TOLERANCE"; payload: string }
+  | { type: "TOGGLE_ELBOW_MONITORING" }
+  | { type: "SET_ELBOW_ANGLE"; payload: string }
+  | { type: "SET_ELBOW_TOLERANCE"; payload: string }
   | { type: "TOGGLE_BAN_KNEE_AND_ANKLE" };
 
 const reducer = (config: Config, action: Action) => {
@@ -61,36 +61,34 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
 
-    case "SET_GET_POSE_INTERVAL": {
-      config.getPoseInterval = action.payload;
+    case "SET_GET_POSE_INTERVAL_IN_S": {
+      config.getPoseIntervalInS = action.payload;
       return;
     }
 
-    case "TOGGLE_EAR_SHOULDER_MONITORING": {
-      config.earShoulderMonitoring.enabled = !config.earShoulderMonitoring
-        .enabled;
+    case "TOGGLE_NECK_MONITORING": {
+      config.neckMonitoring.enabled = !config.neckMonitoring.enabled;
       return;
     }
-    case "SET_EAR_SHOULDER_ANGLE": {
-      config.earShoulderMonitoring.desiredAngle = action.payload;
+    case "SET_NECK_ANGLE": {
+      config.neckMonitoring.desiredAngle = action.payload;
       return;
     }
-    case "SET_EAR_SHOULDER_TOLERANCE": {
-      config.earShoulderMonitoring.tolerance = action.payload;
+    case "SET_NECK_TOLERANCE": {
+      config.neckMonitoring.tolerance = action.payload;
       return;
     }
 
-    case "TOGGLE_SHOULDER_WRIST_MONITORING": {
-      config.shoulderWristMonitoring.enabled = !config.shoulderWristMonitoring
-        .enabled;
+    case "TOGGLE_ELBOW_MONITORING": {
+      config.elbowMonitoring.enabled = !config.elbowMonitoring.enabled;
       return;
     }
-    case "SET_SHOULDER_WRIST_ANGLE": {
-      config.shoulderWristMonitoring.desiredAngle = action.payload;
+    case "SET_ELBOW_ANGLE": {
+      config.elbowMonitoring.desiredAngle = action.payload;
       return;
     }
-    case "SET_SHOULDER_WRIST_TOLERANCE": {
-      config.shoulderWristMonitoring.tolerance = action.payload;
+    case "SET_ELBOW_TOLERANCE": {
+      config.elbowMonitoring.tolerance = action.payload;
       return;
     }
 

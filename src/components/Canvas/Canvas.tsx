@@ -56,7 +56,7 @@ const FONT_SIZE = 48;
 const TEXT_MARGIN = FONT_SIZE * 0.2;
 const TEXT_LINE_HEIGHT = FONT_SIZE / 3;
 const KEYPOINT_COLOR = "aqua";
-const LINE_COLOR = "red";
+const ERROR_COLOR = "red";
 
 interface Props {
   pose: Pose | undefined;
@@ -86,31 +86,36 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     ].every(({ score }) => score >= config.minKeypointScore);
 
     //check ear-shoulder angle
-    if (config.earShoulderMonitoring.enabled && earAndShoulderVisible) {
+    if (config.neckMonitoring.enabled && earAndShoulderVisible) {
       const earPos = pose.keypoints[body.ear].position;
       const shoulderPos = pose.keypoints[body.shoulder].position;
-      const triangle3rdCorner = { x: earPos.x, y: shoulderPos.y };
+      // const triangle3rdCorner = { x: earPos.x, y: shoulderPos.y };
+      let lineColor = KEYPOINT_COLOR;
 
-      drawLine(ctx, earPos, shoulderPos, KEYPOINT_COLOR);
-      drawLine(ctx, triangle3rdCorner, shoulderPos, LINE_COLOR);
-      drawLine(ctx, triangle3rdCorner, earPos, LINE_COLOR);
-      drawPoint(ctx, triangle3rdCorner, LINE_COLOR);
+      const neckAngle = angleBetweenPoints(earPos, shoulderPos);
 
-      const angle = angleBetweenPoints(earPos, shoulderPos);
+      const { tolerance, desiredAngle } = config.neckMonitoring;
+      if (
+        !numberInTolerance(neckAngle, Number(desiredAngle), Number(tolerance))
+      ) {
+        errors.push(POSE_ERRORS.EAR_SHOULDER);
+        lineColor = ERROR_COLOR;
+      }
+
+      drawLine(ctx, earPos, shoulderPos, lineColor);
+      // drawLine(ctx, triangle3rdCorner, shoulderPos, LINE_COLOR);
+      // drawLine(ctx, triangle3rdCorner, earPos, LINE_COLOR);
+      // drawPoint(ctx, triangle3rdCorner, LINE_COLOR);
+
       placeTextBetweenTwoPoints({
         ctx: ctx,
-        text: angle.toString(),
+        text: neckAngle.toString(),
         color: KEYPOINT_COLOR,
         start: earPos,
         end: shoulderPos,
         shiftX: TEXT_MARGIN,
         shiftY: TEXT_LINE_HEIGHT,
       });
-
-      const { tolerance, desiredAngle } = config.earShoulderMonitoring;
-      if (!numberInTolerance(angle, Number(desiredAngle), Number(tolerance))) {
-        errors.push(POSE_ERRORS.EAR_SHOULDER);
-      }
     }
 
     const elbowShoulderAndWristVisible = [
@@ -120,33 +125,31 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     ].every(({ score }) => score >= config.minKeypointScore);
 
     //check elbow angle
-    if (
-      config.shoulderWristMonitoring.enabled &&
-      elbowShoulderAndWristVisible
-    ) {
+    if (config.elbowMonitoring.enabled && elbowShoulderAndWristVisible) {
       const shoulderPos = pose.keypoints[body.shoulder].position;
       const elbowPos = pose.keypoints[body.elbow].position;
       const wristPos = pose.keypoints[body.wrist].position;
+      let lineColor = KEYPOINT_COLOR;
 
-      drawLine(ctx, shoulderPos, elbowPos, LINE_COLOR);
-      drawLine(ctx, elbowPos, wristPos, LINE_COLOR);
-      drawLine(ctx, wristPos, shoulderPos, KEYPOINT_COLOR);
+      const elbowAngle =
+        angleBetweenPoints(shoulderPos, elbowPos) +
+        angleBetweenPoints(elbowPos, wristPos);
 
-      const angle = angleBetweenPoints(wristPos, shoulderPos);
-      placeTextBetweenTwoPoints({
-        ctx: ctx,
-        text: angle.toString(),
-        color: KEYPOINT_COLOR,
-        start: shoulderPos,
-        end: wristPos,
-        shiftX: TEXT_MARGIN,
-        shiftY: TEXT_LINE_HEIGHT,
-      });
-
-      const { tolerance, desiredAngle } = config.shoulderWristMonitoring;
-      if (!numberInTolerance(angle, Number(desiredAngle), Number(tolerance))) {
+      const { tolerance, desiredAngle } = config.elbowMonitoring;
+      if (
+        !numberInTolerance(elbowAngle, Number(desiredAngle), Number(tolerance))
+      ) {
+        lineColor = ERROR_COLOR;
         errors.push(POSE_ERRORS.SHOULER_WRIST);
       }
+
+      drawLine(ctx, elbowPos, wristPos, lineColor);
+      drawLine(ctx, shoulderPos, elbowPos, lineColor);
+      // drawLine(ctx, wristPos, shoulderPos, LINE_COLOR);
+
+      ctx.font = `${FONT_SIZE} serif`;
+      ctx.fillStyle = KEYPOINT_COLOR;
+      ctx.fillText(elbowAngle.toString(), elbowPos.x + 10, elbowPos.y - 10);
     }
 
     const kneeOrAnkleVisible = [
@@ -157,7 +160,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     if (config.banKneeAndAnkle && kneeOrAnkleVisible) {
       errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
     }
-
+    console.log(pose.keypoints[body.knee].score);
     //draw keypoints last to place them on top of the lines
     for (const key of Object.values(body)) {
       const { position, score } = pose.keypoints[key];

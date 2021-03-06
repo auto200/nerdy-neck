@@ -107,46 +107,46 @@ const Config = () => {
 
         <CustomInput
           id="check-pose-interval"
-          label="Check pose interval"
-          value={config.getPoseInterval}
+          label="Check pose interval (in sec)"
+          value={config.getPoseIntervalInS}
           addDegreeSign={false}
           onChange={(val) =>
             dispatchConfig({
-              type: "SET_GET_POSE_INTERVAL",
+              type: "SET_GET_POSE_INTERVAL_IN_S",
               payload: val,
             })
           }
         />
 
         <CustomSwitch
-          id="ear-shoulder-monitoring-switch"
-          label="Ear-shoulder angle monitoring"
-          isChecked={config.earShoulderMonitoring.enabled}
+          id="neck-monitoring-switch"
+          label="Neck angle monitoring"
+          isChecked={config.neckMonitoring.enabled}
           onChange={() =>
             dispatchConfig({
-              type: "TOGGLE_EAR_SHOULDER_MONITORING",
+              type: "TOGGLE_NECK_MONITORING",
             })
           }
         />
-        <Collapse in={config.earShoulderMonitoring.enabled}>
+        <Collapse in={config.neckMonitoring.enabled}>
           <CustomInput
-            id="ear-shoulder-angle"
+            id="neck-angle"
             label="Desired angle"
-            value={config.earShoulderMonitoring.desiredAngle}
+            value={config.neckMonitoring.desiredAngle}
             onChange={(val) =>
               dispatchConfig({
-                type: "SET_EAR_SHOULDER_ANGLE",
+                type: "SET_NECK_ANGLE",
                 payload: val,
               })
             }
           />
           <CustomInput
-            id="ear-shoulder-tolerance"
+            id="neck-tolerance"
             label="Tolerance"
-            value={config.earShoulderMonitoring.tolerance}
+            value={config.neckMonitoring.tolerance}
             onChange={(val) =>
               dispatchConfig({
-                type: "SET_EAR_SHOULDER_TOLERANCE",
+                type: "SET_NECK_TOLERANCE",
                 payload: val,
               })
             }
@@ -154,34 +154,34 @@ const Config = () => {
         </Collapse>
 
         <CustomSwitch
-          id="shoulder-wrist-switch"
-          label="Shoulder-wrist angle monitoring"
-          isChecked={config.shoulderWristMonitoring.enabled}
+          id="elbow-switch"
+          label="Elbow angle monitoring"
+          isChecked={config.elbowMonitoring.enabled}
           onChange={() =>
             dispatchConfig({
-              type: "TOGGLE_SHOULDER_WRIST_MONITORING",
+              type: "TOGGLE_ELBOW_MONITORING",
             })
           }
         />
-        <Collapse in={config.shoulderWristMonitoring.enabled}>
+        <Collapse in={config.elbowMonitoring.enabled}>
           <CustomInput
-            id="shoulder-wrist-angle"
+            id="elbow-angle"
             label="Desired angle"
-            value={config.shoulderWristMonitoring.desiredAngle}
+            value={config.elbowMonitoring.desiredAngle}
             onChange={(val) =>
               dispatchConfig({
-                type: "SET_SHOULDER_WRIST_ANGLE",
+                type: "SET_ELBOW_ANGLE",
                 payload: val,
               })
             }
           />
           <CustomInput
-            id="shoulder-wrist-tolerance"
+            id="elbow-tolerance"
             label="Tolerance"
-            value={config.shoulderWristMonitoring.tolerance}
+            value={config.elbowMonitoring.tolerance}
             onChange={(val) =>
               dispatchConfig({
-                type: "SET_SHOULDER_WRIST_TOLERANCE",
+                type: "SET_ELBOW_TOLERANCE",
                 payload: val,
               })
             }
@@ -190,7 +190,7 @@ const Config = () => {
 
         <CustomSwitch
           id="ban-knee-and-ankle-switch"
-          label="Ban-knee-and-ankle"
+          label="Ban knee and ankle"
           isChecked={config.banKneeAndAnkle}
           onChange={() =>
             dispatchConfig({

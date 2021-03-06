@@ -117,9 +117,9 @@ function App() {
 
     getPoseIntervalRef.current = window.setInterval(
       getPose,
-      Number(config.getPoseInterval)
+      Number(config.getPoseIntervalInS) * 1000
     );
-  }, [running, config.getPoseInterval]);
+  }, [running, config.getPoseIntervalInS]);
 
   useEffect(() => {
     window.localStorage.setItem("currentCamIndex", currentCamIndex.toString());
