@@ -3,15 +3,12 @@ import { Vector2D } from "@tensorflow-models/posenet/dist/types";
 export const angleBetweenPoints = (
   a: Vector2D,
   b: Vector2D,
-  round: boolean = true
+  roundValue: boolean = true
 ) => {
   const dy = Math.abs(a.y - b.y);
   const dx = Math.abs(a.x - b.x);
   const deg = Math.abs(90 - Math.atan2(dy, dx) * (180 / Math.PI));
-  if (round) {
-    return Math.round(deg);
-  }
-  return deg;
+  return roundValue ? Math.round(deg) : deg;
 };
 
 export const drawPoint = (
@@ -82,14 +79,8 @@ export const placeTextBetweenTwoPoints = ({
 
 export const numberInTolerance = (
   number: number,
-  tolerance: number,
-  middlepoint: number
+  middlePoint: number,
+  tolerance: number
 ) => {
-  if (number < middlepoint - tolerance) {
-    return false;
-  }
-  if (number > middlepoint + tolerance) {
-    return false;
-  }
-  return true;
+  return Math.abs(middlePoint - number) <= tolerance ? true : false;
 };
