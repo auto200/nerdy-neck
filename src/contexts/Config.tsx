@@ -14,7 +14,7 @@ export interface Config {
     desiredAngle: string;
     tolerance: string;
   };
-  banKneeAndAnkle: boolean;
+  banKneesAndAnkles: boolean;
   minUpperBodyKeypointScore: number;
   minLowerBodyKeypointScore: number;
 }
@@ -32,7 +32,7 @@ export const initialConfig: Config = {
     desiredAngle: "90",
     tolerance: "10",
   },
-  banKneeAndAnkle: true,
+  banKneesAndAnkles: true,
   minUpperBodyKeypointScore: 0.6,
   minLowerBodyKeypointScore: 0.2,
 };
@@ -54,7 +54,7 @@ export type Action =
   | { type: "TOGGLE_ELBOW_MONITORING" }
   | { type: "SET_ELBOW_ANGLE"; payload: string }
   | { type: "SET_ELBOW_TOLERANCE"; payload: string }
-  | { type: "TOGGLE_BAN_KNEE_AND_ANKLE" };
+  | { type: "TOGGLE_BAN_KNEES_AND_ANKLES" };
 
 const reducer = (config: Config, action: Action) => {
   switch (action.type) {
@@ -94,8 +94,8 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
 
-    case "TOGGLE_BAN_KNEE_AND_ANKLE": {
-      config.banKneeAndAnkle = !config.banKneeAndAnkle;
+    case "TOGGLE_BAN_KNEES_AND_ANKLES": {
+      config.banKneesAndAnkles = !config.banKneesAndAnkles;
       return;
     }
     default:

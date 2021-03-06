@@ -152,11 +152,11 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       ctx.fillText(elbowAngle.toString(), elbowPos.x + 10, elbowPos.y - 10);
     }
 
-    const kneeOrAnkleVisible = Object.values(LOWER_BODY).some(
+    const kneesOrAnklesVisible = Object.values(LOWER_BODY).some(
       (part) => pose.keypoints[part].score >= config.minLowerBodyKeypointScore
     );
 
-    if (config.banKneeAndAnkle && kneeOrAnkleVisible) {
+    if (config.banKneesAndAnkles && kneesOrAnklesVisible) {
       errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
     }
 

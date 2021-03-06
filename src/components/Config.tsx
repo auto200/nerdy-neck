@@ -190,11 +190,11 @@ const Config = () => {
 
         <CustomSwitch
           id="ban-knee-and-ankle-switch"
-          label="Ban knee and ankle"
-          isChecked={config.banKneeAndAnkle}
+          label="Ban knees and ankles"
+          isChecked={config.banKneesAndAnkles}
           onChange={() =>
             dispatchConfig({
-              type: "TOGGLE_BAN_KNEE_AND_ANKLE",
+              type: "TOGGLE_BAN_KNEES_AND_ANKLES",
             })
           }
         />
