@@ -15,7 +15,8 @@ export interface Config {
     tolerance: string;
   };
   banKneeAndAnkle: boolean;
-  minKeypointScore: number;
+  minUpperBodyKeypointScore: number;
+  minLowerBodyKeypointScore: number;
 }
 
 export const initialConfig: Config = {
@@ -31,8 +32,9 @@ export const initialConfig: Config = {
     desiredAngle: "90",
     tolerance: "10",
   },
-  banKneeAndAnkle: false,
-  minKeypointScore: 0.6,
+  banKneeAndAnkle: true,
+  minUpperBodyKeypointScore: 0.6,
+  minLowerBodyKeypointScore: 0.2,
 };
 
 const configContext = createContext<{

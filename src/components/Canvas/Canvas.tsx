@@ -85,7 +85,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     const earAndShoulderVisible = [
       pose.keypoints[body.ear],
       pose.keypoints[body.shoulder],
-    ].every(({ score }) => score >= config.minKeypointScore);
+    ].every(({ score }) => score >= config.minUpperBodyKeypointScore);
 
     //check ear-shoulder angle
     if (config.neckMonitoring.enabled && earAndShoulderVisible) {
@@ -123,7 +123,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       pose.keypoints[body.elbow],
       pose.keypoints[body.shoulder],
       pose.keypoints[body.wrist],
-    ].every(({ score }) => score >= config.minKeypointScore);
+    ].every(({ score }) => score >= config.minUpperBodyKeypointScore);
 
     //check elbow angle
     if (config.elbowMonitoring.enabled && elbowShoulderAndWristVisible) {
@@ -153,7 +153,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     }
 
     const kneeOrAnkleVisible = Object.values(LOWER_BODY).some(
-      (part) => pose.keypoints[part].score >= 0.2
+      (part) => pose.keypoints[part].score >= config.minLowerBodyKeypointScore
     );
 
     if (config.banKneeAndAnkle && kneeOrAnkleVisible) {
@@ -163,7 +163,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     //draw keypoints last to place them on top of the lines
     for (const key of Object.values(body)) {
       const { position, score } = pose.keypoints[key];
-      if (score >= config.minKeypointScore) {
+      if (score >= config.minUpperBodyKeypointScore) {
         drawPoint(ctx, position, KEYPOINT_COLOR);
       }
     }
