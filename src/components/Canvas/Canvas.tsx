@@ -108,7 +108,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       });
 
       const { tolerance, desiredAngle } = config.earShoulderMonitoring;
-      if (!numberInTolerance(angle, Number(tolerance), Number(desiredAngle))) {
+      if (!numberInTolerance(angle, Number(desiredAngle), Number(tolerance))) {
         errors.push(POSE_ERRORS.EAR_SHOULDER);
       }
     }
@@ -144,7 +144,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
       });
 
       const { tolerance, desiredAngle } = config.shoulderWristMonitoring;
-      if (!numberInTolerance(angle, Number(tolerance), Number(desiredAngle))) {
+      if (!numberInTolerance(angle, Number(desiredAngle), Number(tolerance))) {
         errors.push(POSE_ERRORS.SHOULER_WRIST);
       }
     }
