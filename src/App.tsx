@@ -34,6 +34,7 @@ function App() {
     return !isNaN(stored) ? stored : 0;
   });
   const [net, setNet] = useState<PoseNet>();
+  const [loadingNet, setLoadingNet] = useState<boolean>(false);
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [pose, setPose] = useState<Pose>();
   const [running, setRunning] = useState<boolean>(false);
@@ -67,10 +68,22 @@ function App() {
             setCamPermissionGranted(false);
           }
         });
+      } catch (err) {
+        console.log(err);
+      }
 
-        getCams();
-
-        setNet(await loadPosenet());
+      try {
+        setLoadingNet(true);
+        const net = await loadPosenet({
+          architecture: "ResNet50",
+          inputResolution: {
+            width: WIDTH,
+            height: HEIGHT,
+          },
+          outputStride: 16,
+        });
+        setNet(net);
+        setLoadingNet(false);
       } catch (err) {
         console.log(err);
       }
@@ -181,6 +194,8 @@ function App() {
                   !running && (!net || !mediaRef.current || !mediaLoaded)
                 }
                 onClick={() => setRunning((x) => !x)}
+                isLoading={loadingNet}
+                loadingText="Loading"
               >
                 {running ? "STOP" : "START"}
               </Button>
