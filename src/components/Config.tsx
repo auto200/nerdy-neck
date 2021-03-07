@@ -1,6 +1,10 @@
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
-  Center,
   chakra,
   Collapse,
   Divider,
@@ -112,87 +116,90 @@ const Config = () => {
           </Box>
         </FormControl>
 
-        <CustomInput
-          id="check-pose-interval"
-          label="Check pose interval (in sec)"
-          value={config.getPoseIntervalInS}
-          addDegreeSign={false}
-          onChange={(val) =>
-            dispatchConfig({
-              type: "SET_GET_POSE_INTERVAL_IN_S",
-              payload: val,
-            })
-          }
-        />
+        <Box border="1px solid gray" borderRadius="md" p="3">
+          <CustomInput
+            id="check-pose-interval"
+            label="Check pose interval (in sec)"
+            value={config.getPoseIntervalInS}
+            addDegreeSign={false}
+            onChange={(val) =>
+              dispatchConfig({
+                type: "SET_GET_POSE_INTERVAL_IN_S",
+                payload: val,
+              })
+            }
+          />
 
-        <CustomSwitch
-          id="score-sliders"
-          label="Show Additional settings"
-          isChecked={config.keypointScoreSlidersShown}
-          onChange={() =>
-            dispatchConfig({
-              type: "TOGGLE_KEYPOINT_SCORE_SLIDERS_SHOWN",
-            })
-          }
-        />
-        <Collapse in={config.keypointScoreSlidersShown}>
-          <Box p="2" maxW="220px">
-            <Tooltip label="ear, shoulder, elbow and wrist" placement="top">
-              <Box>
-                Upper body detection threshold{" "}
-                <Box as="span" fontWeight="bold">
-                  | {config.minUpperBodyKeypointScore}
+          <Accordion allowToggle mt="1" maxW="210px">
+            <AccordionItem borderBottom="none">
+              <h2>
+                <AccordionButton>
+                  <Box flex="1" textAlign="left">
+                    Additional settings
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel>
+                <Box>
+                  <Tooltip label="ear, shoulder, elbow and wrist">
+                    <Box>
+                      Upper body detection threshold{" "}
+                      <Box as="span" fontWeight="bold">
+                        | {config.minUpperBodyKeypointScore}
+                      </Box>
+                    </Box>
+                  </Tooltip>
+                  <Slider
+                    value={config.minUpperBodyKeypointScore}
+                    onChange={(val) =>
+                      dispatchConfig({
+                        type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE",
+                        payload: val,
+                      })
+                    }
+                    aria-label="Upper body detection threshold slider"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                  </Slider>
+                  <Divider mt="2" mb="2" />
+                  <Tooltip label="knees and angles">
+                    <Box>
+                      Lower body detection threshold{" "}
+                      <Box as="span" fontWeight="bold">
+                        | {config.minLowerBodyKeypointScore}
+                      </Box>
+                    </Box>
+                  </Tooltip>
+                  <Slider
+                    value={config.minLowerBodyKeypointScore}
+                    onChange={(val) =>
+                      dispatchConfig({
+                        type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE",
+                        payload: val,
+                      })
+                    }
+                    aria-label="Lower body detection threshold slider"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                  </Slider>
                 </Box>
-              </Box>
-            </Tooltip>
-            <Slider
-              value={config.minUpperBodyKeypointScore}
-              onChange={(val) =>
-                dispatchConfig({
-                  type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE",
-                  payload: val,
-                })
-              }
-              aria-label="Upper body detection threshold slider"
-              min={0}
-              max={1}
-              step={0.05}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-            <Tooltip label="knees and angles" placement="top">
-              <Box>
-                Lower body detection threshold{" "}
-                <Box as="span" fontWeight="bold">
-                  | {config.minLowerBodyKeypointScore}
-                </Box>
-              </Box>
-            </Tooltip>
-            <Slider
-              value={config.minLowerBodyKeypointScore}
-              onChange={(val) =>
-                dispatchConfig({
-                  type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE",
-                  payload: val,
-                })
-              }
-              aria-label="Lower body detection threshold slider"
-              min={0}
-              max={1}
-              step={0.05}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-          </Box>
-        </Collapse>
-
-        <Divider height="5" />
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        </Box>
 
         <CustomSwitch
           id="neck-monitoring-switch"
