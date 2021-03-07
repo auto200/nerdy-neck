@@ -17,7 +17,6 @@ export interface Config {
   banKneesAndAnkles: boolean;
   minUpperBodyKeypointScore: number;
   minLowerBodyKeypointScore: number;
-  keypointScoreSlidersShown: boolean;
 }
 
 export const initialConfig: Config = {
@@ -36,7 +35,6 @@ export const initialConfig: Config = {
   banKneesAndAnkles: true,
   minUpperBodyKeypointScore: 0.6,
   minLowerBodyKeypointScore: 0.2,
-  keypointScoreSlidersShown: true,
 };
 
 const configContext = createContext<{
@@ -52,7 +50,6 @@ export type Action =
   | { type: "SET_GET_POSE_INTERVAL_IN_S"; payload: string }
   | { type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE"; payload: number }
   | { type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE"; payload: number }
-  | { type: "TOGGLE_KEYPOINT_SCORE_SLIDERS_SHOWN" }
   | { type: "TOGGLE_NECK_MONITORING" }
   | { type: "SET_NECK_ANGLE"; payload: string }
   | { type: "SET_NECK_TOLERANCE"; payload: string }
@@ -73,10 +70,6 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
 
-    case "TOGGLE_KEYPOINT_SCORE_SLIDERS_SHOWN": {
-      config.keypointScoreSlidersShown = !config.keypointScoreSlidersShown;
-      return;
-    }
     case "SET_MIN_UPPER_BODY_KEYPOINT_SCORE": {
       config.minUpperBodyKeypointScore = action.payload;
       return;
