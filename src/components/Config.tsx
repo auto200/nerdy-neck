@@ -157,6 +157,7 @@ const Config = () => {
 
                   <Divider mt="2" mb="2" />
 
+                  <Tooltip label="ear, shoulder, elbow and wrist | Higher = less sensitive">
                     <Box>
                       Upper body detection threshold{" "}
                       <Box as="span" fontWeight="bold">
@@ -183,7 +184,7 @@ const Config = () => {
                     <SliderThumb />
                   </Slider>
                   <Divider mt="2" mb="2" />
-                  <Tooltip label="knees and angles">
+                  <Tooltip label="knees and angles | Higher = less sensitive">
                     <Box>
                       Lower body detection threshold{" "}
                       <Box as="span" fontWeight="bold">
