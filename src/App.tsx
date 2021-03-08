@@ -6,6 +6,7 @@ import { Box, Button, Flex, Heading, Select } from "@chakra-ui/react";
 import { useConfig } from "./contexts/Config";
 import Config from "./components/Config";
 import GithubLink from "./components/GithubLink";
+import badPostureSound from "./assets/Chaturbate - Tip Sound - Small.mp3";
 
 const WIDTH = 600;
 const HEIGHT = 500;
@@ -44,6 +45,7 @@ function App() {
   const mediaRef = useRef<HTMLVideoElement>(null);
   const runningRef = useRef(running);
   const getPoseIntervalRef = useRef<number>();
+  const audioRef = useRef(new Audio(badPostureSound));
 
   useEffect(() => {
     const init = async () => {
@@ -137,6 +139,12 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem("currentCamIndex", currentCamIndex.toString());
   }, [currentCamIndex]);
+
+  useEffect(() => {
+    if (!poseErrors.length) return;
+    audioRef.current.currentTime = 0;
+    audioRef.current.play();
+  }, [poseErrors]);
 
   return (
     <Flex flexWrap="wrap">
