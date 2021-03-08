@@ -7,6 +7,7 @@ import { useConfig } from "./contexts/Config";
 import Config from "./components/Config";
 import GithubLink from "./components/GithubLink";
 import badPostureSound from "./assets/Chaturbate - Tip Sound - Small.mp3";
+import PanicButton from "./components/PanicButton";
 
 const WIDTH = 600;
 const HEIGHT = 500;
@@ -159,78 +160,81 @@ function App() {
   }, [poseErrors]);
 
   return (
-    <Flex flexWrap="wrap">
-      <GithubLink />
-      <Box>
-        <Box pos="relative" minW={WIDTH} minH={HEIGHT}>
-          <Canvas
-            pose={pose}
-            width={WIDTH}
-            height={HEIGHT}
-            setPoseErrors={setPoseErrors}
-          />
-          <video
-            autoPlay
-            ref={mediaRef}
-            width={WIDTH}
-            height={HEIGHT}
-            onLoadedMetadata={() => setMediaLoaded(true)}
-          />
-          <Box pos="absolute" top="0" left="2">
-            {poseErrors.map((err, i) => (
-              <Box
-                key={i}
-                color="red.500"
-                fontSize="3xl"
-                fontWeight="bold"
-                sx={{ WebkitTextStroke: "1px rgba(0, 0, 0, 0.7)" }}
-              >
-                {err}
-              </Box>
-            ))}
+    <>
+      <Flex flexWrap="wrap">
+        <GithubLink />
+        <Box>
+          <Box pos="relative" minW={WIDTH} minH={HEIGHT}>
+            <Canvas
+              pose={pose}
+              width={WIDTH}
+              height={HEIGHT}
+              setPoseErrors={setPoseErrors}
+            />
+            <video
+              autoPlay
+              ref={mediaRef}
+              width={WIDTH}
+              height={HEIGHT}
+              onLoadedMetadata={() => setMediaLoaded(true)}
+            />
+            <Box pos="absolute" top="0" left="2">
+              {poseErrors.map((err, i) => (
+                <Box
+                  key={i}
+                  color="red.500"
+                  fontSize="3xl"
+                  fontWeight="bold"
+                  sx={{ WebkitTextStroke: "1px rgba(0, 0, 0, 0.7)" }}
+                >
+                  {err}
+                </Box>
+              ))}
+            </Box>
           </Box>
+          <Flex>
+            {!!cams?.length && (
+              <>
+                <Select
+                  w="60"
+                  value={cams[currentCamIndex]?.deviceId}
+                  onChange={(e) => {
+                    const camIndex = cams.findIndex(
+                      ({ deviceId }) => deviceId === e.target.value
+                    );
+                    camIndex > -1 && setCurrentCamIndex(camIndex);
+                  }}
+                >
+                  {cams.map(({ label, deviceId }) => (
+                    <option key={deviceId} value={deviceId}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+                <Button
+                  disabled={
+                    !running && (!net || !mediaRef.current || !mediaLoaded)
+                  }
+                  onClick={() => setRunning((x) => !x)}
+                  isLoading={loadingNet}
+                  loadingText="Loading"
+                >
+                  {running ? "STOP" : "START"}
+                </Button>
+              </>
+            )}
+            {!camPermissionGranted && (
+              <Heading variant="h1" color="yellow.400">
+                You need to grant permission to use your cam
+              </Heading>
+            )}
+          </Flex>
         </Box>
-        <Flex>
-          {!!cams?.length && (
-            <>
-              <Select
-                w="60"
-                value={cams[currentCamIndex]?.deviceId}
-                onChange={(e) => {
-                  const camIndex = cams.findIndex(
-                    ({ deviceId }) => deviceId === e.target.value
-                  );
-                  camIndex > -1 && setCurrentCamIndex(camIndex);
-                }}
-              >
-                {cams.map(({ label, deviceId }) => (
-                  <option key={deviceId} value={deviceId}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
-              <Button
-                disabled={
-                  !running && (!net || !mediaRef.current || !mediaLoaded)
-                }
-                onClick={() => setRunning((x) => !x)}
-                isLoading={loadingNet}
-                loadingText="Loading"
-              >
-                {running ? "STOP" : "START"}
-              </Button>
-            </>
-          )}
-          {!camPermissionGranted && (
-            <Heading variant="h1" color="yellow.400">
-              You need to grant permission to use your cam
-            </Heading>
-          )}
-        </Flex>
-      </Box>
-      {/* config ui */}
-      <Config />
-    </Flex>
+        {/* config ui */}
+        <Config />
+      </Flex>
+      <PanicButton />
+    </>
   );
 }
 

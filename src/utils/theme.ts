@@ -6,5 +6,12 @@ const config = {
 const theme = extendTheme({
   //@ts-ignore
   config,
+  styles: {
+    global: {
+      "#root": {
+        minHeight: "100vh",
+      },
+    },
+  },
 });
 export default theme;
