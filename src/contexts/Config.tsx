@@ -2,8 +2,11 @@ import React, { createContext, useContext, useEffect } from "react";
 import { useImmerReducer } from "../utils/hooks/useImmerReducer";
 
 export interface Config {
-  getPoseIntervalInS: string;
   bodySide: "left" | "right";
+  getPoseIntervalInS: string;
+  onErrorRetryIntervalInS: string;
+  minUpperBodyKeypointScore: number;
+  minLowerBodyKeypointScore: number;
   neckMonitoring: {
     enabled: boolean;
     desiredAngle: string;
@@ -15,13 +18,16 @@ export interface Config {
     tolerance: string;
   };
   banKneesAndAnkles: boolean;
-  minUpperBodyKeypointScore: number;
-  minLowerBodyKeypointScore: number;
 }
 
 export const initialConfig: Config = {
-  getPoseIntervalInS: "1",
   bodySide: "right",
+  getPoseIntervalInS: "1",
+  //additional settings / maby move them to separate object
+  onErrorRetryIntervalInS: "5",
+  minUpperBodyKeypointScore: 0.6,
+  minLowerBodyKeypointScore: 0.2,
+
   neckMonitoring: {
     enabled: true,
     desiredAngle: "15",
@@ -33,8 +39,6 @@ export const initialConfig: Config = {
     tolerance: "10",
   },
   banKneesAndAnkles: true,
-  minUpperBodyKeypointScore: 0.6,
-  minLowerBodyKeypointScore: 0.2,
 };
 
 const configContext = createContext<{
@@ -48,6 +52,7 @@ const configContext = createContext<{
 export type Action =
   | { type: "TOGGLE_BODY_SIDE" }
   | { type: "SET_GET_POSE_INTERVAL_IN_S"; payload: string }
+  | { type: "SET_ON_ERROR_RETRY_INTERVAL_IN_S"; payload: string }
   | { type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE"; payload: number }
   | { type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE"; payload: number }
   | { type: "TOGGLE_NECK_MONITORING" }
@@ -67,6 +72,11 @@ const reducer = (config: Config, action: Action) => {
 
     case "SET_GET_POSE_INTERVAL_IN_S": {
       config.getPoseIntervalInS = action.payload;
+      return;
+    }
+
+    case "SET_ON_ERROR_RETRY_INTERVAL_IN_S": {
+      config.onErrorRetryIntervalInS = action.payload;
       return;
     }
 

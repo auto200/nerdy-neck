@@ -130,11 +130,23 @@ function App() {
       }
     };
 
-    getPoseIntervalRef.current = window.setInterval(
-      getPose,
-      Number(config.getPoseIntervalInS) * 1000
-    );
-  }, [running, config.getPoseIntervalInS]);
+    if (poseErrors.length) {
+      getPoseIntervalRef.current = window.setInterval(
+        getPose,
+        Number(config.onErrorRetryIntervalInS) * 1000
+      );
+    } else {
+      getPoseIntervalRef.current = window.setInterval(
+        getPose,
+        Number(config.getPoseIntervalInS) * 1000
+      );
+    }
+  }, [
+    running,
+    config.getPoseIntervalInS,
+    poseErrors.length,
+    config.onErrorRetryIntervalInS,
+  ]);
 
   useEffect(() => {
     window.localStorage.setItem("currentCamIndex", currentCamIndex.toString());

@@ -142,7 +142,21 @@ const Config = () => {
               </h2>
               <AccordionPanel>
                 <Box>
-                  <Tooltip label="ear, shoulder, elbow and wrist">
+                  <CustomInput
+                    addDegreeSign={false}
+                    id="on-error-retry-interval"
+                    label="On error check retry interval (in sec)"
+                    value={config.onErrorRetryIntervalInS}
+                    onChange={(val) => {
+                      dispatchConfig({
+                        type: "SET_ON_ERROR_RETRY_INTERVAL_IN_S",
+                        payload: val,
+                      });
+                    }}
+                  />
+
+                  <Divider mt="2" mb="2" />
+
                     <Box>
                       Upper body detection threshold{" "}
                       <Box as="span" fontWeight="bold">
