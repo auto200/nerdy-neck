@@ -21,7 +21,6 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
 import { useConfig } from "../contexts/Config";
 
 const CustomSwitch = ({
@@ -81,9 +80,9 @@ const Config = () => {
   const { config, dispatch: dispatchConfig } = useConfig();
 
   return (
-    <VStack p="5" pt="0" ml="2">
+    <VStack p="5" pt="0" ml="2" w="400px">
       <Heading as="h1">config:</Heading>
-      <Box>
+      <Box w="100%">
         <FormControl mt="6" mb="6">
           <FormLabel htmlFor="body-side-switch" m="0">
             Body side
@@ -130,7 +129,7 @@ const Config = () => {
             }
           />
 
-          <Accordion allowToggle mt="1" maxW="210px">
+          <Accordion allowToggle mt="1">
             <AccordionItem borderBottom="none">
               <h2>
                 <AccordionButton>
