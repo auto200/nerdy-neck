@@ -4,7 +4,10 @@ import { useImmerReducer } from "../utils/hooks/useImmerReducer";
 export interface Config {
   bodySide: "left" | "right";
   getPoseIntervalInS: string;
-  onErrorRetryIntervalInS: string;
+  onErrorRetry: {
+    enabled: boolean;
+    intervalInS: string;
+  };
   minUpperBodyKeypointScore: number;
   minLowerBodyKeypointScore: number;
   neckMonitoring: {
@@ -24,7 +27,10 @@ export const initialConfig: Config = {
   bodySide: "right",
   getPoseIntervalInS: "1",
   //additional settings / maby move them to separate object
-  onErrorRetryIntervalInS: "5",
+  onErrorRetry: {
+    enabled: false,
+    intervalInS: "5",
+  },
   minUpperBodyKeypointScore: 0.6,
   minLowerBodyKeypointScore: 0.2,
 
@@ -52,6 +58,7 @@ const configContext = createContext<{
 export type Action =
   | { type: "TOGGLE_BODY_SIDE" }
   | { type: "SET_GET_POSE_INTERVAL_IN_S"; payload: string }
+  | { type: "TOGGLE_ON_ERROR_RETRY" }
   | { type: "SET_ON_ERROR_RETRY_INTERVAL_IN_S"; payload: string }
   | { type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE"; payload: number }
   | { type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE"; payload: number }
@@ -75,8 +82,12 @@ const reducer = (config: Config, action: Action) => {
       return;
     }
 
+    case "TOGGLE_ON_ERROR_RETRY": {
+      config.onErrorRetry.enabled = !config.onErrorRetry.enabled;
+      return;
+    }
     case "SET_ON_ERROR_RETRY_INTERVAL_IN_S": {
-      config.onErrorRetryIntervalInS = action.payload;
+      config.onErrorRetry.intervalInS = action.payload;
       return;
     }
 

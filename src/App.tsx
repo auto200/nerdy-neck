@@ -131,10 +131,10 @@ function App() {
       }
     };
 
-    if (poseErrors.length) {
+    if (config.onErrorRetry.enabled && poseErrors.length) {
       getPoseIntervalRef.current = window.setInterval(
         getPose,
-        Number(config.onErrorRetryIntervalInS) * 1000
+        Number(config.onErrorRetry.intervalInS) * 1000
       );
     } else {
       getPoseIntervalRef.current = window.setInterval(
@@ -146,7 +146,7 @@ function App() {
     running,
     config.getPoseIntervalInS,
     poseErrors.length,
-    config.onErrorRetryIntervalInS,
+    config.onErrorRetry,
   ]);
 
   useEffect(() => {

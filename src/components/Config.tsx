@@ -142,18 +142,30 @@ const Config = () => {
               </h2>
               <AccordionPanel>
                 <Box>
-                  <CustomInput
-                    addDegreeSign={false}
-                    id="on-error-retry-interval"
-                    label="On error check retry interval (in sec)"
-                    value={config.onErrorRetryIntervalInS}
-                    onChange={(val) => {
+                  <CustomSwitch
+                    id="on-error-retry-switch"
+                    label="On error interval"
+                    isChecked={config.onErrorRetry.enabled}
+                    onChange={() =>
                       dispatchConfig({
-                        type: "SET_ON_ERROR_RETRY_INTERVAL_IN_S",
-                        payload: val,
-                      });
-                    }}
+                        type: "TOGGLE_ON_ERROR_RETRY",
+                      })
+                    }
                   />
+                  <Collapse in={config.onErrorRetry.enabled}>
+                    <CustomInput
+                      addDegreeSign={false}
+                      id="on-error-retry-interval"
+                      label="Retry interval (in sec)"
+                      value={config.onErrorRetry.intervalInS}
+                      onChange={(val) => {
+                        dispatchConfig({
+                          type: "SET_ON_ERROR_RETRY_INTERVAL_IN_S",
+                          payload: val,
+                        });
+                      }}
+                    />
+                  </Collapse>
 
                   <Divider mt="2" mb="2" />
 
