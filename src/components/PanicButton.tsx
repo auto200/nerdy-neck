@@ -46,6 +46,7 @@ const PanicButton = () => {
             <Button
               colorScheme="red"
               isLoading={wipingData}
+              loadingText="Reloading"
               onClick={() => {
                 setWipingData(true);
                 window.localStorage.clear();
