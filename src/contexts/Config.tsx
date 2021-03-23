@@ -21,6 +21,9 @@ export interface Config {
     tolerance: string;
   };
   banKneesAndAnkles: boolean;
+  sound: {
+    enabled: boolean;
+  };
 }
 
 export const initialConfig: Config = {
@@ -45,6 +48,9 @@ export const initialConfig: Config = {
     tolerance: "10",
   },
   banKneesAndAnkles: true,
+  sound: {
+    enabled: false,
+  },
 };
 
 const configContext = createContext<{
@@ -68,7 +74,8 @@ export type Action =
   | { type: "TOGGLE_ELBOW_MONITORING" }
   | { type: "SET_ELBOW_ANGLE"; payload: string }
   | { type: "SET_ELBOW_TOLERANCE"; payload: string }
-  | { type: "TOGGLE_BAN_KNEES_AND_ANKLES" };
+  | { type: "TOGGLE_BAN_KNEES_AND_ANKLES" }
+  | { type: "TOGGLE_SOUND_ENABLED" };
 
 const reducer = (config: Config, action: Action) => {
   switch (action.type) {
@@ -128,6 +135,11 @@ const reducer = (config: Config, action: Action) => {
 
     case "TOGGLE_BAN_KNEES_AND_ANKLES": {
       config.banKneesAndAnkles = !config.banKneesAndAnkles;
+      return;
+    }
+
+    case "TOGGLE_SOUND_ENABLED": {
+      config.sound.enabled = !config.sound.enabled;
       return;
     }
     default:

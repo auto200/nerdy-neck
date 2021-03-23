@@ -155,9 +155,17 @@ function App() {
 
   useEffect(() => {
     if (!poseErrors.length) return;
-    audioRef.current.currentTime = 0;
-    audioRef.current.play();
-  }, [poseErrors]);
+
+    if (!config.sound.enabled && !audioRef.current.paused) {
+      audioRef.current.pause();
+      return;
+    }
+
+    if (config.sound.enabled) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    }
+  }, [poseErrors, config.sound.enabled]);
 
   return (
     <>

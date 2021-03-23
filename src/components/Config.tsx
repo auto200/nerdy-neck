@@ -83,7 +83,7 @@ const Config = () => {
     <VStack p="5" pt="0" ml="2" w="400px">
       <Heading as="h1">config:</Heading>
       <Box w="100%">
-        <FormControl mt="6" mb="6">
+        <FormControl my={6}>
           <FormLabel htmlFor="body-side-switch" m="0">
             Body side
           </FormLabel>
@@ -93,8 +93,7 @@ const Config = () => {
             </chakra.span>
             <Switch
               id="body-side-switch"
-              ml="2"
-              mr="2"
+              mx={2}
               isChecked={config.bodySide === "right"}
               onChange={() => dispatchConfig({ type: "TOGGLE_BODY_SIDE" })}
               sx={{
@@ -166,7 +165,16 @@ const Config = () => {
                     />
                   </Collapse>
 
-                  <Divider mt="2" mb="2" />
+                  <CustomSwitch
+                    id="sound-enabled-switch"
+                    label="On error sound"
+                    isChecked={config.sound.enabled}
+                    onChange={() =>
+                      dispatchConfig({ type: "TOGGLE_SOUND_ENABLED" })
+                    }
+                  />
+
+                  <Divider my="2" />
 
                   <Tooltip label="ear, shoulder, elbow and wrist | Higher = less sensitive">
                     <Box>
@@ -194,7 +202,7 @@ const Config = () => {
                     </SliderTrack>
                     <SliderThumb />
                   </Slider>
-                  <Divider mt="2" mb="2" />
+                  <Divider my="2" />
                   <Tooltip label="knees and angles | Higher = less sensitive">
                     <Box>
                       Lower body detection threshold{" "}
