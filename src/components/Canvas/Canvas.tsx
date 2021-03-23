@@ -1,4 +1,4 @@
-import { Pose } from "@tensorflow-models/posenet";
+import { Keypoint, Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef } from "react";
 import { useConfig } from "../../contexts/Config";
 import { POSE_ERRORS } from "../../utils/constants";
@@ -77,94 +77,116 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
-    const errors: string[] = [];
-
-    const body = UPPER_BODY[config.bodySide];
     ctx.clearRect(0, 0, width, height);
 
-    const earAndShoulderVisible = [
-      pose.keypoints[body.ear],
-      pose.keypoints[body.shoulder],
-    ].every(({ score }) => score >= config.minUpperBodyKeypointScore);
+    const upperBodySide = UPPER_BODY[config.bodySide];
+    const errors: string[] = [];
 
-    //check ear-shoulder angle
-    if (config.neckMonitoring.enabled && earAndShoulderVisible) {
-      const earPos = pose.keypoints[body.ear].position;
-      const shoulderPos = pose.keypoints[body.shoulder].position;
-      // const triangle3rdCorner = { x: earPos.x, y: shoulderPos.y };
-      let lineColor = KEYPOINT_COLOR;
-
-      const neckAngle = angleBetweenPoints(earPos, shoulderPos);
-      const { tolerance, desiredAngle } = config.neckMonitoring;
-      if (
-        !numberInTolerance(neckAngle, Number(desiredAngle), Number(tolerance))
-      ) {
-        errors.push(POSE_ERRORS.EAR_SHOULDER);
-        lineColor = ERROR_COLOR;
-      }
-
-      drawLine(ctx, earPos, shoulderPos, lineColor);
-      // drawLine(ctx, triangle3rdCorner, shoulderPos, LINE_COLOR);
-      // drawLine(ctx, triangle3rdCorner, earPos, LINE_COLOR);
-      // drawPoint(ctx, triangle3rdCorner, LINE_COLOR);
-
-      placeTextBetweenTwoPoints({
-        ctx: ctx,
-        text: neckAngle.toString(),
-        color: KEYPOINT_COLOR,
-        start: earPos,
-        end: shoulderPos,
-        shiftX: TEXT_MARGIN,
-        shiftY: TEXT_LINE_HEIGHT,
-      });
-    }
-
-    const elbowShoulderAndWristVisible = [
-      pose.keypoints[body.elbow],
-      pose.keypoints[body.shoulder],
-      pose.keypoints[body.wrist],
-    ].every(({ score }) => score >= config.minUpperBodyKeypointScore);
-
-    //check elbow angle
-    if (config.elbowMonitoring.enabled && elbowShoulderAndWristVisible) {
-      const shoulderPos = pose.keypoints[body.shoulder].position;
-      const elbowPos = pose.keypoints[body.elbow].position;
-      const wristPos = pose.keypoints[body.wrist].position;
-      let lineColor = KEYPOINT_COLOR;
-
-      const elbowAngle =
-        angleBetweenPoints(shoulderPos, elbowPos) +
-        angleBetweenPoints(elbowPos, wristPos);
-      const { tolerance, desiredAngle } = config.elbowMonitoring;
-      if (
-        !numberInTolerance(elbowAngle, Number(desiredAngle), Number(tolerance))
-      ) {
-        lineColor = ERROR_COLOR;
-        errors.push(POSE_ERRORS.SHOULER_WRIST);
-      }
-
-      drawLine(ctx, elbowPos, wristPos, lineColor);
-      drawLine(ctx, shoulderPos, elbowPos, lineColor);
-      // drawLine(ctx, wristPos, shoulderPos, LINE_COLOR);
-
-      ctx.font = `${FONT_SIZE} serif`;
-      ctx.fillStyle = KEYPOINT_COLOR;
-      ctx.fillText(elbowAngle.toString(), elbowPos.x + 10, elbowPos.y - 10);
-    }
-
-    const kneesOrAnklesVisible = Object.values(LOWER_BODY).some(
-      (part) => pose.keypoints[part].score >= config.minLowerBodyKeypointScore
+    const earAndShoulderKeypoints: [Keypoint, Keypoint] = [
+      pose.keypoints[upperBodySide.ear],
+      pose.keypoints[upperBodySide.shoulder],
+    ];
+    const elbowShoulderAndWristKeypoints: [Keypoint, Keypoint, Keypoint] = [
+      pose.keypoints[upperBodySide.elbow],
+      pose.keypoints[upperBodySide.shoulder],
+      pose.keypoints[upperBodySide.wrist],
+    ];
+    const kneesAndAnklesKeypoints = Object.values(LOWER_BODY).map(
+      (keypoint) => pose.keypoints[keypoint]
     );
 
-    if (config.banKneesAndAnkles && kneesOrAnklesVisible) {
-      errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
+    const EAR_AND_SHOULDER_VISIBLE = earAndShoulderKeypoints.every(
+      ({ score }) => score >= config.minUpperBodyKeypointScore
+    );
+    const ELBOW_SHOULDER_AND_WRIST_VISIBLE = elbowShoulderAndWristKeypoints.every(
+      ({ score }) => score >= config.minUpperBodyKeypointScore
+    );
+    const KNEE_OR_ANKLE_VISIBLE = kneesAndAnklesKeypoints.some(
+      (keypoint) => keypoint.score >= config.minLowerBodyKeypointScore
+    );
+
+    //check for errors and draw lines between keypoints
+    {
+      if (config.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
+        const earPos = earAndShoulderKeypoints[0].position;
+        const shoulderPos = earAndShoulderKeypoints[1].position;
+        let lineColor = KEYPOINT_COLOR;
+
+        const neckAngle = angleBetweenPoints(earPos, shoulderPos);
+        const { tolerance, desiredAngle } = config.neckMonitoring;
+        if (
+          !numberInTolerance(neckAngle, Number(desiredAngle), Number(tolerance))
+        ) {
+          errors.push(POSE_ERRORS.EAR_SHOULDER);
+          lineColor = ERROR_COLOR;
+        }
+
+        drawLine(ctx, earPos, shoulderPos, lineColor);
+        placeTextBetweenTwoPoints({
+          ctx: ctx,
+          text: neckAngle.toString(),
+          color: KEYPOINT_COLOR,
+          start: earPos,
+          end: shoulderPos,
+          shiftX: TEXT_MARGIN,
+          shiftY: TEXT_LINE_HEIGHT,
+        });
+      }
+
+      if (config.elbowMonitoring.enabled && ELBOW_SHOULDER_AND_WRIST_VISIBLE) {
+        const elbowPos = elbowShoulderAndWristKeypoints[0].position;
+        const shoulderPos = elbowShoulderAndWristKeypoints[1].position;
+        const wristPos = elbowShoulderAndWristKeypoints[2].position;
+        let lineColor = KEYPOINT_COLOR;
+
+        const elbowAngle =
+          angleBetweenPoints(shoulderPos, elbowPos) +
+          angleBetweenPoints(elbowPos, wristPos); // dunno why this mathematically works but looks ok, so yea ¯\_(ツ)_/¯
+        const { tolerance, desiredAngle } = config.elbowMonitoring;
+        if (
+          !numberInTolerance(
+            elbowAngle,
+            Number(desiredAngle),
+            Number(tolerance)
+          )
+        ) {
+          lineColor = ERROR_COLOR;
+          errors.push(POSE_ERRORS.SHOULER_WRIST);
+        }
+
+        drawLine(ctx, elbowPos, wristPos, lineColor);
+        drawLine(ctx, shoulderPos, elbowPos, lineColor);
+
+        ctx.font = `${FONT_SIZE} serif`;
+        ctx.fillStyle = KEYPOINT_COLOR;
+        ctx.fillText(elbowAngle.toString(), elbowPos.x + 10, elbowPos.y - 10);
+      }
+
+      if (config.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
+        errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
+      }
     }
 
     //draw keypoints last to place them on top of the lines
-    for (const key of Object.values(body)) {
-      const { position, score } = pose.keypoints[key];
-      if (score >= config.minUpperBodyKeypointScore) {
-        drawPoint(ctx, position, KEYPOINT_COLOR);
+    {
+      if (config.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
+        earAndShoulderKeypoints.forEach(({ position }) =>
+          drawPoint(ctx, position, KEYPOINT_COLOR)
+        );
+      }
+
+      if (config.elbowMonitoring.enabled && ELBOW_SHOULDER_AND_WRIST_VISIBLE) {
+        elbowShoulderAndWristKeypoints.forEach(({ position }) => {
+          drawPoint(ctx, position, KEYPOINT_COLOR);
+        });
+      }
+
+      if (config.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
+        kneesAndAnklesKeypoints.forEach(({ position, score }) => {
+          if (score >= config.minLowerBodyKeypointScore) {
+            drawPoint(ctx, position, ERROR_COLOR);
+          }
+        });
       }
     }
 
