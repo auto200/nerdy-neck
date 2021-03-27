@@ -96,13 +96,14 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     );
 
     const EAR_AND_SHOULDER_VISIBLE = earAndShoulderKeypoints.every(
-      ({ score }) => score >= config.minUpperBodyKeypointScore
+      ({ score }) => score >= config.additional.minUpperBodyKeypointScore
     );
     const ELBOW_SHOULDER_AND_WRIST_VISIBLE = elbowShoulderAndWristKeypoints.every(
-      ({ score }) => score >= config.minUpperBodyKeypointScore
+      ({ score }) => score >= config.additional.minUpperBodyKeypointScore
     );
     const KNEE_OR_ANKLE_VISIBLE = kneesAndAnklesKeypoints.some(
-      (keypoint) => keypoint.score >= config.minLowerBodyKeypointScore
+      (keypoint) =>
+        keypoint.score >= config.additional.minLowerBodyKeypointScore
     );
 
     //check for errors and draw lines between keypoints
@@ -183,7 +184,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
 
       if (config.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
         kneesAndAnklesKeypoints.forEach(({ position, score }) => {
-          if (score >= config.minLowerBodyKeypointScore) {
+          if (score >= config.additional.minLowerBodyKeypointScore) {
             drawPoint(ctx, position, ERROR_COLOR);
           }
         });

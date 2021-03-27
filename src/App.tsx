@@ -131,10 +131,10 @@ function App() {
       }
     };
 
-    if (config.onErrorRetry.enabled && poseErrors.length) {
+    if (config.additional.onErrorRetry.enabled && poseErrors.length) {
       getPoseIntervalRef.current = window.setInterval(
         getPose,
-        Number(config.onErrorRetry.intervalInS) * 1000
+        Number(config.additional.onErrorRetry.intervalInS) * 1000
       );
     } else {
       getPoseIntervalRef.current = window.setInterval(
@@ -146,7 +146,7 @@ function App() {
     running,
     config.getPoseIntervalInS,
     poseErrors.length,
-    config.onErrorRetry,
+    config.additional.onErrorRetry,
   ]);
 
   useEffect(() => {
@@ -156,16 +156,16 @@ function App() {
   useEffect(() => {
     if (!poseErrors.length) return;
 
-    if (!config.sound.enabled && !audioRef.current.paused) {
+    if (!config.additional.sound.enabled && !audioRef.current.paused) {
       audioRef.current.pause();
       return;
     }
 
-    if (config.sound.enabled) {
+    if (config.additional.sound.enabled) {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
     }
-  }, [poseErrors, config.sound.enabled]);
+  }, [poseErrors, config.additional.sound.enabled]);
 
   return (
     <>

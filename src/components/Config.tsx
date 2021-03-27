@@ -143,22 +143,22 @@ const Config = () => {
                   <CustomSwitch
                     id="on-error-retry-switch"
                     label="On error interval"
-                    isChecked={config.onErrorRetry.enabled}
+                    isChecked={config.additional.onErrorRetry.enabled}
                     onChange={() =>
                       dispatchConfig({
-                        type: "TOGGLE_ON_ERROR_RETRY",
+                        type: "TOGGLE_ADDITIONAL_ON_ERROR_RETRY",
                       })
                     }
                   />
-                  <Collapse in={config.onErrorRetry.enabled}>
+                  <Collapse in={config.additional.onErrorRetry.enabled}>
                     <CustomInput
                       addDegreeSign={false}
                       id="on-error-retry-interval"
                       label="Retry interval (in sec)"
-                      value={config.onErrorRetry.intervalInS}
+                      value={config.additional.onErrorRetry.intervalInS}
                       onChange={(val) => {
                         dispatchConfig({
-                          type: "SET_ON_ERROR_RETRY_INTERVAL_IN_S",
+                          type: "SET_ADDITIONAL_ON_ERROR_RETRY_INTERVAL_IN_S",
                           payload: val,
                         });
                       }}
@@ -168,9 +168,11 @@ const Config = () => {
                   <CustomSwitch
                     id="sound-enabled-switch"
                     label="On error sound"
-                    isChecked={config.sound.enabled}
+                    isChecked={config.additional.sound.enabled}
                     onChange={() =>
-                      dispatchConfig({ type: "TOGGLE_SOUND_ENABLED" })
+                      dispatchConfig({
+                        type: "TOGGLE_ADDITIONAL_SOUND_ENABLED",
+                      })
                     }
                   />
 
@@ -180,15 +182,15 @@ const Config = () => {
                     <Box>
                       Upper body detection threshold{" "}
                       <Box as="span" fontWeight="bold">
-                        | {config.minUpperBodyKeypointScore}
+                        | {config.additional.minUpperBodyKeypointScore}
                       </Box>
                     </Box>
                   </Tooltip>
                   <Slider
-                    value={config.minUpperBodyKeypointScore}
+                    value={config.additional.minUpperBodyKeypointScore}
                     onChange={(val) =>
                       dispatchConfig({
-                        type: "SET_MIN_UPPER_BODY_KEYPOINT_SCORE",
+                        type: "SET_ADDITIONAL_MIN_UPPER_BODY_KEYPOINT_SCORE",
                         payload: val,
                       })
                     }
@@ -207,15 +209,15 @@ const Config = () => {
                     <Box>
                       Lower body detection threshold{" "}
                       <Box as="span" fontWeight="bold">
-                        | {config.minLowerBodyKeypointScore}
+                        | {config.additional.minLowerBodyKeypointScore}
                       </Box>
                     </Box>
                   </Tooltip>
                   <Slider
-                    value={config.minLowerBodyKeypointScore}
+                    value={config.additional.minLowerBodyKeypointScore}
                     onChange={(val) =>
                       dispatchConfig({
-                        type: "SET_MIN_LOWER_BODY_KEYPOINT_SCORE",
+                        type: "SET_ADDITIONAL_MIN_LOWER_BODY_KEYPOINT_SCORE",
                         payload: val,
                       })
                     }
