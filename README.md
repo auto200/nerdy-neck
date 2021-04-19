@@ -16,7 +16,7 @@ Website 👉 https://nerdy-neck.auto200.eu/ **(use google chrome :sweat_smile:)*
 
 #### Legs monitoring
 
- <img src="preview-pics/ban-knees-and-ankles.png" alt="legs monitoring">
+ <img src="preview-pics/ban-knees-and-ankles.png" alt="feet pic">
 
 ---
 
@@ -28,7 +28,7 @@ Website 👉 https://nerdy-neck.auto200.eu/ **(use google chrome :sweat_smile:)*
 
 **_Any kind of pictures or reflections may be misinterpreted_**
 
-<img src="preview-pics/flaws.png" alt="feet pic">
+<img src="preview-pics/flaws.png" alt="flaws of the app">
 
 ---
 
