@@ -1,4 +1,4 @@
-Website 👉 https://nerdy-neck.auto200.eu/
+Website 👉 https://nerdy-neck.auto200.eu/ **(use google chrome :sweat_smile:)**
 
 # Monitor your body posture while sitting
 
