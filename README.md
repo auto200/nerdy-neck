@@ -30,6 +30,8 @@ Website 👉 https://nerdy-neck.auto200.eu/ **(use google chrome :sweat_smile:)*
 
 <img src="preview-pics/flaws.png" alt="flaws of the app">
 
+# <u>**Do not run this app on mobile, mine froze for like 10 mins :smile:**</u>
+
 ---
 
 # Getting Started with Create React App
