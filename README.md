@@ -4,35 +4,31 @@ Website 👉 https://nerdy-neck.auto200.eu/
 
 ## Features:
 
-**Neck monitoring**
+#### Neck monitoring
 
-<img src="preview-pics/neck-monitoring-bad.png" alt="preview" width="300px">
-<img src="preview-pics/neck-monitoring-good.png" alt="preview" width="300px">
+| <img src="preview-pics/neck-monitoring-bad.png" alt="preview"> | <img src="preview-pics/neck-monitoring-good.png" alt="preview"> |
+| :------------------------------------------------------------- | --------------------------------------------------------------- |
 
----
+#### Elbow monitoring
 
-**Elbow monitoring**
+| <img src="preview-pics/elbow-monitoring-bad.png" alt="preview"> | <img src="preview-pics/elbow-monitoring-good.png" alt="preview"> |
+| :-------------------------------------------------------------- | :--------------------------------------------------------------- |
 
-<img src="preview-pics/elbow-monitoring-bad.png" alt="preview" width="300px">
-<img src="preview-pics/elbow-monitoring-good.png" alt="preview" width="300px">
+#### Legs monitoring
 
----
-
-**Legs monitoring**
-
- <img src="preview-pics/ban-knees-and-ankles.png" alt="preview" width="300px">
+ <img src="preview-pics/ban-knees-and-ankles.png" alt="preview">
 
 ---
 
 **Fully customizable**
 
-<img src="preview-pics/fully-customizable.png" alt="preview" width="300px">
+<img src="preview-pics/fully-customizable.png" alt="preview">
 
 # Flaws
 
 **_Any kind of pictures or reflections may be misinterpreted_**
 
-<img src="preview-pics/flaws.png" alt="preview" width="300px">
+<img src="preview-pics/flaws.png" alt="preview">
 
 ---
 
