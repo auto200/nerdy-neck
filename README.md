@@ -20,7 +20,7 @@ Website 👉 https://nerdy-neck.auto200.eu/
 
 ---
 
-**Fully customizable**
+#### Fully customizable
 
 <img src="preview-pics/fully-customizable.png" alt="preview">
 
