@@ -6,29 +6,29 @@ Website 👉 https://nerdy-neck.auto200.eu/ **(use google chrome :sweat_smile:)*
 
 #### Neck monitoring
 
-| <img src="preview-pics/neck-monitoring-bad.png" alt="preview"> | <img src="preview-pics/neck-monitoring-good.png" alt="preview"> |
-| :------------------------------------------------------------- | --------------------------------------------------------------- |
+| <img src="preview-pics/neck-monitoring-bad.png" alt="bad head position"> | <img src="preview-pics/neck-monitoring-good.png" alt="good head position"> |
+| :----------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 
 #### Elbow monitoring
 
-| <img src="preview-pics/elbow-monitoring-bad.png" alt="preview"> | <img src="preview-pics/elbow-monitoring-good.png" alt="preview"> |
-| :-------------------------------------------------------------- | :--------------------------------------------------------------- |
+| <img src="preview-pics/elbow-monitoring-bad.png" alt="bad elbow angle"> | <img src="preview-pics/elbow-monitoring-good.png" alt="good elbow angle"> |
+| :---------------------------------------------------------------------- | :------------------------------------------------------------------------ |
 
 #### Legs monitoring
 
- <img src="preview-pics/ban-knees-and-ankles.png" alt="preview">
+ <img src="preview-pics/ban-knees-and-ankles.png" alt="legs monitoring">
 
 ---
 
 #### Fully customizable
 
-<img src="preview-pics/fully-customizable.png" alt="preview">
+<img src="preview-pics/fully-customizable.png" alt="settings">
 
 # Flaws
 
 **_Any kind of pictures or reflections may be misinterpreted_**
 
-<img src="preview-pics/flaws.png" alt="preview">
+<img src="preview-pics/flaws.png" alt="feet pic">
 
 ---
 
