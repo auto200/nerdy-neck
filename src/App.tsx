@@ -2,7 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import { load as loadPosenet, PoseNet, Pose } from "@tensorflow-models/posenet";
 import Canvas from "./components/Canvas";
-import { Box, Button, Flex, Heading, Select } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Code,
+  Flex,
+  Heading,
+  Select,
+  Text,
+} from "@chakra-ui/react";
 import { useConfig } from "./contexts/Config";
 import Config from "./components/Config";
 import GithubLink from "./components/GithubLink";
@@ -27,14 +35,12 @@ const getCams = async () => {
 };
 
 function App() {
-  const [camPermissionGranted, setCamPermissionGranted] = useState<boolean>(
-    false
-  );
+  const [camPermissionGranted, setCamPermissionGranted] =
+    useState<boolean>(false);
   const [cams, setCams] = useState<MediaDeviceInfo[]>();
-  const [currentCamIndex, setCurrentCamIndex] = useState<number>(() => {
-    const stored = Number(window.localStorage.getItem("currentCamIndex"));
-    return !isNaN(stored) ? stored : 0;
-  });
+  const [currentCamIndex, setCurrentCamIndex] = useState<number>(
+    () => Number(window.localStorage.getItem("currentCamIndex")) || 0
+  );
   const [net, setNet] = useState<PoseNet>();
   const [loadingNet, setLoadingNet] = useState<boolean>(false);
   const [mediaLoaded, setMediaLoaded] = useState(false);
@@ -42,10 +48,13 @@ function App() {
   const [running, setRunning] = useState<boolean>(false);
   const { config } = useConfig();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
+  const [secToPoseCheck, setSecToPoseCheck] = useState<number>(
+    Number(config.getPoseIntervalInS)
+  );
 
   const mediaRef = useRef<HTMLVideoElement>(null);
-  const runningRef = useRef(running);
   const getPoseIntervalRef = useRef<number>();
+  const timerIntervalToPoseCheckRef = useRef<number>();
   const audioRef = useRef(new Audio(badPostureSound));
 
   useEffect(() => {
@@ -118,30 +127,42 @@ function App() {
   }, [cams, currentCamIndex, camPermissionGranted]);
 
   useEffect(() => {
-    runningRef.current = running;
     clearInterval(getPoseIntervalRef.current);
+    clearInterval(timerIntervalToPoseCheckRef.current);
+
     if (!running || !net || !mediaRef.current) return;
+
+    let startCountdownToPoseCheckTs = Date.now();
 
     const getPose = async () => {
       try {
         const pose = await net.estimateSinglePose(mediaRef.current!);
         setPose(pose);
+        startCountdownToPoseCheckTs = Date.now();
       } catch (err) {
         console.log(err);
       }
     };
 
+    let intervalTimeout = 0;
     if (config.additional.onErrorRetry.enabled && poseErrors.length) {
-      getPoseIntervalRef.current = window.setInterval(
-        getPose,
-        Number(config.additional.onErrorRetry.intervalInS) * 1000
-      );
+      intervalTimeout =
+        Number(config.additional.onErrorRetry.intervalInS) * 1000;
     } else {
-      getPoseIntervalRef.current = window.setInterval(
-        getPose,
-        Number(config.getPoseIntervalInS) * 1000
-      );
+      intervalTimeout = Number(config.getPoseIntervalInS) * 1000;
     }
+
+    timerIntervalToPoseCheckRef.current = window.setInterval(() => {
+      const secToPoseCheck =
+        Math.abs(
+          Math.round(
+            (startCountdownToPoseCheckTs + intervalTimeout - Date.now()) / 1000
+          ) * 1000
+        ) / 1000;
+      setSecToPoseCheck(secToPoseCheck);
+    }, 1000);
+
+    getPoseIntervalRef.current = window.setInterval(getPose, intervalTimeout);
   }, [
     running,
     config.getPoseIntervalInS,
@@ -199,8 +220,19 @@ function App() {
                 </Box>
               ))}
             </Box>
+            {running && (
+              <Box pos="absolute" bottom="5px" right="5px">
+                <Heading
+                  variant="h2"
+                  color="blackAlpha.500"
+                  sx={{ WebkitTextStroke: "1px rgba(255, 255, 255, 0.7)" }}
+                >
+                  {secToPoseCheck}
+                </Heading>
+              </Box>
+            )}
           </Box>
-          <Flex>
+          <Flex m="10px">
             {!!cams?.length && (
               <>
                 <Select
@@ -237,6 +269,11 @@ function App() {
               </Heading>
             )}
           </Flex>
+          <Text ml="5px" color="chartreuse">
+            please make sure to have{" "}
+            <Code colorScheme="messenger">Hardware Acceleration</Code> turned on
+            in chrome settings
+          </Text>
         </Box>
         {/* config ui */}
         <Config />
