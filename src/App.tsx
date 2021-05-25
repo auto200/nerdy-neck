@@ -270,7 +270,7 @@ function App() {
             )}
           </Flex>
           <Text ml="5px" color="chartreuse">
-            please make sure to have{" "}
+            Please make sure to have{" "}
             <Code colorScheme="messenger">Hardware Acceleration</Code> turned on
             in chrome settings
           </Text>
