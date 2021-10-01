@@ -11,7 +11,7 @@ import {
   Portal,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const PanicButton = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -20,7 +20,7 @@ const PanicButton = () => {
   return (
     <>
       <Portal>
-        <Button pos="absolute" left="0" bottom="0" onClick={onOpen}>
+        <Button pos="absolute" right="0" bottom="0" onClick={onOpen}>
           Something is broken HELP ME!!1!1
         </Button>
       </Portal>
