@@ -11,7 +11,7 @@ import {
   Select,
   Text,
 } from "@chakra-ui/react";
-import { useConfig } from "./contexts/Config";
+import { useConfig } from "./contexts/ConfigContext";
 import Config from "./components/Config";
 import GithubLink from "./components/GithubLink";
 import badPostureSound from "./assets/Chaturbate - Tip Sound - Small.mp3";

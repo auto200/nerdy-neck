@@ -1,6 +1,6 @@
 import { Keypoint, Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef } from "react";
-import { useConfig } from "../../contexts/Config";
+import { useConfig } from "../../contexts/ConfigContext";
 import { POSE_ERRORS } from "../../utils/constants";
 import {
   angleBetweenPoints,

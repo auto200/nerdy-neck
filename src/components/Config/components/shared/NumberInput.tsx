@@ -1,0 +1,53 @@
+import {
+  FormControl,
+  FormLabel,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput as ChakraNumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from "@chakra-ui/react";
+
+interface Props {
+  id: string;
+  label: string;
+  value: string | number;
+  onChange: (valueAsString: string, valueAsNumber: number) => void;
+  addDegreeSign?: boolean;
+  stepper?: boolean;
+  [rest: string]: any;
+}
+
+const NumberInput = ({
+  id,
+  label,
+  value,
+  onChange,
+  addDegreeSign = true,
+  stepper = false,
+  ...rest
+}: Props) => {
+  return (
+    <FormControl>
+      <FormLabel htmlFor={id} m="0">
+        {label}
+      </FormLabel>
+      <ChakraNumberInput
+        id={id}
+        mr="1"
+        value={value + (addDegreeSign ? "°" : "")}
+        onChange={onChange}
+        {...rest}
+        min={0}
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </ChakraNumberInput>
+    </FormControl>
+  );
+};
+
+export default NumberInput;
