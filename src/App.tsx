@@ -35,21 +35,20 @@ const getCams = async () => {
 };
 
 function App() {
-  const [camPermissionGranted, setCamPermissionGranted] =
-    useState<boolean>(false);
+  const [camPermissionGranted, setCamPermissionGranted] = useState(false);
   const [cams, setCams] = useState<MediaDeviceInfo[]>();
-  const [currentCamIndex, setCurrentCamIndex] = useState<number>(
-    () => Number(window.localStorage.getItem("currentCamIndex")) || 0
+  const [currentCamIndex, setCurrentCamIndex] = useState(() =>
+    parseInt(window.localStorage.getItem("currentCamIndex") || "0")
   );
   const [net, setNet] = useState<PoseNet>();
-  const [loadingNet, setLoadingNet] = useState<boolean>(false);
+  const [loadingNet, setLoadingNet] = useState(false);
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [pose, setPose] = useState<Pose>();
-  const [running, setRunning] = useState<boolean>(false);
+  const [running, setRunning] = useState(false);
   const { config } = useConfig();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
-  const [secToPoseCheck, setSecToPoseCheck] = useState<number>(
-    Number(config.getPoseIntervalInS)
+  const [secToPoseCheck, setSecToPoseCheck] = useState(
+    parseInt(config.getPoseIntervalInS)
   );
 
   const mediaRef = useRef<HTMLVideoElement>(null);
@@ -147,9 +146,9 @@ function App() {
     let intervalTimeout = 0;
     if (config.additional.onErrorRetry.enabled && poseErrors.length) {
       intervalTimeout =
-        Number(config.additional.onErrorRetry.intervalInS) * 1000;
+        parseInt(config.additional.onErrorRetry.intervalInS) * 1000;
     } else {
-      intervalTimeout = Number(config.getPoseIntervalInS) * 1000;
+      intervalTimeout = parseInt(config.getPoseIntervalInS) * 1000;
     }
 
     timerIntervalToPoseCheckRef.current = window.setInterval(() => {

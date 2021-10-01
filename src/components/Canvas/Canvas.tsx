@@ -61,7 +61,7 @@ const KEYPOINT_COLOR = "aqua";
 const ERROR_COLOR = "red";
 
 interface Props {
-  pose: Pose | undefined;
+  pose?: Pose;
   width: number;
   height: number;
   setPoseErrors: React.Dispatch<React.SetStateAction<string[]>>;
@@ -70,12 +70,10 @@ interface Props {
 const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { config } = useConfig();
+  const ctx = canvasRef?.current?.getContext("2d");
 
   useEffect(() => {
-    if (!pose || !canvasRef.current) return;
-
-    const ctx = canvasRef.current.getContext("2d");
-    if (!ctx) return;
+    if (!pose || !canvasRef.current || !ctx) return;
 
     ctx.clearRect(0, 0, width, height);
 
@@ -98,9 +96,10 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     const EAR_AND_SHOULDER_VISIBLE = earAndShoulderKeypoints.every(
       ({ score }) => score >= config.additional.minUpperBodyKeypointScore
     );
-    const ELBOW_SHOULDER_AND_WRIST_VISIBLE = elbowShoulderAndWristKeypoints.every(
-      ({ score }) => score >= config.additional.minUpperBodyKeypointScore
-    );
+    const ELBOW_SHOULDER_AND_WRIST_VISIBLE =
+      elbowShoulderAndWristKeypoints.every(
+        ({ score }) => score >= config.additional.minUpperBodyKeypointScore
+      );
     const KNEE_OR_ANKLE_VISIBLE = kneesAndAnklesKeypoints.some(
       (keypoint) =>
         keypoint.score >= config.additional.minLowerBodyKeypointScore
