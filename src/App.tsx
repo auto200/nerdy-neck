@@ -48,7 +48,7 @@ function App() {
   const { config } = useConfig();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
   const [secToPoseCheck, setSecToPoseCheck] = useState(
-    parseInt(config.getPoseIntervalInS)
+    config.getPoseIntervalInS
   );
 
   const mediaRef = useRef<HTMLVideoElement>(null);
@@ -145,10 +145,9 @@ function App() {
 
     let intervalTimeout = 0;
     if (config.additional.onErrorRetry.enabled && poseErrors.length) {
-      intervalTimeout =
-        parseInt(config.additional.onErrorRetry.intervalInS) * 1000;
+      intervalTimeout = config.additional.onErrorRetry.intervalInS * 1000;
     } else {
-      intervalTimeout = parseInt(config.getPoseIntervalInS) * 1000;
+      intervalTimeout = config.getPoseIntervalInS * 1000;
     }
 
     timerIntervalToPoseCheckRef.current = window.setInterval(() => {

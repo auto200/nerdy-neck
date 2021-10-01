@@ -20,12 +20,12 @@ const Config = () => {
           <NumberInput
             id="check-pose-interval"
             label="Check pose interval (in sec)"
-            value={config.getPoseIntervalInS}
+            value={config.getPoseIntervalInS || ""}
             addDegreeSign={false}
-            onChange={(val) =>
+            onChange={(_, numVal) =>
               dispatchConfig({
                 type: "SET_GET_POSE_INTERVAL_IN_S",
-                payload: val,
+                payload: numVal,
               })
             }
           />

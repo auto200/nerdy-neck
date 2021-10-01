@@ -21,22 +21,22 @@ const ElbowMonitoring = () => {
         <NumberInput
           id="elbow-angle"
           label="Desired angle"
-          value={config.elbowMonitoring.desiredAngle}
-          onChange={(val) =>
+          value={config.elbowMonitoring.desiredAngle || ""}
+          onChange={(_, numVal) =>
             dispatchConfig({
               type: "SET_ELBOW_ANGLE",
-              payload: val,
+              payload: numVal,
             })
           }
         />
         <NumberInput
           id="elbow-tolerance"
           label="Tolerance"
-          value={config.elbowMonitoring.tolerance}
-          onChange={(val) =>
+          value={config.elbowMonitoring.tolerance || ""}
+          onChange={(_, numVal) =>
             dispatchConfig({
               type: "SET_ELBOW_TOLERANCE",
-              payload: val,
+              payload: numVal,
             })
           }
         />

@@ -21,22 +21,22 @@ const NeckMonitoring = () => {
         <NumberInput
           id="neck-angle"
           label="Desired angle"
-          value={config.neckMonitoring.desiredAngle}
-          onChange={(val) =>
+          value={config.neckMonitoring.desiredAngle || ""}
+          onChange={(_, numVal) =>
             dispatchConfig({
               type: "SET_NECK_ANGLE",
-              payload: val,
+              payload: numVal,
             })
           }
         />
         <NumberInput
           id="neck-tolerance"
           label="Tolerance"
-          value={config.neckMonitoring.tolerance}
-          onChange={(val) =>
+          value={config.neckMonitoring.tolerance || ""}
+          onChange={(_, numVal) =>
             dispatchConfig({
               type: "SET_NECK_TOLERANCE",
-              payload: val,
+              payload: numVal,
             })
           }
         />

@@ -22,11 +22,11 @@ const OnError = () => {
           addDegreeSign={false}
           id="on-error-retry-interval"
           label="Retry interval (in sec)"
-          value={config.additional.onErrorRetry.intervalInS}
-          onChange={(val) => {
+          value={config.additional.onErrorRetry.intervalInS || ""}
+          onChange={(_, numVal) => {
             dispatchConfig({
               type: "SET_ADDITIONAL_ON_ERROR_RETRY_INTERVAL_IN_S",
-              payload: val,
+              payload: numVal,
             });
           }}
         />

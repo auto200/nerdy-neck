@@ -3,11 +3,11 @@ import { useImmerReducer } from "../utils/hooks/useImmerReducer";
 
 export interface Config {
   bodySide: "left" | "right";
-  getPoseIntervalInS: string;
+  getPoseIntervalInS: number;
   additional: {
     onErrorRetry: {
       enabled: boolean;
-      intervalInS: string;
+      intervalInS: number;
     };
     sound: {
       enabled: boolean;
@@ -17,27 +17,27 @@ export interface Config {
   };
   neckMonitoring: {
     enabled: boolean;
-    desiredAngle: string;
-    tolerance: string;
+    desiredAngle: number;
+    tolerance: number;
   };
   elbowMonitoring: {
     enabled: boolean;
-    desiredAngle: string;
-    tolerance: string;
+    desiredAngle: number;
+    tolerance: number;
   };
   banKneesAndAnkles: boolean;
 }
 
 export const initialConfig: Config = {
   bodySide: "right",
-  getPoseIntervalInS: "45",
+  getPoseIntervalInS: 45,
   //additional settings
   //maby extract additional settings to other reducer
   //https://stackoverflow.com/questions/59200785/react-usereducer-how-to-combine-multiple-reducers
   additional: {
     onErrorRetry: {
       enabled: false,
-      intervalInS: "5",
+      intervalInS: 5,
     },
     minUpperBodyKeypointScore: 0.6,
     minLowerBodyKeypointScore: 0.2,
@@ -48,13 +48,13 @@ export const initialConfig: Config = {
 
   neckMonitoring: {
     enabled: true,
-    desiredAngle: "15",
-    tolerance: "5",
+    desiredAngle: 15,
+    tolerance: 5,
   },
   elbowMonitoring: {
     enabled: true,
-    desiredAngle: "90",
-    tolerance: "10",
+    desiredAngle: 90,
+    tolerance: 10,
   },
   banKneesAndAnkles: true,
 };
@@ -67,20 +67,20 @@ const configContext = createContext<{
   dispatch: () => null,
 });
 
-export type Action =
+type Action =
   | { type: "TOGGLE_BODY_SIDE" }
-  | { type: "SET_GET_POSE_INTERVAL_IN_S"; payload: string }
+  | { type: "SET_GET_POSE_INTERVAL_IN_S"; payload: number }
   | { type: "TOGGLE_ADDITIONAL_ON_ERROR_RETRY" }
-  | { type: "SET_ADDITIONAL_ON_ERROR_RETRY_INTERVAL_IN_S"; payload: string }
+  | { type: "SET_ADDITIONAL_ON_ERROR_RETRY_INTERVAL_IN_S"; payload: number }
   | { type: "SET_ADDITIONAL_MIN_UPPER_BODY_KEYPOINT_SCORE"; payload: number }
   | { type: "SET_ADDITIONAL_MIN_LOWER_BODY_KEYPOINT_SCORE"; payload: number }
   | { type: "TOGGLE_ADDITIONAL_SOUND_ENABLED" }
   | { type: "TOGGLE_NECK_MONITORING" }
-  | { type: "SET_NECK_ANGLE"; payload: string }
-  | { type: "SET_NECK_TOLERANCE"; payload: string }
+  | { type: "SET_NECK_ANGLE"; payload: number }
+  | { type: "SET_NECK_TOLERANCE"; payload: number }
   | { type: "TOGGLE_ELBOW_MONITORING" }
-  | { type: "SET_ELBOW_ANGLE"; payload: string }
-  | { type: "SET_ELBOW_TOLERANCE"; payload: string }
+  | { type: "SET_ELBOW_ANGLE"; payload: number }
+  | { type: "SET_ELBOW_TOLERANCE"; payload: number }
   | { type: "TOGGLE_BAN_KNEES_AND_ANKLES" };
 
 const reducer = (config: Config, action: Action) => {
@@ -96,8 +96,8 @@ const reducer = (config: Config, action: Action) => {
     }
 
     case "TOGGLE_ADDITIONAL_ON_ERROR_RETRY": {
-      config.additional.onErrorRetry.enabled = !config.additional.onErrorRetry
-        .enabled;
+      config.additional.onErrorRetry.enabled =
+        !config.additional.onErrorRetry.enabled;
       return;
     }
     case "SET_ADDITIONAL_ON_ERROR_RETRY_INTERVAL_IN_S": {
