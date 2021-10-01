@@ -34,7 +34,7 @@ const getCams = async () => {
   return cams;
 };
 
-function App() {
+const App: React.FC = () => {
   const [camPermissionGranted, setCamPermissionGranted] = useState(false);
   const [cams, setCams] = useState<MediaDeviceInfo[]>();
   const [currentCamIndex, setCurrentCamIndex] = useState(() =>
@@ -71,8 +71,8 @@ function App() {
           promptCameraPemission();
         }
 
-        camPermission.addEventListener("change", async function () {
-          if (this.state === "granted") {
+        camPermission.addEventListener("change", async (e) => {
+          if ((e.target as PermissionStatus).state === "granted") {
             setCamPermissionGranted(true);
             setCams(await getCams());
           } else {
@@ -162,6 +162,7 @@ function App() {
 
     getPoseIntervalRef.current = window.setInterval(getPose, intervalTimeout);
   }, [
+    net,
     running,
     config.getPoseIntervalInS,
     poseErrors.length,
@@ -279,6 +280,6 @@ function App() {
       <PanicButton />
     </>
   );
-}
+};
 
 export default App;

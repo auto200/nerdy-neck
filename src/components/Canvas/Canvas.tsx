@@ -6,7 +6,7 @@ import {
   angleBetweenPoints,
   drawLine,
   drawPoint,
-  numberInTolerance,
+  isNumberInTolerance,
   placeTextBetweenTwoPoints,
 } from "./utils";
 
@@ -105,6 +105,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
         keypoint.score >= config.additional.minLowerBodyKeypointScore
     );
 
+    /* eslint-disable no-lone-blocks */
     //check for errors and draw lines between keypoints
     {
       if (config.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
@@ -114,9 +115,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
 
         const neckAngle = angleBetweenPoints(earPos, shoulderPos);
         const { tolerance, desiredAngle } = config.neckMonitoring;
-        if (
-          !numberInTolerance(neckAngle, Number(desiredAngle), Number(tolerance))
-        ) {
+        if (!isNumberInTolerance(neckAngle, desiredAngle, tolerance)) {
           errors.push(POSE_ERRORS.EAR_SHOULDER);
           lineColor = ERROR_COLOR;
         }
@@ -143,13 +142,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
           angleBetweenPoints(shoulderPos, elbowPos) +
           angleBetweenPoints(elbowPos, wristPos); // dunno why this mathematically works but looks ok, so yea ¯\_(ツ)_/¯
         const { tolerance, desiredAngle } = config.elbowMonitoring;
-        if (
-          !numberInTolerance(
-            elbowAngle,
-            Number(desiredAngle),
-            Number(tolerance)
-          )
-        ) {
+        if (!isNumberInTolerance(elbowAngle, desiredAngle, tolerance)) {
           lineColor = ERROR_COLOR;
           errors.push(POSE_ERRORS.SHOULER_WRIST);
         }
@@ -191,7 +184,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     }
 
     setPoseErrors(errors);
-  }, [pose]);
+  }, [pose, config, ctx, height, width, setPoseErrors]);
 
   return (
     <canvas

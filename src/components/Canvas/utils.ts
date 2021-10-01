@@ -77,7 +77,7 @@ export const placeTextBetweenTwoPoints = ({
   ctx.fillText(text, x, y);
 };
 
-export const numberInTolerance = (
+export const isNumberInTolerance = (
   number: number,
   middlePoint: number,
   tolerance: number
