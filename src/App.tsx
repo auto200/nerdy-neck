@@ -2,46 +2,32 @@ import { useEffect, useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import { load as loadPosenet, PoseNet, Pose } from "@tensorflow-models/posenet";
 import Canvas from "./components/Canvas";
-import {
-  Box,
-  Button,
-  Code,
-  Flex,
-  Heading,
-  Select,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useConfig } from "./contexts/ConfigContext";
 import Config from "./components/Config";
 import GithubLink from "./components/GithubLink";
 import badPostureSound from "./assets/Chaturbate - Tip Sound - Small.mp3";
 import PanicButton from "./components/PanicButton";
+import { getCams, promptCameraPemission } from "./common";
+import HardwareAccelerationNotice from "./components/HardwareAccelerationNotice";
+import CamPermissionNotGrantedNotice from "./components/CamPermissionNotGrantedNotice";
+import CamSelect from "./components/CamSelect";
+import ControlButton from "./components/ControlButton";
+import SecToPoseCheck from "./components/SecToPoseCheck";
+import PoseErrors from "./components/PoseErrors";
 
 const WIDTH = 600;
 const HEIGHT = 500;
 
-const promptCameraPemission = () => {
-  window.navigator.mediaDevices.getUserMedia({
-    video: true,
-  });
-};
-
-const getCams = async () => {
-  const devices = await window.navigator.mediaDevices.enumerateDevices();
-  const cams = devices.filter(
-    ({ kind, deviceId, label }) => kind === "videoinput" && deviceId && label
-  );
-  return cams;
-};
-
 const App: React.FC = () => {
-  const [camPermissionGranted, setCamPermissionGranted] = useState(false);
-  const [cams, setCams] = useState<MediaDeviceInfo[]>();
+  const [camPermissionGranted, setCamPermissionGranted] = useState<
+    boolean | null
+  >(null);
+  const [cams, setCams] = useState<MediaDeviceInfo[]>([]);
   const [currentCamIndex, setCurrentCamIndex] = useState(() =>
     parseInt(window.localStorage.getItem("currentCamIndex") || "0")
   );
   const [net, setNet] = useState<PoseNet>();
-  const [loadingNet, setLoadingNet] = useState(false);
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [pose, setPose] = useState<Pose>();
   const [running, setRunning] = useState(false);
@@ -59,32 +45,16 @@ const App: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        //tested on chrome, 4sure not working on firefox
-        const camPermission = await window.navigator.permissions.query({
-          name: "camera",
-        });
-
-        if (camPermission.state === "granted") {
-          setCamPermissionGranted(true);
-          setCams(await getCams());
-        } else {
-          promptCameraPemission();
-        }
-
-        camPermission.addEventListener("change", async (e) => {
-          if ((e.target as PermissionStatus).state === "granted") {
-            setCamPermissionGranted(true);
-            setCams(await getCams());
-          } else {
-            setCamPermissionGranted(false);
-          }
-        });
+        await promptCameraPemission();
+        setCamPermissionGranted(true);
+        setCams(await getCams());
       } catch (err) {
         console.log(err);
+        setCamPermissionGranted(false);
+        return;
       }
 
       try {
-        setLoadingNet(true);
         const net = await loadPosenet({
           architecture: "ResNet50",
           inputResolution: {
@@ -94,7 +64,6 @@ const App: React.FC = () => {
           outputStride: 16,
         });
         setNet(net);
-        setLoadingNet(false);
       } catch (err) {
         console.log(err);
       }
@@ -103,9 +72,9 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const getStream = async () => {
-      if (!camPermissionGranted || !cams) return;
+    if (!camPermissionGranted || !cams) return;
 
+    const getStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -134,6 +103,8 @@ const App: React.FC = () => {
     let startCountdownToPoseCheckTs = Date.now();
 
     const getPose = async () => {
+      console.log("called");
+
       try {
         const pose = await net.estimateSinglePose(mediaRef.current!);
         setPose(pose);
@@ -159,8 +130,13 @@ const App: React.FC = () => {
         ) / 1000;
       setSecToPoseCheck(secToPoseCheck);
     }, 1000);
+    console.log(intervalTimeout);
 
-    getPoseIntervalRef.current = window.setInterval(getPose, intervalTimeout);
+    getPoseIntervalRef.current = window.setInterval(
+      getPose,
+      //minimal value in case of empty interval field so app do not freeze browser/tab
+      intervalTimeout || 1000
+    );
   }, [
     net,
     running,
@@ -174,7 +150,7 @@ const App: React.FC = () => {
   }, [currentCamIndex]);
 
   useEffect(() => {
-    if (!poseErrors.length) return;
+    if (poseErrors.length === 0) return;
 
     if (!config.additional.sound.enabled && !audioRef.current.paused) {
       audioRef.current.pause();
@@ -204,75 +180,35 @@ const App: React.FC = () => {
               ref={mediaRef}
               width={WIDTH}
               height={HEIGHT}
+              onLoadStart={() => setMediaLoaded(false)}
               onLoadedMetadata={() => setMediaLoaded(true)}
             />
-            <Box pos="absolute" top="0" left="2">
-              {poseErrors.map((err, i) => (
-                <Box
-                  key={i}
-                  color="red.500"
-                  fontSize="3xl"
-                  fontWeight="bold"
-                  sx={{ WebkitTextStroke: "1px rgba(0, 0, 0, 0.7)" }}
-                >
-                  {err}
-                </Box>
-              ))}
-            </Box>
-            {running && (
-              <Box pos="absolute" bottom="5px" right="5px">
-                <Heading
-                  variant="h2"
-                  color="blackAlpha.500"
-                  sx={{ WebkitTextStroke: "1px rgba(255, 255, 255, 0.7)" }}
-                >
-                  {secToPoseCheck}
-                </Heading>
-              </Box>
-            )}
+            <PoseErrors errors={poseErrors} />
+            {running && <SecToPoseCheck sec={secToPoseCheck} />}
           </Box>
           <Flex m="10px">
-            {!!cams?.length && (
+            {cams.length !== 0 && (
               <>
-                <Select
-                  w="60"
-                  value={cams[currentCamIndex]?.deviceId}
-                  onChange={(e) => {
-                    const camIndex = cams.findIndex(
-                      ({ deviceId }) => deviceId === e.target.value
-                    );
-                    camIndex > -1 && setCurrentCamIndex(camIndex);
-                  }}
-                >
-                  {cams.map(({ label, deviceId }) => (
-                    <option key={deviceId} value={deviceId}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-                <Button
+                <CamSelect
+                  cams={cams}
+                  currentCamIndex={currentCamIndex}
+                  setCurrentCamIndex={setCurrentCamIndex}
+                />
+                <ControlButton
                   disabled={
                     !running && (!net || !mediaRef.current || !mediaLoaded)
                   }
                   onClick={() => setRunning((x) => !x)}
-                  isLoading={loadingNet}
-                  loadingText="Loading"
-                >
-                  {running ? "STOP" : "START"}
-                </Button>
+                  isLoading={!net}
+                  running={running}
+                />
               </>
             )}
-            {!camPermissionGranted && (
-              <Heading variant="h1" color="yellow.400">
-                You need to grant permission to use your cam
-              </Heading>
+            {camPermissionGranted === false && (
+              <CamPermissionNotGrantedNotice />
             )}
           </Flex>
-          <Text ml="5px" color="chartreuse">
-            Please make sure to have{" "}
-            <Code colorScheme="messenger">Hardware Acceleration</Code> turned on
-            in chrome settings
-          </Text>
+          <HardwareAccelerationNotice />
         </Box>
         {/* config ui */}
         <Config />
