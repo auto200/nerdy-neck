@@ -1,12 +1,11 @@
-import "@tensorflow/tfjs";
 import { Box, Flex } from "@chakra-ui/react";
-import Config from "./components/Config";
-import GithubLink from "./components/GithubLink";
-import PanicButton from "./components/PanicButton";
-import HardwareAccelerationNotice from "./components/HardwareAccelerationNotice";
-import Controls from "./components/Controls";
-
+import "@tensorflow/tfjs";
 import CamAndCanvas from "./components/CamAndCanvas";
+import Config from "./components/Config";
+import Controls from "./components/Controls";
+import GithubLink from "./components/GithubLink";
+import HardwareAccelerationNotice from "./components/HardwareAccelerationNotice";
+import PanicButton from "./components/PanicButton";
 
 const App: React.FC = () => {
   return (

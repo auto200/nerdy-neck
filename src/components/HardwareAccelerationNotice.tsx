@@ -1,4 +1,4 @@
-import { Text, Code } from "@chakra-ui/react";
+import { Code, Text } from "@chakra-ui/react";
 
 const HardwareAccelerationNotice: React.FC = () => {
   return (
