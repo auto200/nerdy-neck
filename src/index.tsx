@@ -5,15 +5,18 @@ import App from "./App";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import theme from "./utils/theme";
 import ConfigContext from "./contexts/ConfigContext";
+import { StoreContextProvider } from "./contexts/store";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <ConfigContext>
-        <App />
-      </ConfigContext>
-    </ChakraProvider>
+    <StoreContextProvider>
+      <ChakraProvider theme={theme}>
+        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+        <ConfigContext>
+          <App />
+        </ConfigContext>
+      </ChakraProvider>
+    </StoreContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

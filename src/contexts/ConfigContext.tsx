@@ -59,7 +59,7 @@ export const initialConfig: Config = {
   banKneesAndAnkles: true,
 };
 
-const configContext = createContext<{
+const ConfigContext = createContext<{
   config: Config;
   dispatch: React.Dispatch<Action>;
 }>({
@@ -159,8 +159,15 @@ const ConfigContextProvider: React.FC = ({ children }) => {
     reducer,
     initialConfig,
     () => {
-      const configStr = window.localStorage.getItem("config");
-      return configStr ? JSON.parse(configStr) : initialConfig;
+      try {
+        const configStr = window.localStorage.getItem("config");
+        if (configStr) {
+          return JSON.parse(configStr);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+      return initialConfig;
     }
   );
 
@@ -168,7 +175,9 @@ const ConfigContextProvider: React.FC = ({ children }) => {
     try {
       const configStr = JSON.stringify(config);
       window.localStorage.setItem("config", configStr);
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   }, [config]);
 
   const values = {
@@ -177,10 +186,10 @@ const ConfigContextProvider: React.FC = ({ children }) => {
   };
 
   return (
-    <configContext.Provider value={values}>{children}</configContext.Provider>
+    <ConfigContext.Provider value={values}>{children}</ConfigContext.Provider>
   );
 };
 
 export default ConfigContextProvider;
 
-export const useConfig = () => useContext(configContext);
+export const useConfig = () => useContext(ConfigContext);
