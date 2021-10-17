@@ -1,7 +1,7 @@
 import { PoseNet } from "@tensorflow-models/posenet";
 import { IStore } from "./store";
 
-export type storeReducerActions =
+export type StoreReducerActions =
   | {
       action: "SET_CAM_PERMISSION_GRANTED";
       payload: boolean | null;
@@ -33,7 +33,7 @@ export type storeReducerActions =
 
 export const storeReducer = (
   state: IStore,
-  action: storeReducerActions
+  action: StoreReducerActions
 ): IStore => {
   switch (action.action) {
     case "SET_CAM_PERMISSION_GRANTED": {
