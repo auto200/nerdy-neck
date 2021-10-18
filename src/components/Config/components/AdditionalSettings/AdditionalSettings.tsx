@@ -8,8 +8,8 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useConfig } from "../../../../contexts/ConfigContext";
-import { OnError, ModelDetectionThreshold } from "./components";
 import { Switch } from "../shared";
+import { ModelDetectionThreshold, OnError } from "./components";
 
 const AdditionalSettings = () => {
   const { config, dispatch: dispatchConfig } = useConfig();

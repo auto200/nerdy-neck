@@ -1,7 +1,7 @@
 import {
   FormControl,
-  Switch as ChakraSwitch,
   FormLabel,
+  Switch as ChakraSwitch,
 } from "@chakra-ui/react";
 
 interface Props {
