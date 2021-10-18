@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/posenet";
 import { useEffect, useRef, useState } from "react";
+import { ReactComponent as CamError } from "../../assets/cam-error.svg";
 import badPostureSound from "../../assets/Chaturbate - Tip Sound - Small.mp3";
 import { useConfig } from "../../contexts/ConfigContext";
 import { useStore } from "../../contexts/store";
@@ -113,22 +114,29 @@ const CamAndCanvas = () => {
 
   return (
     <Box pos="relative" minW={CAM_WIDTH} minH={CAM_HEIGHT}>
-      <Canvas
-        pose={pose}
-        width={CAM_WIDTH}
-        height={CAM_HEIGHT}
-        setPoseErrors={setPoseErrors}
-      />
-      <video
-        autoPlay
-        ref={camVideoElRef}
-        width={CAM_WIDTH}
-        height={CAM_HEIGHT}
-        onLoadStart={() => setMediaLoaded(false)}
-        onLoadedMetadata={() => setMediaLoaded(true)}
-      />
-      <PoseErrors errors={poseErrors} />
-      {running && <SecToPoseCheck sec={secToPoseCheck} />}
+      {camPermissionGranted === false && (
+        <CamError width={CAM_WIDTH} height={CAM_HEIGHT} />
+      )}
+      {camPermissionGranted && (
+        <>
+          <Canvas
+            pose={pose}
+            width={CAM_WIDTH}
+            height={CAM_HEIGHT}
+            setPoseErrors={setPoseErrors}
+          />
+          <video
+            autoPlay
+            ref={camVideoElRef}
+            width={CAM_WIDTH}
+            height={CAM_HEIGHT}
+            onLoadStart={() => setMediaLoaded(false)}
+            onLoadedMetadata={() => setMediaLoaded(true)}
+          />
+          <PoseErrors errors={poseErrors} />
+          {running && <SecToPoseCheck sec={secToPoseCheck} />}
+        </>
+      )}
     </Box>
   );
 };
