@@ -30,7 +30,7 @@ export interface Config {
 
 export const initialConfig: Config = {
   bodySide: "right",
-  getPoseIntervalInS: 45,
+  getPoseIntervalInS: 5,
   //additional settings
   //maby extract additional settings to other reducer
   //https://stackoverflow.com/questions/59200785/react-usereducer-how-to-combine-multiple-reducers
@@ -52,11 +52,11 @@ export const initialConfig: Config = {
     tolerance: 5,
   },
   elbowMonitoring: {
-    enabled: true,
+    enabled: false,
     desiredAngle: 90,
     tolerance: 10,
   },
-  banKneesAndAnkles: true,
+  banKneesAndAnkles: false,
 };
 
 const ConfigContext = createContext<{
