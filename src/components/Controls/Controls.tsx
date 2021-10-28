@@ -5,7 +5,7 @@ import ControlButton from "./ControlButton";
 
 const Controls = () => {
   const {
-    store: { cams, currentCamId, appReady, running, camPermissionGranted },
+    store: { cams, currentCamId, appReady, running },
     storeHandlers: { setCurrentCamId, setRunning },
   } = useStore();
   return (
@@ -25,7 +25,6 @@ const Controls = () => {
           />
         </>
       )}
-      {camPermissionGranted === false && <CamPermissionNotGrantedNotice />}
     </Flex>
   );
 };

@@ -5,6 +5,7 @@ import { useConfig } from "contexts/ConfigContext";
 import { useStore } from "contexts/store";
 import { useEffect, useRef, useState } from "react";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
+import CamPermissionNotGranted from "./CamPermissionNotGranted";
 import Canvas from "./Canvas";
 import PoseErrors from "./PoseErrors";
 import SecToPoseCheck from "./SecToPoseCheck";
@@ -58,6 +59,7 @@ const CamAndCanvas = () => {
 
     const getPose = async () => {
       try {
+        console.log("getting pose");
         const pose = await poseNet.estimateSinglePose(camVideoElRef.current!);
         setPose(pose);
         startCountdownToPoseCheckTs = Date.now();
@@ -113,9 +115,7 @@ const CamAndCanvas = () => {
 
   return (
     <Box pos="relative" minW={CAM_WIDTH} minH={CAM_HEIGHT}>
-      {camPermissionGranted === false && (
-        <CamError width={CAM_WIDTH} height={CAM_HEIGHT} />
-      )}
+      {camPermissionGranted === false && <CamPermissionNotGranted />}
       {camPermissionGranted && (
         <>
           <Canvas
