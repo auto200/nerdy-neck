@@ -19,12 +19,9 @@ const CamAndCanvas = () => {
   const sideModeSettings = useSelector(selectSideModeSettings);
   const [pose, setPose] = useState<Pose>();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
-  const [secToPoseCheck, setSecToPoseCheck] = useState(
-    sideModeSettings.getPoseIntervalInS
-  );
+
   const camVideoElRef = useRef<HTMLVideoElement>(null);
   const getPoseIntervalRef = useRef<number>();
-  const timerIntervalToPoseCheckRef = useRef<number>();
   const audioRef = useRef(new Audio(badPostureSound));
 
   useEffect(() => {
@@ -52,18 +49,14 @@ const CamAndCanvas = () => {
 
   useEffect(() => {
     clearInterval(getPoseIntervalRef.current);
-    clearInterval(timerIntervalToPoseCheckRef.current);
 
     if (!running || !poseNet || !camVideoElRef.current) return;
-
-    let startCountdownToPoseCheckTs = Date.now();
 
     const getPose = async () => {
       try {
         console.log("getting pose");
         const pose = await poseNet.estimateSinglePose(camVideoElRef.current!);
         setPose(pose);
-        startCountdownToPoseCheckTs = Date.now();
       } catch (err) {
         console.log(err);
       }
@@ -76,16 +69,6 @@ const CamAndCanvas = () => {
     } else {
       intervalTimeout = sideModeSettings.getPoseIntervalInS * 1000;
     }
-
-    timerIntervalToPoseCheckRef.current = window.setInterval(() => {
-      const secToPoseCheck =
-        Math.abs(
-          Math.round(
-            (startCountdownToPoseCheckTs + intervalTimeout - Date.now()) / 1000
-          ) * 1000
-        ) / 1000;
-      setSecToPoseCheck(secToPoseCheck);
-    }, 1000);
 
     getPoseIntervalRef.current = window.setInterval(
       getPose,
@@ -138,7 +121,12 @@ const CamAndCanvas = () => {
             onLoadedMetadata={() => setMediaLoaded(true)}
           />
           <PoseErrors errors={poseErrors} />
-          {running && <SecToPoseCheck sec={secToPoseCheck} />}
+          {running && (
+            <SecToPoseCheck
+              key={pose?.score}
+              getPoseIntervalInS={sideModeSettings.getPoseIntervalInS}
+            />
+          )}
         </>
       )}
     </Box>
