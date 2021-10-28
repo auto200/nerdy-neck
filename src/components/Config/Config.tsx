@@ -1,5 +1,5 @@
 import { Box, Heading, VStack } from "@chakra-ui/react";
-import { useConfig } from "../../contexts/ConfigContext";
+import { useConfig } from "contexts/ConfigContext";
 import {
   AdditionalSettings,
   BodySideSwitch,

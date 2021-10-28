@@ -1,6 +1,5 @@
 import { Flex } from "@chakra-ui/react";
-import { useStore } from "../../contexts/store";
-import CamPermissionNotGrantedNotice from "../CamPermissionNotGrantedNotice";
+import { useStore } from "contexts/store";
 import CamSelect from "./CamSelect";
 import ControlButton from "./ControlButton";
 

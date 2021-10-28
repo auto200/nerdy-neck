@@ -1,11 +1,10 @@
 import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/posenet";
+import badPostureSound from "assets/on-error-sound.mp3";
+import { useConfig } from "contexts/ConfigContext";
+import { useStore } from "contexts/store";
 import { useEffect, useRef, useState } from "react";
-import { ReactComponent as CamError } from "../../assets/cam-error.svg";
-import badPostureSound from "../../assets/Chaturbate - Tip Sound - Small.mp3";
-import { useConfig } from "../../contexts/ConfigContext";
-import { useStore } from "../../contexts/store";
-import { CAM_HEIGHT, CAM_WIDTH } from "../../utils/constants";
+import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import Canvas from "./Canvas";
 import PoseErrors from "./PoseErrors";
 import SecToPoseCheck from "./SecToPoseCheck";

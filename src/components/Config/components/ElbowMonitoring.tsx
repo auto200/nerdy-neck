@@ -1,5 +1,5 @@
-import { Box, Collapse } from "@chakra-ui/react";
-import { useConfig } from "../../../contexts/ConfigContext";
+import { Collapse } from "@chakra-ui/react";
+import { useConfig } from "contexts/ConfigContext";
 import { NumberInput, Switch } from "./shared";
 
 const ElbowMonitoring = () => {

@@ -7,7 +7,7 @@ import {
   Box,
   Divider,
 } from "@chakra-ui/react";
-import { useConfig } from "../../../../contexts/ConfigContext";
+import { useConfig } from "contexts/ConfigContext";
 import { Switch } from "../shared";
 import { ModelDetectionThreshold, OnError } from "./components";
 

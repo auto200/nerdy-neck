@@ -5,7 +5,7 @@ import {
   FormLabel,
   Switch as ChakraSwitch,
 } from "@chakra-ui/react";
-import { useConfig } from "../../../contexts/ConfigContext";
+import { useConfig } from "contexts/ConfigContext";
 
 const BodySideSwitch = () => {
   const { config, dispatch: dispatchConfig } = useConfig();

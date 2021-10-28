@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from "react";
-import { useImmerReducer } from "../utils/hooks/useImmerReducer";
+import { useImmerReducer } from "utils/hooks/useImmerReducer";
 
 export interface Config {
   bodySide: "left" | "right";

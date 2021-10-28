@@ -1,7 +1,7 @@
 import { load as loadPosenet, PoseNet } from "@tensorflow-models/posenet";
 import { useCallback, useEffect, useReducer } from "react";
-import { getCams, promptCameraPemission } from "../../utils/cams";
-import { CAM_HEIGHT, CAM_WIDTH } from "../../utils/constants";
+import { getCams, promptCameraPemission } from "utils/cams";
+import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import { initialStoreState } from "./initialStoreState";
 import { localStorageKeys } from "./localStorage.keys";
 import { StoreContext } from "./store.context";
