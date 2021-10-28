@@ -2,6 +2,8 @@
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { store } from "store";
 import App from "./App";
 import ConfigContext from "./contexts/ConfigContext";
 import { StoreContextProvider } from "./contexts/store";
@@ -13,7 +15,9 @@ ReactDOM.render(
       <ChakraProvider theme={theme}>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         <ConfigContext>
-          <App />
+          <Provider store={store}>
+            <App />
+          </Provider>
         </ConfigContext>
       </ChakraProvider>
     </StoreContextProvider>
