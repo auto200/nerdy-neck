@@ -3,8 +3,11 @@ import sideModeSettingsSlice from "./slices/sideModeSettingsSlice";
 
 export const store = configureStore({
   reducer: {
-    frontModeSettings: sideModeSettingsSlice,
+    sideModeSettings: sideModeSettingsSlice,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export const selectSideModeSettings = (state: RootState) =>
+  state.sideModeSettings;

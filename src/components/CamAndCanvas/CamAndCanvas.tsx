@@ -1,9 +1,10 @@
 import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/posenet";
 import badPostureSound from "assets/on-error-sound.mp3";
-import { useConfig } from "contexts/ConfigContext";
 import { useStore } from "contexts/store";
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectSideModeSettings } from "store";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import CamPermissionNotGranted from "./CamPermissionNotGranted";
 import Canvas from "./Canvas";
@@ -15,11 +16,11 @@ const CamAndCanvas = () => {
     store: { camPermissionGranted, cams, currentCamId, running, poseNet },
     storeHandlers: { setMediaLoaded },
   } = useStore();
-  const { config } = useConfig();
+  const sideModeSettings = useSelector(selectSideModeSettings);
   const [pose, setPose] = useState<Pose>();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
   const [secToPoseCheck, setSecToPoseCheck] = useState(
-    config.getPoseIntervalInS
+    sideModeSettings.getPoseIntervalInS
   );
   const camVideoElRef = useRef<HTMLVideoElement>(null);
   const getPoseIntervalRef = useRef<number>();
@@ -69,10 +70,11 @@ const CamAndCanvas = () => {
     };
 
     let intervalTimeout = 0;
-    if (config.additional.onErrorRetry.enabled && poseErrors.length) {
-      intervalTimeout = config.additional.onErrorRetry.intervalInS * 1000;
+    if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
+      intervalTimeout =
+        sideModeSettings.additional.onErrorRetry.intervalInS * 1000;
     } else {
-      intervalTimeout = config.getPoseIntervalInS * 1000;
+      intervalTimeout = sideModeSettings.getPoseIntervalInS * 1000;
     }
 
     timerIntervalToPoseCheckRef.current = window.setInterval(() => {
@@ -94,24 +96,27 @@ const CamAndCanvas = () => {
   }, [
     poseNet,
     running,
-    config.getPoseIntervalInS,
+    sideModeSettings.getPoseIntervalInS,
     poseErrors.length,
-    config.additional.onErrorRetry,
+    sideModeSettings.additional.onErrorRetry,
   ]);
 
   useEffect(() => {
     if (poseErrors.length === 0) return;
 
-    if (!config.additional.sound.enabled && !audioRef.current.paused) {
+    if (
+      !sideModeSettings.additional.sound.enabled &&
+      !audioRef.current.paused
+    ) {
       audioRef.current.pause();
       return;
     }
 
-    if (config.additional.sound.enabled) {
+    if (sideModeSettings.additional.sound.enabled) {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
     }
-  }, [poseErrors, config.additional.sound.enabled]);
+  }, [poseErrors, sideModeSettings.additional.sound.enabled]);
 
   return (
     <Box pos="relative" minW={CAM_WIDTH} minH={CAM_HEIGHT}>

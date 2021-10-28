@@ -5,7 +5,6 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { store } from "store";
 import App from "./App";
-import ConfigContext from "./contexts/ConfigContext";
 import { StoreContextProvider } from "./contexts/store";
 import theme from "./utils/theme";
 
@@ -14,11 +13,9 @@ ReactDOM.render(
     <StoreContextProvider>
       <ChakraProvider theme={theme}>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        <ConfigContext>
-          <Provider store={store}>
-            <App />
-          </Provider>
-        </ConfigContext>
+        <Provider store={store}>
+          <App />
+        </Provider>
       </ChakraProvider>
     </StoreContextProvider>
   </React.StrictMode>,

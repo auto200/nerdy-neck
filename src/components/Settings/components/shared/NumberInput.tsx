@@ -12,7 +12,7 @@ interface Props {
   id: string;
   label: string;
   value: string | number;
-  onChange: (valueAsString: string, valueAsNumber: number) => void;
+  onChange: (valueAsNumber: number) => void;
   addDegreeSign?: boolean;
   stepper?: boolean;
   [rest: string]: any;
@@ -36,7 +36,7 @@ const NumberInput = ({
         id={id}
         mr="1"
         value={value + (addDegreeSign ? "°" : "")}
-        onChange={onChange}
+        onChange={(_, numVal) => onChange(numVal)}
         {...rest}
         min={0}
       >

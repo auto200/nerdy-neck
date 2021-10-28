@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "store";
 
 interface SideModeSettings {
@@ -57,19 +57,97 @@ const initialSideModeSettings: SideModeSettings = {
 };
 
 export const sideModeSettingsSlice = createSlice({
-  name: "frontModeSettings",
+  name: "sideModeSettings",
   initialState: initialSideModeSettings,
   reducers: {
     toggleBodySide: (state) => {
       state.bodySide = state.bodySide === "left" ? "right" : "left";
     },
+    setGetPoseIntervalInS: (state, action: PayloadAction<number>) => {
+      state.getPoseIntervalInS = action.payload;
+    },
+
+    toggleAdditionalSoundEnabled: (state) => {
+      state.additional.sound.enabled = !state.additional.sound.enabled;
+    },
+    toggleAdditionalOnErrorRetry: (state) => {
+      state.additional.onErrorRetry.enabled =
+        !state.additional.onErrorRetry.enabled;
+    },
+    setAdditionalOnErrorRetryIntervalInS: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      state.additional.onErrorRetry.intervalInS = action.payload;
+    },
+    setAdditionalMinUpperBodyKeypoinScore: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      state.additional.minUpperBodyKeypointScore = action.payload;
+    },
+    setAdditionalMinLowerBodyKeypoinScore: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      state.additional.minLowerBodyKeypointScore = action.payload;
+    },
+
+    toggleNeckMonitoring: (state) => {
+      state.neckMonitoring.enabled = !state.neckMonitoring.enabled;
+    },
+    setNeckDesiredAngle: (state, action: PayloadAction<number>) => {
+      state.neckMonitoring.desiredAngle = action.payload;
+    },
+    setNeckTolerance: (state, action: PayloadAction<number>) => {
+      state.neckMonitoring.tolerance = action.payload;
+    },
+
+    toggleElbowMonitoring: (state) => {
+      state.elbowMonitoring.enabled = !state.elbowMonitoring.enabled;
+    },
+    setElbowAngle: (state, action: PayloadAction<number>) => {
+      state.elbowMonitoring.desiredAngle = action.payload;
+    },
+    setElbowTolerance: (state, action: PayloadAction<number>) => {
+      state.elbowMonitoring.tolerance = action.payload;
+    },
+
+    toggleBanKneesAndAnkles: (state) => {
+      state.banKneesAndAnkles = !state.banKneesAndAnkles;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleBodySide } = sideModeSettingsSlice.actions;
+export const {
+  toggleBodySide,
+  setGetPoseIntervalInS,
+  toggleAdditionalSoundEnabled,
+  setAdditionalMinLowerBodyKeypoinScore,
+  setAdditionalMinUpperBodyKeypoinScore,
+  setAdditionalOnErrorRetryIntervalInS,
+  toggleAdditionalOnErrorRetry,
+  setNeckDesiredAngle,
+  setNeckTolerance,
+  toggleNeckMonitoring,
+  setElbowAngle,
+  setElbowTolerance,
+  toggleBanKneesAndAnkles,
+  toggleElbowMonitoring,
+} = sideModeSettingsSlice.actions;
 
 export default sideModeSettingsSlice.reducer;
 
 export const selectBodySide = (state: RootState) =>
-  state.frontModeSettings.bodySide;
+  state.sideModeSettings.bodySide;
+export const selectGetPoseIntervalInS = (state: RootState) =>
+  state.sideModeSettings.getPoseIntervalInS;
+export const selectAdditional = (state: RootState) =>
+  state.sideModeSettings.additional;
+export const selectNeckMonitoring = (state: RootState) =>
+  state.sideModeSettings.neckMonitoring;
+export const selectElbowMonitoring = (state: RootState) =>
+  state.sideModeSettings.elbowMonitoring;
+export const selectBanKneesAndAnkles = (state: RootState) =>
+  state.sideModeSettings.banKneesAndAnkles;
