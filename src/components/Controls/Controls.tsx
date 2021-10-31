@@ -1,14 +1,14 @@
 import { Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAppState, selectGeneralAppState } from "store";
+import { selectAppState, selectSideModeSettings } from "store";
 import { setRunning } from "store/slices/appStateSlice";
-import { setCurrentCamId } from "store/slices/generalStateSlice";
+import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import CamSelect from "./CamSelect";
 import ControlButton from "./ControlButton";
 
 const Controls = () => {
   const { cams, appReady, running } = useSelector(selectAppState);
-  const { currentCamId } = useSelector(selectGeneralAppState);
+  const { selectedCamId } = useSelector(selectSideModeSettings);
   const dispatch = useDispatch();
 
   return (
@@ -17,8 +17,8 @@ const Controls = () => {
         <>
           <CamSelect
             cams={cams}
-            currentCamId={currentCamId}
-            setCurrentCamId={(id: string) => dispatch(setCurrentCamId(id))}
+            selectedCamId={selectedCamId}
+            setSelectedCamId={(id: string) => dispatch(setSelectedCamId(id))}
           />
 
           <ControlButton

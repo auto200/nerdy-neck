@@ -3,18 +3,14 @@ import { load as loadPosenet, Pose, PoseNet } from "@tensorflow-models/posenet";
 import badPostureSound from "assets/on-error-sound.mp3";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAppState,
-  selectGeneralAppState,
-  selectSideModeSettings,
-} from "store";
+import { selectAppState, selectSideModeSettings } from "store";
 import {
   setAppReady,
   setCamPermissionGranted,
   setCams,
   setMediaLoaded,
 } from "store/slices/appStateSlice";
-import { setCurrentCamId } from "store/slices/generalStateSlice";
+import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { getCams, promptCameraPemission } from "utils/cams";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import CamPermissionNotGranted from "./CamPermissionNotGranted";
@@ -25,7 +21,7 @@ import SecToPoseCheck from "./SecToPoseCheck";
 const CamAndCanvas = () => {
   const { camPermissionGranted, cams, running, mediaLoaded } =
     useSelector(selectAppState);
-  const { currentCamId } = useSelector(selectGeneralAppState);
+  const { selectedCamId } = useSelector(selectSideModeSettings);
   const dispatch = useDispatch();
   const [poseNet, setPoseNet] = useState<PoseNet>();
   const sideModeSettings = useSelector(selectSideModeSettings);
@@ -44,8 +40,8 @@ const CamAndCanvas = () => {
         dispatch(setCamPermissionGranted(true));
         const cams = await getCams();
         dispatch(setCams(cams));
-        if (!currentCamId) {
-          dispatch(setCurrentCamId(cams[0].id));
+        if (!selectedCamId) {
+          dispatch(setSelectedCamId(cams[0].id));
         }
       } catch (err) {
         console.log(err);
@@ -81,14 +77,14 @@ const CamAndCanvas = () => {
     if (!camPermissionGranted || !cams) return;
 
     const getStream = async () => {
-      console.log(currentCamId);
+      console.log(selectedCamId);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
             width: CAM_WIDTH,
             height: CAM_HEIGHT,
-            deviceId: currentCamId,
+            deviceId: selectedCamId,
           },
         });
         if (camVideoElRef.current) {
@@ -99,7 +95,7 @@ const CamAndCanvas = () => {
       }
     };
     getStream();
-  }, [cams, currentCamId, camPermissionGranted]);
+  }, [cams, selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
     clearInterval(getPoseIntervalRef.current);

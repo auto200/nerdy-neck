@@ -1,23 +1,37 @@
 import { configureStore } from "@reduxjs/toolkit";
-import appStateSlice from "./slices/appStateSlice";
-import generalStateSlice from "./slices/generalStateSlice";
-import sideModeSettingsSlice from "./slices/sideModeSettingsSlice";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { rootReducer } from "./rootReducer";
 
-export const store = configureStore({
-  reducer: {
-    sideModeSettings: sideModeSettingsSlice,
-    appState: appStateSlice,
-    generalAppState: generalStateSlice,
-  },
-  // middleware:(getDefaultMiddleware)=>getDefaultMiddleware().prepend
+const persistConfig = {
+  key: "root",
+  version: 1,
+  storage,
+  whitelist: ["sideModeSettings"],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
+export default store;
 
 export type RootState = ReturnType<typeof store.getState>;
 
-export const selectSideModeSettings = (state: RootState) =>
-  state.sideModeSettings;
-
-export const selectAppState = (state: RootState) => state.appState;
-
-export const selectGeneralAppState = (state: RootState) =>
-  state.generalAppState;
+export const persistor = persistStore(store);

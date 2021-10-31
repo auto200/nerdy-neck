@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "store";
 
 interface SideModeSettings {
+  selectedCamId: string;
   bodySide: "left" | "right";
   getPoseIntervalInS: number;
   additional: {
@@ -29,6 +30,7 @@ interface SideModeSettings {
 }
 
 const initialSideModeSettings: SideModeSettings = {
+  selectedCamId: "",
   bodySide: "right",
   getPoseIntervalInS: 5,
   additional: {
@@ -60,6 +62,9 @@ const sideModeSettingsSlice = createSlice({
   name: "sideModeSettings",
   initialState: initialSideModeSettings,
   reducers: {
+    setSelectedCamId: (state, action: PayloadAction<string>) => {
+      state.selectedCamId = action.payload;
+    },
     toggleBodySide: (state) => {
       state.bodySide = state.bodySide === "left" ? "right" : "left";
     },
@@ -121,6 +126,7 @@ const sideModeSettingsSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setSelectedCamId,
   toggleBodySide,
   setGetPoseIntervalInS,
   toggleAdditionalSoundEnabled,
