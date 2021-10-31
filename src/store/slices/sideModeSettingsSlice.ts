@@ -56,7 +56,7 @@ const initialSideModeSettings: SideModeSettings = {
   banKneesAndAnkles: false,
 };
 
-export const sideModeSettingsSlice = createSlice({
+const sideModeSettingsSlice = createSlice({
   name: "sideModeSettings",
   initialState: initialSideModeSettings,
   reducers: {

@@ -5,19 +5,16 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { store } from "store";
 import App from "./App";
-import { StoreContextProvider } from "./contexts/store";
 import theme from "./utils/theme";
 
 ReactDOM.render(
   <React.StrictMode>
-    <StoreContextProvider>
-      <ChakraProvider theme={theme}>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </ChakraProvider>
-    </StoreContextProvider>
+    <ChakraProvider theme={theme}>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

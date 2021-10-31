@@ -1,13 +1,16 @@
 import { Flex } from "@chakra-ui/react";
-import { useStore } from "contexts/store";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAppState, selectGeneralAppState } from "store";
+import { setRunning } from "store/slices/appStateSlice";
+import { setCurrentCamId } from "store/slices/generalStateSlice";
 import CamSelect from "./CamSelect";
 import ControlButton from "./ControlButton";
 
 const Controls = () => {
-  const {
-    store: { cams, currentCamId, appReady, running },
-    storeHandlers: { setCurrentCamId, setRunning },
-  } = useStore();
+  const { cams, appReady, running } = useSelector(selectAppState);
+  const { currentCamId } = useSelector(selectGeneralAppState);
+  const dispatch = useDispatch();
+
   return (
     <Flex m="10px">
       {cams.length !== 0 && (
@@ -15,11 +18,11 @@ const Controls = () => {
           <CamSelect
             cams={cams}
             currentCamId={currentCamId}
-            setCurrentCamId={setCurrentCamId}
+            setCurrentCamId={(id: string) => dispatch(setCurrentCamId(id))}
           />
 
           <ControlButton
-            onClick={() => setRunning(!running)}
+            onClick={() => dispatch(setRunning(!running))}
             isLoading={!appReady}
             running={running}
           />

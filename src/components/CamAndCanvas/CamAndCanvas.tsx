@@ -1,10 +1,21 @@
 import { Box } from "@chakra-ui/react";
-import { Pose } from "@tensorflow-models/posenet";
+import { load as loadPosenet, Pose, PoseNet } from "@tensorflow-models/posenet";
 import badPostureSound from "assets/on-error-sound.mp3";
-import { useStore } from "contexts/store";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectSideModeSettings } from "store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAppState,
+  selectGeneralAppState,
+  selectSideModeSettings,
+} from "store";
+import {
+  setAppReady,
+  setCamPermissionGranted,
+  setCams,
+  setMediaLoaded,
+} from "store/slices/appStateSlice";
+import { setCurrentCamId } from "store/slices/generalStateSlice";
+import { getCams, promptCameraPemission } from "utils/cams";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import CamPermissionNotGranted from "./CamPermissionNotGranted";
 import Canvas from "./Canvas";
@@ -12,10 +23,11 @@ import PoseErrors from "./PoseErrors";
 import SecToPoseCheck from "./SecToPoseCheck";
 
 const CamAndCanvas = () => {
-  const {
-    store: { camPermissionGranted, cams, currentCamId, running, poseNet },
-    storeHandlers: { setMediaLoaded },
-  } = useStore();
+  const { camPermissionGranted, cams, running, mediaLoaded } =
+    useSelector(selectAppState);
+  const { currentCamId } = useSelector(selectGeneralAppState);
+  const dispatch = useDispatch();
+  const [poseNet, setPoseNet] = useState<PoseNet>();
   const sideModeSettings = useSelector(selectSideModeSettings);
   const [pose, setPose] = useState<Pose>();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
@@ -25,9 +37,51 @@ const CamAndCanvas = () => {
   const audioRef = useRef(new Audio(badPostureSound));
 
   useEffect(() => {
+    console.log("howmany times this is called");
+    const init = async () => {
+      try {
+        await promptCameraPemission();
+        dispatch(setCamPermissionGranted(true));
+        const cams = await getCams();
+        dispatch(setCams(cams));
+        if (!currentCamId) {
+          dispatch(setCurrentCamId(cams[0].id));
+        }
+      } catch (err) {
+        console.log(err);
+        setCamPermissionGranted(false);
+        return;
+      }
+
+      try {
+        const net = await loadPosenet({
+          architecture: "ResNet50",
+          inputResolution: {
+            width: CAM_WIDTH,
+            height: CAM_HEIGHT,
+          },
+          outputStride: 16,
+        });
+        setPoseNet(net);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    init();
+    //eslint-disable-next-line
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (poseNet && mediaLoaded) {
+      dispatch(setAppReady(true));
+    }
+  }, [poseNet, dispatch, mediaLoaded]);
+
+  useEffect(() => {
     if (!camPermissionGranted || !cams) return;
 
     const getStream = async () => {
+      console.log(currentCamId);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -117,8 +171,8 @@ const CamAndCanvas = () => {
             ref={camVideoElRef}
             width={CAM_WIDTH}
             height={CAM_HEIGHT}
-            onLoadStart={() => setMediaLoaded(false)}
-            onLoadedMetadata={() => setMediaLoaded(true)}
+            onLoadStart={() => dispatch(setMediaLoaded(false))}
+            onLoadedMetadata={() => dispatch(setMediaLoaded(true))}
           />
           <PoseErrors errors={poseErrors} />
           {running && (

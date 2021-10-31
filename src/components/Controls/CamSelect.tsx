@@ -1,7 +1,8 @@
 import { Select } from "@chakra-ui/react";
+import { Cam } from "utils/interfaces";
 
 interface Props {
-  cams: MediaDeviceInfo[];
+  cams: Cam[];
   currentCamId: string;
   setCurrentCamId: (id: string) => void;
 }
@@ -17,8 +18,8 @@ const CamSelect: React.FC<Props> = ({
       value={currentCamId}
       onChange={(e) => setCurrentCamId(e.target.value)}
     >
-      {cams.map(({ label, deviceId }) => (
-        <option key={deviceId} value={deviceId}>
+      {cams.map(({ label, id }) => (
+        <option key={id} value={id}>
           {label}
         </option>
       ))}
