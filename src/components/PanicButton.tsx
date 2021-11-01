@@ -33,7 +33,7 @@ const PanicButton = () => {
           <ModalBody>
             <Box>
               Oh no 😢 Note that this app is just a fun project and breaking
-              changes may be happening
+              changes may happen
             </Box>
             <Box mt="1">
               Best you can do is wipe all locally stored data and cross your
