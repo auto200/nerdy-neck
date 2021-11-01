@@ -7,12 +7,19 @@ import {
   Box,
   Divider,
 } from "@chakra-ui/react";
-import { useConfig } from "contexts/ConfigContext";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAdditional,
+  setAdditionalMinLowerBodyKeypoinScore,
+  setAdditionalMinUpperBodyKeypoinScore,
+  toggleAdditionalSoundEnabled,
+} from "store/slices/sideModeSettingsSlice";
 import { Switch } from "../shared";
 import { ModelDetectionThreshold, OnError } from "./components";
 
 const AdditionalSettings = () => {
-  const { config, dispatch: dispatchConfig } = useConfig();
+  const additional = useSelector(selectAdditional);
+  const dispatch = useDispatch();
 
   return (
     <Accordion allowToggle mt="1">
@@ -31,35 +38,25 @@ const AdditionalSettings = () => {
             <Switch
               id="sound-enabled-switch"
               label="On error sound"
-              isChecked={config.additional.sound.enabled}
-              onChange={() =>
-                dispatchConfig({
-                  type: "TOGGLE_ADDITIONAL_SOUND_ENABLED",
-                })
-              }
+              isChecked={additional.sound.enabled}
+              onChange={() => dispatch(toggleAdditionalSoundEnabled())}
             />
             <Divider my="2" />
             <ModelDetectionThreshold
               tooltip="ear, shoulder, elbow and wrist | Higher = less sensitive"
               label="Upper body detection threshold"
-              value={config.additional.minUpperBodyKeypointScore}
+              value={additional.minUpperBodyKeypointScore}
               onChange={(val) =>
-                dispatchConfig({
-                  type: "SET_ADDITIONAL_MIN_UPPER_BODY_KEYPOINT_SCORE",
-                  payload: val,
-                })
+                dispatch(setAdditionalMinUpperBodyKeypoinScore(val))
               }
             />
             <Divider my="2" />
             <ModelDetectionThreshold
               tooltip="knees and angles | Higher = less sensitive"
               label="Lower body detection threshold"
-              value={config.additional.minLowerBodyKeypointScore}
+              value={additional.minLowerBodyKeypointScore}
               onChange={(val) =>
-                dispatchConfig({
-                  type: "SET_ADDITIONAL_MIN_LOWER_BODY_KEYPOINT_SCORE",
-                  payload: val,
-                })
+                dispatch(setAdditionalMinLowerBodyKeypoinScore(val))
               }
             />
           </Box>

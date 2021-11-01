@@ -1,6 +1,7 @@
 import { Keypoint, Pose } from "@tensorflow-models/posenet";
-import { useConfig } from "contexts/ConfigContext";
 import { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { selectSideModeSettings } from "store";
 import { POSE_ERRORS } from "utils/enums";
 import {
   angleBetweenPoints,
@@ -69,7 +70,7 @@ interface Props {
 
 const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { config } = useConfig();
+  const sideModeSettings = useSelector(selectSideModeSettings);
   const ctx = canvasRef?.current?.getContext("2d");
 
   useEffect(() => {
@@ -77,7 +78,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
 
     ctx.clearRect(0, 0, width, height);
 
-    const upperBodySide = UPPER_BODY[config.bodySide];
+    const upperBodySide = UPPER_BODY[sideModeSettings.bodySide];
     const errors: string[] = [];
 
     const earAndShoulderKeypoints: [Keypoint, Keypoint] = [
@@ -94,27 +95,29 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     );
 
     const EAR_AND_SHOULDER_VISIBLE = earAndShoulderKeypoints.every(
-      ({ score }) => score >= config.additional.minUpperBodyKeypointScore
+      ({ score }) =>
+        score >= sideModeSettings.additional.minUpperBodyKeypointScore
     );
     const ELBOW_SHOULDER_AND_WRIST_VISIBLE =
       elbowShoulderAndWristKeypoints.every(
-        ({ score }) => score >= config.additional.minUpperBodyKeypointScore
+        ({ score }) =>
+          score >= sideModeSettings.additional.minUpperBodyKeypointScore
       );
     const KNEE_OR_ANKLE_VISIBLE = kneesAndAnklesKeypoints.some(
       (keypoint) =>
-        keypoint.score >= config.additional.minLowerBodyKeypointScore
+        keypoint.score >= sideModeSettings.additional.minLowerBodyKeypointScore
     );
 
     /* eslint-disable no-lone-blocks */
     //check for errors and draw lines between keypoints
     {
-      if (config.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
+      if (sideModeSettings.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
         const earPos = earAndShoulderKeypoints[0].position;
         const shoulderPos = earAndShoulderKeypoints[1].position;
         let lineColor = KEYPOINT_COLOR;
 
         const neckAngle = angleBetweenPoints(earPos, shoulderPos);
-        const { tolerance, desiredAngle } = config.neckMonitoring;
+        const { tolerance, desiredAngle } = sideModeSettings.neckMonitoring;
         if (!isNumberInTolerance(neckAngle, desiredAngle, tolerance)) {
           errors.push(POSE_ERRORS.EAR_SHOULDER);
           lineColor = ERROR_COLOR;
@@ -132,7 +135,10 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
         });
       }
 
-      if (config.elbowMonitoring.enabled && ELBOW_SHOULDER_AND_WRIST_VISIBLE) {
+      if (
+        sideModeSettings.elbowMonitoring.enabled &&
+        ELBOW_SHOULDER_AND_WRIST_VISIBLE
+      ) {
         const elbowPos = elbowShoulderAndWristKeypoints[0].position;
         const shoulderPos = elbowShoulderAndWristKeypoints[1].position;
         const wristPos = elbowShoulderAndWristKeypoints[2].position;
@@ -141,7 +147,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
         const elbowAngle =
           angleBetweenPoints(shoulderPos, elbowPos) +
           angleBetweenPoints(elbowPos, wristPos); // dunno why this mathematically works but looks ok, so yea ¯\_(ツ)_/¯
-        const { tolerance, desiredAngle } = config.elbowMonitoring;
+        const { tolerance, desiredAngle } = sideModeSettings.elbowMonitoring;
         if (!isNumberInTolerance(elbowAngle, desiredAngle, tolerance)) {
           lineColor = ERROR_COLOR;
           errors.push(POSE_ERRORS.SHOULER_WRIST);
@@ -155,28 +161,31 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
         ctx.fillText(elbowAngle.toString(), elbowPos.x + 10, elbowPos.y - 10);
       }
 
-      if (config.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
+      if (sideModeSettings.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
         errors.push(POSE_ERRORS.KNEE_OR_ANKLE);
       }
     }
 
     //draw keypoints last to place them on top of the lines
     {
-      if (config.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
+      if (sideModeSettings.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
         earAndShoulderKeypoints.forEach(({ position }) =>
           drawPoint(ctx, position, KEYPOINT_COLOR)
         );
       }
 
-      if (config.elbowMonitoring.enabled && ELBOW_SHOULDER_AND_WRIST_VISIBLE) {
+      if (
+        sideModeSettings.elbowMonitoring.enabled &&
+        ELBOW_SHOULDER_AND_WRIST_VISIBLE
+      ) {
         elbowShoulderAndWristKeypoints.forEach(({ position }) => {
           drawPoint(ctx, position, KEYPOINT_COLOR);
         });
       }
 
-      if (config.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
+      if (sideModeSettings.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
         kneesAndAnklesKeypoints.forEach(({ position, score }) => {
-          if (score >= config.additional.minLowerBodyKeypointScore) {
+          if (score >= sideModeSettings.additional.minLowerBodyKeypointScore) {
             drawPoint(ctx, position, ERROR_COLOR);
           }
         });
@@ -184,7 +193,7 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     }
 
     setPoseErrors(errors);
-  }, [pose, config, ctx, height, width, setPoseErrors]);
+  }, [pose, sideModeSettings, ctx, height, width, setPoseErrors]);
 
   return (
     <canvas

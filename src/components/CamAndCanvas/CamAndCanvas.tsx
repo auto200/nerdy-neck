@@ -1,9 +1,17 @@
 import { Box } from "@chakra-ui/react";
-import { Pose } from "@tensorflow-models/posenet";
+import { load as loadPosenet, Pose, PoseNet } from "@tensorflow-models/posenet";
 import badPostureSound from "assets/on-error-sound.mp3";
-import { useConfig } from "contexts/ConfigContext";
-import { useStore } from "contexts/store";
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAppState, selectSideModeSettings } from "store";
+import {
+  setAppReady,
+  setCamPermissionGranted,
+  setCams,
+  setMediaLoaded,
+} from "store/slices/appStateSlice";
+import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
+import { getCams, promptCameraPemission } from "utils/cams";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import CamPermissionNotGranted from "./CamPermissionNotGranted";
 import Canvas from "./Canvas";
@@ -11,32 +19,72 @@ import PoseErrors from "./PoseErrors";
 import SecToPoseCheck from "./SecToPoseCheck";
 
 const CamAndCanvas = () => {
-  const {
-    store: { camPermissionGranted, cams, currentCamId, running, poseNet },
-    storeHandlers: { setMediaLoaded },
-  } = useStore();
-  const { config } = useConfig();
+  const { camPermissionGranted, cams, running, mediaLoaded } =
+    useSelector(selectAppState);
+  const { selectedCamId } = useSelector(selectSideModeSettings);
+  const dispatch = useDispatch();
+  const [poseNet, setPoseNet] = useState<PoseNet>();
+  const sideModeSettings = useSelector(selectSideModeSettings);
   const [pose, setPose] = useState<Pose>();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
-  const [secToPoseCheck, setSecToPoseCheck] = useState(
-    config.getPoseIntervalInS
-  );
+
   const camVideoElRef = useRef<HTMLVideoElement>(null);
   const getPoseIntervalRef = useRef<number>();
-  const timerIntervalToPoseCheckRef = useRef<number>();
   const audioRef = useRef(new Audio(badPostureSound));
+
+  useEffect(() => {
+    console.log("howmany times this is called");
+    const init = async () => {
+      try {
+        await promptCameraPemission();
+        dispatch(setCamPermissionGranted(true));
+        const cams = await getCams();
+        dispatch(setCams(cams));
+        if (!selectedCamId) {
+          dispatch(setSelectedCamId(cams[0].id));
+        }
+      } catch (err) {
+        console.log(err);
+        setCamPermissionGranted(false);
+        return;
+      }
+
+      try {
+        const net = await loadPosenet({
+          architecture: "ResNet50",
+          inputResolution: {
+            width: CAM_WIDTH,
+            height: CAM_HEIGHT,
+          },
+          outputStride: 16,
+        });
+        setPoseNet(net);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    init();
+    //eslint-disable-next-line
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (poseNet && mediaLoaded) {
+      dispatch(setAppReady(true));
+    }
+  }, [poseNet, dispatch, mediaLoaded]);
 
   useEffect(() => {
     if (!camPermissionGranted || !cams) return;
 
     const getStream = async () => {
+      console.log(selectedCamId);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
             width: CAM_WIDTH,
             height: CAM_HEIGHT,
-            deviceId: currentCamId,
+            deviceId: selectedCamId,
           },
         });
         if (camVideoElRef.current) {
@@ -47,43 +95,30 @@ const CamAndCanvas = () => {
       }
     };
     getStream();
-  }, [cams, currentCamId, camPermissionGranted]);
+  }, [cams, selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
     clearInterval(getPoseIntervalRef.current);
-    clearInterval(timerIntervalToPoseCheckRef.current);
 
     if (!running || !poseNet || !camVideoElRef.current) return;
-
-    let startCountdownToPoseCheckTs = Date.now();
 
     const getPose = async () => {
       try {
         console.log("getting pose");
         const pose = await poseNet.estimateSinglePose(camVideoElRef.current!);
         setPose(pose);
-        startCountdownToPoseCheckTs = Date.now();
       } catch (err) {
         console.log(err);
       }
     };
 
     let intervalTimeout = 0;
-    if (config.additional.onErrorRetry.enabled && poseErrors.length) {
-      intervalTimeout = config.additional.onErrorRetry.intervalInS * 1000;
+    if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
+      intervalTimeout =
+        sideModeSettings.additional.onErrorRetry.intervalInS * 1000;
     } else {
-      intervalTimeout = config.getPoseIntervalInS * 1000;
+      intervalTimeout = sideModeSettings.getPoseIntervalInS * 1000;
     }
-
-    timerIntervalToPoseCheckRef.current = window.setInterval(() => {
-      const secToPoseCheck =
-        Math.abs(
-          Math.round(
-            (startCountdownToPoseCheckTs + intervalTimeout - Date.now()) / 1000
-          ) * 1000
-        ) / 1000;
-      setSecToPoseCheck(secToPoseCheck);
-    }, 1000);
 
     getPoseIntervalRef.current = window.setInterval(
       getPose,
@@ -94,24 +129,27 @@ const CamAndCanvas = () => {
   }, [
     poseNet,
     running,
-    config.getPoseIntervalInS,
+    sideModeSettings.getPoseIntervalInS,
     poseErrors.length,
-    config.additional.onErrorRetry,
+    sideModeSettings.additional.onErrorRetry,
   ]);
 
   useEffect(() => {
     if (poseErrors.length === 0) return;
 
-    if (!config.additional.sound.enabled && !audioRef.current.paused) {
+    if (
+      !sideModeSettings.additional.sound.enabled &&
+      !audioRef.current.paused
+    ) {
       audioRef.current.pause();
       return;
     }
 
-    if (config.additional.sound.enabled) {
+    if (sideModeSettings.additional.sound.enabled) {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
     }
-  }, [poseErrors, config.additional.sound.enabled]);
+  }, [poseErrors, sideModeSettings.additional.sound.enabled]);
 
   return (
     <Box pos="relative" minW={CAM_WIDTH} minH={CAM_HEIGHT}>
@@ -129,11 +167,16 @@ const CamAndCanvas = () => {
             ref={camVideoElRef}
             width={CAM_WIDTH}
             height={CAM_HEIGHT}
-            onLoadStart={() => setMediaLoaded(false)}
-            onLoadedMetadata={() => setMediaLoaded(true)}
+            onLoadStart={() => dispatch(setMediaLoaded(false))}
+            onLoadedMetadata={() => dispatch(setMediaLoaded(true))}
           />
           <PoseErrors errors={poseErrors} />
-          {running && <SecToPoseCheck sec={secToPoseCheck} />}
+          {running && (
+            <SecToPoseCheck
+              key={pose?.score}
+              getPoseIntervalInS={sideModeSettings.getPoseIntervalInS}
+            />
+          )}
         </>
       )}
     </Box>
