@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectGetPoseIntervalInS,
+  selectBanKneesAndAnkles,
   toggleBanKneesAndAnkles,
 } from "store/slices/sideModeSettingsSlice";
 import { Switch } from "./shared";
 
 const BanKneesAndAnkles = () => {
-  const banKneesAndAnkles = useSelector(selectGetPoseIntervalInS);
+  const banKneesAndAnkles = useSelector(selectBanKneesAndAnkles);
   const dispatch = useDispatch();
 
   return (

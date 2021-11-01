@@ -2,25 +2,29 @@ import { Box, Heading } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
-  getPoseIntervalInS: number;
+  seconds: number;
 }
 
-const SecToPoseCheck: React.FC<Props> = ({ getPoseIntervalInS }) => {
-  const [secToPoseCheck, setSecToPoseCheck] = useState(getPoseIntervalInS);
+const SecToPoseCheck: React.FC<Props> = ({ seconds }) => {
+  const [secToPoseCheck, setSecToPoseCheck] = useState(seconds);
   const endTsRef = useRef(0);
 
   useEffect(() => {
-    endTsRef.current = Date.now() + getPoseIntervalInS * 1000;
+    endTsRef.current = Date.now() + seconds * 1000;
 
     const interval = window.setInterval(() => {
       const secToPoseCheck = Math.ceil((endTsRef.current - Date.now()) / 1000);
       setSecToPoseCheck(secToPoseCheck);
+
+      if (secToPoseCheck === 0) {
+        window.clearInterval(interval);
+      }
     }, 1000);
 
     return () => {
       window.clearInterval(interval);
     };
-  }, [getPoseIntervalInS]);
+  }, [seconds]);
 
   return (
     <Box pos="absolute" bottom="5px" right="5px">
