@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import { load as loadPosenet, Pose, PoseNet } from "@tensorflow-models/posenet";
+import { Pose } from "@tensorflow-models/posenet";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAppState, selectSideModeSettings } from "store";
@@ -11,13 +11,24 @@ import {
 } from "store/slices/appStateSlice";
 import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
+// @ts-ignore
+//eslint-disable-next-line import/no-webpack-loader-syntax
+import poseWorker from "workerize-loader!workers/pose.worker";
+import { PoseWorker } from "workers/types";
 import {
   CamPermissionNotGranted,
   Canvas,
   PoseCheckCountdown,
   PoseErrors,
 } from "./components";
-import { getCameraPemission, getCams, getStream } from "./utils";
+import {
+  getCameraPemission,
+  getCams,
+  getFrameFromVideoEl,
+  getStream,
+} from "./utils";
+
+const { getPose, loadPoseNet } = poseWorker() as PoseWorker;
 
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
@@ -26,7 +37,8 @@ const CamAndCanvas = () => {
   const sideModeSettings = useSelector(selectSideModeSettings);
   const dispatch = useDispatch();
 
-  const [poseNet, setPoseNet] = useState<PoseNet>();
+  const [poseNetLoaded, setPoseNetLoaded] = useState(false);
+  //@ts-ignore
   const [pose, setPose] = useState<Pose>();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
 
@@ -65,31 +77,19 @@ const CamAndCanvas = () => {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
-      try {
-        const net = await loadPosenet({
-          architecture: "ResNet50",
-          inputResolution: {
-            width: CAM_WIDTH,
-            height: CAM_HEIGHT,
-          },
-          outputStride: 16,
-        });
-        setPoseNet(net);
-      } catch (err) {
-        console.log(err);
-      }
+      setPoseNetLoaded(await loadPoseNet());
     };
     init();
     //eslint-disable-next-line
   }, [dispatch]);
 
   useEffect(() => {
-    if (camPermissionGranted && poseNet) {
+    if (camPermissionGranted && poseNetLoaded) {
       dispatch(setAppReady(true));
     } else {
       dispatch(setAppReady(false));
     }
-  }, [camPermissionGranted, poseNet, dispatch]);
+  }, [camPermissionGranted, poseNetLoaded, dispatch]);
 
   useEffect(() => {
     if (!camPermissionGranted || !camVideoElRef.current) return;
@@ -102,29 +102,27 @@ const CamAndCanvas = () => {
   useEffect(() => {
     clearInterval(getPoseIntervalRef.current);
 
-    if (!running || !poseNet || !camVideoElRef.current || !mediaLoaded) return;
+    if (!running || !poseNetLoaded || !camVideoElRef.current || !mediaLoaded)
+      return;
 
-    const getPose = async () => {
-      try {
-        const startTime = performance.now();
-        const pose = await poseNet.estimateSinglePose(camVideoElRef.current!);
-        console.log(performance.now() - startTime);
-        setPose(pose);
-      } catch (err) {
-        console.log(err);
-      }
+    const tick = async () => {
+      const frame = getFrameFromVideoEl(camVideoElRef.current!);
+      if (!frame) return;
+
+      const pose = await getPose(frame);
+      setPose(pose);
     };
 
     const intervalTimeout = getIntervalTimeout();
 
     getPoseIntervalRef.current = window.setInterval(
-      getPose,
+      tick,
       //minimal value in case of empty interval field so app do not freeze
       //browser/tab ;not the best way to do it;
       intervalTimeout || 1000
     );
   }, [
-    poseNet,
+    poseNetLoaded,
     running,
     mediaLoaded,
     sideModeSettings.getPoseIntervalInS,

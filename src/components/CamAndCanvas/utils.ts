@@ -45,3 +45,13 @@ export const getStream = async (camId: string): Promise<MediaStream | null> => {
     return null;
   }
 };
+
+export const getFrameFromVideoEl = (videoEl: HTMLVideoElement) => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.drawImage(videoEl, 0, 0, videoEl.width, videoEl.height);
+  const frame = ctx.getImageData(0, 0, videoEl.width, videoEl.height);
+  return frame;
+};
