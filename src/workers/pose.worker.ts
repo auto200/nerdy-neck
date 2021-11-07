@@ -1,5 +1,5 @@
 import { load as loadPosenetModel, PoseNet } from "@tensorflow-models/posenet";
-import "@tensorflow/tfjs";
+import "@tensorflow/tfjs-backend-webgl";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import { GetPose, LoadPoseNet } from "./types";
 
@@ -13,11 +13,12 @@ export const loadPoseNet: LoadPoseNet = async () => {
         width: CAM_WIDTH,
         height: CAM_HEIGHT,
       },
-      outputStride: 16,
+      outputStride: 32,
     });
 
     return true;
   } catch (err) {
+    console.log(err);
     return false;
   }
 };
@@ -30,5 +31,6 @@ export const getPose: GetPose = async (mediaInput) => {
     return pose;
   } catch (err) {
     console.log(err);
+    return undefined;
   }
 };
