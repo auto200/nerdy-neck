@@ -1,7 +1,9 @@
-import { Pose } from "@tensorflow-models/posenet";
-import { PosenetInput } from "@tensorflow-models/posenet/dist/types";
+import { Pose, PoseDetectorInput } from "@tensorflow-models/pose-detection";
 
-export type GetPose = (mediaInput: PosenetInput) => Promise<Pose | undefined>;
-export type LoadPoseNet = () => Promise<boolean>;
+export type GetPose = (
+  mediaInput: PoseDetectorInput
+) => Promise<Pose | undefined>;
 
-export type PoseWorker = { getPose: GetPose; loadPoseNet: LoadPoseNet };
+export type LoadDetector = () => Promise<boolean>;
+
+export type PoseWorker = { getPose: GetPose; loadDetector: LoadDetector };

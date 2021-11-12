@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import { Pose } from "@tensorflow-models/posenet";
+import { Pose } from "@tensorflow-models/pose-detection";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAppState, selectSideModeSettings } from "store";
@@ -28,7 +28,7 @@ import {
   getStream,
 } from "./utils";
 
-const { getPose, loadPoseNet } = poseWorker() as PoseWorker;
+const { getPose, loadDetector } = poseWorker() as PoseWorker;
 
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
@@ -38,7 +38,6 @@ const CamAndCanvas = () => {
   const dispatch = useDispatch();
 
   const [poseNetLoaded, setPoseNetLoaded] = useState(false);
-  //@ts-ignore
   const [pose, setPose] = useState<Pose>();
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
 
@@ -77,7 +76,7 @@ const CamAndCanvas = () => {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
-      setPoseNetLoaded(await loadPoseNet());
+      setPoseNetLoaded(await loadDetector());
     };
     init();
     //eslint-disable-next-line

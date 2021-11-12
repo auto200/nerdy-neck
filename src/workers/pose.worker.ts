@@ -1,20 +1,31 @@
-import { load as loadPosenetModel, PoseNet } from "@tensorflow-models/posenet";
+import {
+  createDetector,
+  movenet,
+  MoveNetModelConfig,
+  PoseDetector,
+  SupportedModels,
+} from "@tensorflow-models/pose-detection";
+import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl";
-import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
-import { GetPose, LoadPoseNet } from "./types";
+import { GetPose, LoadDetector } from "./types";
 
-let poseNet: PoseNet | null = null;
+let detector: PoseDetector | null = null;
 
-export const loadPoseNet: LoadPoseNet = async () => {
+export const loadDetector: LoadDetector = async () => {
+  const config: MoveNetModelConfig = {
+    modelType: movenet.modelType.SINGLEPOSE_THUNDER,
+  };
+
   try {
-    poseNet = await loadPosenetModel({
-      architecture: "ResNet50",
-      inputResolution: {
-        width: CAM_WIDTH,
-        height: CAM_HEIGHT,
-      },
-      outputStride: 32,
-    });
+    console.log("creating detector");
+    detector = await createDetector(SupportedModels.MoveNet, config);
+
+    console.log("detector created");
+
+    //warm up https://github.com/tensorflow/tfjs-models/blob/9b5d3b663638752b692080145cfb123fa324ff11/pose-detection/demos/upload_video/src/index.js#L181
+    const warmUpTensor = tf.fill([500, 600, 3], 0, "float32");
+    await detector.estimatePoses(warmUpTensor as any);
+    warmUpTensor.dispose();
 
     return true;
   } catch (err) {
@@ -26,9 +37,10 @@ export const loadPoseNet: LoadPoseNet = async () => {
 export const getPose: GetPose = async (mediaInput) => {
   try {
     const startTime = performance.now();
-    const pose = await poseNet?.estimateSinglePose(mediaInput);
+    const pose = await detector?.estimatePoses(mediaInput);
     console.log(performance.now() - startTime);
-    return pose;
+    console.log(pose);
+    return pose?.[0];
   } catch (err) {
     console.log(err);
     return undefined;

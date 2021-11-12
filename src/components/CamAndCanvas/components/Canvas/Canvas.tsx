@@ -1,4 +1,4 @@
-import { Keypoint, Pose } from "@tensorflow-models/posenet";
+import { Keypoint, Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectSideModeSettings } from "store";
@@ -8,6 +8,7 @@ import {
   drawLine,
   drawPoint,
   isNumberInTolerance,
+  keypointToPosition,
   placeTextBetweenTwoPoints,
 } from "./utils";
 
@@ -93,27 +94,33 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     const kneesAndAnklesKeypoints = Object.values(LOWER_BODY).map(
       (keypoint) => pose.keypoints[keypoint]
     );
+    console.log(
+      earAndShoulderKeypoints,
+      elbowShoulderAndWristKeypoints,
+      kneesAndAnklesKeypoints
+    );
 
     const EAR_AND_SHOULDER_VISIBLE = earAndShoulderKeypoints.every(
       ({ score }) =>
-        score >= sideModeSettings.additional.minUpperBodyKeypointScore
+        score && score >= sideModeSettings.additional.minUpperBodyKeypointScore
     );
     const ELBOW_SHOULDER_AND_WRIST_VISIBLE =
       elbowShoulderAndWristKeypoints.every(
         ({ score }) =>
+          score &&
           score >= sideModeSettings.additional.minUpperBodyKeypointScore
       );
     const KNEE_OR_ANKLE_VISIBLE = kneesAndAnklesKeypoints.some(
-      (keypoint) =>
-        keypoint.score >= sideModeSettings.additional.minLowerBodyKeypointScore
+      ({ score }) =>
+        score && score >= sideModeSettings.additional.minLowerBodyKeypointScore
     );
 
     /* eslint-disable no-lone-blocks */
     //check for errors and draw lines between keypoints
     {
       if (sideModeSettings.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
-        const earPos = earAndShoulderKeypoints[0].position;
-        const shoulderPos = earAndShoulderKeypoints[1].position;
+        const earPos = keypointToPosition(earAndShoulderKeypoints[0]);
+        const shoulderPos = keypointToPosition(earAndShoulderKeypoints[1]);
         let lineColor = KEYPOINT_COLOR;
 
         const neckAngle = angleBetweenPoints(earPos, shoulderPos);
@@ -139,9 +146,11 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
         sideModeSettings.elbowMonitoring.enabled &&
         ELBOW_SHOULDER_AND_WRIST_VISIBLE
       ) {
-        const elbowPos = elbowShoulderAndWristKeypoints[0].position;
-        const shoulderPos = elbowShoulderAndWristKeypoints[1].position;
-        const wristPos = elbowShoulderAndWristKeypoints[2].position;
+        const elbowPos = keypointToPosition(elbowShoulderAndWristKeypoints[0]);
+        const shoulderPos = keypointToPosition(
+          elbowShoulderAndWristKeypoints[1]
+        );
+        const wristPos = keypointToPosition(elbowShoulderAndWristKeypoints[2]);
         let lineColor = KEYPOINT_COLOR;
 
         const elbowAngle =
@@ -169,8 +178,8 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     //draw keypoints last to place them on top of the lines
     {
       if (sideModeSettings.neckMonitoring.enabled && EAR_AND_SHOULDER_VISIBLE) {
-        earAndShoulderKeypoints.forEach(({ position }) =>
-          drawPoint(ctx, position, KEYPOINT_COLOR)
+        earAndShoulderKeypoints.forEach((keypoint) =>
+          drawPoint(ctx, keypointToPosition(keypoint), KEYPOINT_COLOR)
         );
       }
 
@@ -178,20 +187,23 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
         sideModeSettings.elbowMonitoring.enabled &&
         ELBOW_SHOULDER_AND_WRIST_VISIBLE
       ) {
-        elbowShoulderAndWristKeypoints.forEach(({ position }) => {
-          drawPoint(ctx, position, KEYPOINT_COLOR);
+        elbowShoulderAndWristKeypoints.forEach((keypoint) => {
+          drawPoint(ctx, keypointToPosition(keypoint), KEYPOINT_COLOR);
         });
       }
 
       if (sideModeSettings.banKneesAndAnkles && KNEE_OR_ANKLE_VISIBLE) {
-        kneesAndAnklesKeypoints.forEach(({ position, score }) => {
-          if (score >= sideModeSettings.additional.minLowerBodyKeypointScore) {
-            drawPoint(ctx, position, ERROR_COLOR);
+        kneesAndAnklesKeypoints.forEach((keypoint) => {
+          if (
+            keypoint.score &&
+            keypoint.score >=
+              sideModeSettings.additional.minLowerBodyKeypointScore
+          ) {
+            drawPoint(ctx, keypointToPosition(keypoint), ERROR_COLOR);
           }
         });
       }
     }
-
     setPoseErrors(errors);
   }, [pose, sideModeSettings, ctx, height, width, setPoseErrors]);
 

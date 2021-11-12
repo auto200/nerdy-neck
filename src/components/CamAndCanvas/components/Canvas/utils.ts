@@ -1,4 +1,5 @@
-import { Vector2D } from "@tensorflow-models/posenet/dist/types";
+import { Keypoint } from "@tensorflow-models/pose-detection";
+import { Vector2D } from "@tensorflow-models/pose-detection/dist/posenet/types";
 
 export const angleBetweenPoints = (
   a: Vector2D,
@@ -83,4 +84,8 @@ export const isNumberInTolerance = (
   tolerance: number
 ) => {
   return Math.abs(middlePoint - number) <= tolerance ? true : false;
+};
+
+export const keypointToPosition = (keypoint: Keypoint): Vector2D => {
+  return { x: keypoint.x, y: keypoint.y };
 };
