@@ -63,7 +63,7 @@ const KEYPOINT_COLOR = "aqua";
 const ERROR_COLOR = "red";
 
 interface Props {
-  pose?: Pose;
+  pose: Pose | null;
   width: number;
   height: number;
   setPoseErrors: React.Dispatch<React.SetStateAction<string[]>>;
@@ -93,11 +93,6 @@ const Canvas = ({ pose, width, height, setPoseErrors }: Props) => {
     ];
     const kneesAndAnklesKeypoints = Object.values(LOWER_BODY).map(
       (keypoint) => pose.keypoints[keypoint]
-    );
-    console.log(
-      earAndShoulderKeypoints,
-      elbowShoulderAndWristKeypoints,
-      kneesAndAnklesKeypoints
     );
 
     const EAR_AND_SHOULDER_VISIBLE = earAndShoulderKeypoints.every(

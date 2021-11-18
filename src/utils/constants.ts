@@ -1,2 +1,2 @@
-export const CAM_WIDTH = 600;
-export const CAM_HEIGHT = 500;
+export const CAM_WIDTH = 640;
+export const CAM_HEIGHT = 480;

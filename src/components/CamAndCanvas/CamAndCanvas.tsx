@@ -2,6 +2,7 @@ import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { PoseDetector } from "services/poseDetection/PoseDetector";
 import { selectAppState, selectSideModeSettings } from "store";
 import {
   setAppReady,
@@ -13,22 +14,15 @@ import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 // @ts-ignore
 //eslint-disable-next-line import/no-webpack-loader-syntax
-import poseWorker from "workerize-loader!workers/pose.worker";
-import { PoseWorker } from "workers/types";
 import {
   CamPermissionNotGranted,
   Canvas,
   PoseCheckCountdown,
   PoseErrors,
 } from "./components";
-import {
-  getCameraPemission,
-  getCams,
-  getFrameFromVideoEl,
-  getStream,
-} from "./utils";
+import { getCameraPemission, getCams, getStream } from "./utils";
 
-const { getPose, loadDetector } = poseWorker() as PoseWorker;
+const poseDetector = new PoseDetector();
 
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
@@ -38,7 +32,7 @@ const CamAndCanvas = () => {
   const dispatch = useDispatch();
 
   const [poseNetLoaded, setPoseNetLoaded] = useState(false);
-  const [pose, setPose] = useState<Pose>();
+  const [pose, setPose] = useState<Pose | null>(null);
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
 
   const camVideoElRef = useRef<HTMLVideoElement>(null);
@@ -57,12 +51,11 @@ const CamAndCanvas = () => {
 
   useEffect(() => {
     const init = async () => {
-      const camPermission = await getCameraPemission();
-      if (!camPermission) {
-        dispatch(setCamPermissionGranted(false));
+      const camPermissionGranted = await getCameraPemission();
+      dispatch(setCamPermissionGranted(camPermissionGranted));
+      if (!camPermissionGranted) {
         return;
       }
-      dispatch(setCamPermissionGranted(true));
 
       const cams = await getCams();
       if (cams.length === 0) {
@@ -76,7 +69,12 @@ const CamAndCanvas = () => {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
-      setPoseNetLoaded(await loadDetector());
+      try {
+        await poseDetector.load();
+        setPoseNetLoaded(true);
+      } catch (err) {
+        setPoseNetLoaded(false);
+      }
     };
     init();
     //eslint-disable-next-line
@@ -101,14 +99,12 @@ const CamAndCanvas = () => {
   useEffect(() => {
     clearInterval(getPoseIntervalRef.current);
 
-    if (!running || !poseNetLoaded || !camVideoElRef.current || !mediaLoaded)
+    if (!running || !poseNetLoaded || !camVideoElRef.current || !mediaLoaded) {
       return;
+    }
 
     const tick = async () => {
-      const frame = getFrameFromVideoEl(camVideoElRef.current!);
-      if (!frame) return;
-
-      const pose = await getPose(frame);
+      const pose = await poseDetector.getPose(camVideoElRef.current!);
       setPose(pose);
     };
 
