@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PoseDetector } from "services/poseDetection/PoseDetector";
 import { selectAppState, selectSideModeSettings } from "store";
@@ -12,8 +12,6 @@ import {
 } from "store/slices/appStateSlice";
 import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
-// @ts-ignore
-//eslint-disable-next-line import/no-webpack-loader-syntax
 import {
   CamPermissionNotGranted,
   Canvas,
@@ -22,12 +20,9 @@ import {
 } from "./components";
 import { getCameraPemission, getCams, getStream } from "./utils";
 
-const poseDetector = new PoseDetector();
-
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
     useSelector(selectAppState);
-  const { selectedCamId } = useSelector(selectSideModeSettings);
   const sideModeSettings = useSelector(selectSideModeSettings);
   const dispatch = useDispatch();
 
@@ -36,9 +31,10 @@ const CamAndCanvas = () => {
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
 
   const camVideoElRef = useRef<HTMLVideoElement>(null);
-  const getPoseIntervalRef = useRef<number>();
+  const getPoseTimeoutRef = useRef<number>();
+  const poseDetectorRef = useRef(new PoseDetector());
 
-  const getIntervalTimeout = useCallback(() => {
+  const intervalTimeout = useMemo(() => {
     if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
       return sideModeSettings.additional.onErrorRetry.intervalInS * 1000;
     }
@@ -65,12 +61,12 @@ const CamAndCanvas = () => {
       }
       dispatch(setCams(cams));
 
-      if (!selectedCamId) {
+      if (!sideModeSettings.selectedCamId) {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
       try {
-        await poseDetector.load();
+        await poseDetectorRef.current.load();
         setPoseNetLoaded(true);
       } catch (err) {
         setPoseNetLoaded(false);
@@ -91,31 +87,28 @@ const CamAndCanvas = () => {
   useEffect(() => {
     if (!camPermissionGranted || !camVideoElRef.current) return;
 
-    getStream(selectedCamId).then((stream) => {
+    getStream(sideModeSettings.selectedCamId).then((stream) => {
       camVideoElRef.current!.srcObject = stream;
     });
-  }, [selectedCamId, camPermissionGranted]);
+  }, [sideModeSettings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
-    clearInterval(getPoseIntervalRef.current);
+    clearTimeout(getPoseTimeoutRef.current);
 
     if (!running || !poseNetLoaded || !camVideoElRef.current || !mediaLoaded) {
       return;
     }
 
     const tick = async () => {
-      const pose = await poseDetector.getPose(camVideoElRef.current!);
+      const pose = await poseDetectorRef.current.getPose(
+        camVideoElRef.current!
+      );
       setPose(pose);
+
+      getPoseTimeoutRef.current = window.setTimeout(tick, intervalTimeout);
     };
 
-    const intervalTimeout = getIntervalTimeout();
-
-    getPoseIntervalRef.current = window.setInterval(
-      tick,
-      //minimal value in case of empty interval field so app do not freeze
-      //browser/tab ;not the best way to do it;
-      intervalTimeout || 1000
-    );
+    tick();
   }, [
     poseNetLoaded,
     running,
@@ -123,7 +116,7 @@ const CamAndCanvas = () => {
     sideModeSettings.getPoseIntervalInS,
     poseErrors.length,
     sideModeSettings.additional.onErrorRetry,
-    getIntervalTimeout,
+    intervalTimeout,
   ]);
 
   return (
@@ -146,10 +139,10 @@ const CamAndCanvas = () => {
             onLoadedMetadata={() => dispatch(setMediaLoaded(true))}
           />
           <PoseErrors errors={poseErrors} />
-          {running && (
+          {running && !!intervalTimeout && (
             <PoseCheckCountdown
               key={pose?.score}
-              seconds={getIntervalTimeout() / 1000}
+              seconds={intervalTimeout / 1000}
             />
           )}
         </>
