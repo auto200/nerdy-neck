@@ -18,10 +18,7 @@ export class PoseDetector {
       modelType: movenet.modelType.SINGLEPOSE_LIGHTNING,
     };
 
-    const loadStartTime = performance.now();
-    console.log("creating detector");
     this.detector = await createDetector(SupportedModels.MoveNet, config);
-    console.log("detector created, time:", performance.now() - loadStartTime);
 
     //warm up
     //https://github.com/tensorflow/tfjs-models/blob/9b5d3b663638752b692080145cfb123fa324ff11/pose-detection/demos/upload_video/src/index.js#L181
@@ -36,10 +33,7 @@ export class PoseDetector {
     }
 
     try {
-      const startTime = performance.now();
       const pose = await this.detector.estimatePoses(mediaInput);
-      console.log("pose estimation time:", performance.now() - startTime);
-      console.log(pose);
       return pose[0] ?? null;
     } catch (err) {
       console.log(err);
