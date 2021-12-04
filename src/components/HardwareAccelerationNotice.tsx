@@ -4,16 +4,18 @@ import { selectAppState } from "store";
 
 const HardwareAccelerationNotice: React.FC = () => {
   const { appReady } = useSelector(selectAppState);
-
+  //TODO: check if hardware acceleration is supported/enabled
   if (!appReady) {
     return null;
   }
 
   return (
-    <Text ml="5px" color="chartreuse">
-      Please make sure to have{" "}
-      <Code colorScheme="messenger">Hardware Acceleration</Code> turned on in
-      your browser settings
+    <Text ml="5px" color="chartreuse" maxW="600" px="1" textAlign="center">
+      If your having performace issues, please make sure to have{" "}
+      <span>
+        <Code colorScheme="pink">Hardware Acceleration</Code>
+      </span>
+      turned on in your browser settings
     </Text>
   );
 };

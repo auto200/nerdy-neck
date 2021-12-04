@@ -24,7 +24,7 @@ const NumberInput = ({
   value,
   onChange,
   addDegreeSign = true,
-  stepper = false,
+  stepper = true,
   ...rest
 }: Props) => {
   return (
@@ -41,10 +41,12 @@ const NumberInput = ({
         min={0}
       >
         <NumberInputField />
-        <NumberInputStepper>
-          <NumberIncrementStepper />
-          <NumberDecrementStepper />
-        </NumberInputStepper>
+        {stepper && (
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        )}
       </ChakraNumberInput>
     </FormControl>
   );

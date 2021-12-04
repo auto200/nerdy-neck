@@ -1,7 +1,8 @@
 import { Box } from "@chakra-ui/react";
-import { load as loadPosenet, Pose, PoseNet } from "@tensorflow-models/posenet";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Pose } from "@tensorflow-models/pose-detection";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { PoseDetector } from "services/poseDetection/PoseDetector";
 import { selectAppState, selectSideModeSettings } from "store";
 import {
   setAppReady,
@@ -22,18 +23,18 @@ import { getCameraPemission, getCams, getStream } from "./utils";
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
     useSelector(selectAppState);
-  const { selectedCamId } = useSelector(selectSideModeSettings);
   const sideModeSettings = useSelector(selectSideModeSettings);
   const dispatch = useDispatch();
 
-  const [poseNet, setPoseNet] = useState<PoseNet>();
-  const [pose, setPose] = useState<Pose>();
+  const [poseNetLoaded, setPoseNetLoaded] = useState(false);
+  const [pose, setPose] = useState<Pose | null>(null);
   const [poseErrors, setPoseErrors] = useState<string[]>([]);
 
   const camVideoElRef = useRef<HTMLVideoElement>(null);
-  const getPoseIntervalRef = useRef<number>();
+  const getPoseTimeoutRef = useRef<number>();
+  const poseDetectorRef = useRef(new PoseDetector());
 
-  const getIntervalTimeout = useCallback(() => {
+  const intervalTimeout = useMemo(() => {
     if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
       return sideModeSettings.additional.onErrorRetry.intervalInS * 1000;
     }
@@ -46,12 +47,11 @@ const CamAndCanvas = () => {
 
   useEffect(() => {
     const init = async () => {
-      const camPermission = await getCameraPemission();
-      if (!camPermission) {
-        dispatch(setCamPermissionGranted(false));
+      const camPermissionGranted = await getCameraPemission();
+      dispatch(setCamPermissionGranted(camPermissionGranted));
+      if (!camPermissionGranted) {
         return;
       }
-      dispatch(setCamPermissionGranted(true));
 
       const cams = await getCams();
       if (cams.length === 0) {
@@ -61,22 +61,15 @@ const CamAndCanvas = () => {
       }
       dispatch(setCams(cams));
 
-      if (!selectedCamId) {
+      if (!sideModeSettings.selectedCamId) {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
       try {
-        const net = await loadPosenet({
-          architecture: "ResNet50",
-          inputResolution: {
-            width: CAM_WIDTH,
-            height: CAM_HEIGHT,
-          },
-          outputStride: 16,
-        });
-        setPoseNet(net);
+        await poseDetectorRef.current.load();
+        setPoseNetLoaded(true);
       } catch (err) {
-        console.log(err);
+        setPoseNetLoaded(false);
       }
     };
     init();
@@ -84,53 +77,46 @@ const CamAndCanvas = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (camPermissionGranted && poseNet) {
+    if (camPermissionGranted && poseNetLoaded) {
       dispatch(setAppReady(true));
     } else {
       dispatch(setAppReady(false));
     }
-  }, [camPermissionGranted, poseNet, dispatch]);
+  }, [camPermissionGranted, poseNetLoaded, dispatch]);
 
   useEffect(() => {
     if (!camPermissionGranted || !camVideoElRef.current) return;
 
-    getStream(selectedCamId).then((stream) => {
+    getStream(sideModeSettings.selectedCamId).then((stream) => {
       camVideoElRef.current!.srcObject = stream;
     });
-  }, [selectedCamId, camPermissionGranted]);
+  }, [sideModeSettings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
-    clearInterval(getPoseIntervalRef.current);
+    clearTimeout(getPoseTimeoutRef.current);
 
-    if (!running || !poseNet || !camVideoElRef.current || !mediaLoaded) return;
+    if (!running || !poseNetLoaded || !camVideoElRef.current || !mediaLoaded) {
+      return;
+    }
 
-    const getPose = async () => {
-      try {
-        const startTime = performance.now();
-        const pose = await poseNet.estimateSinglePose(camVideoElRef.current!);
-        console.log(performance.now() - startTime);
-        setPose(pose);
-      } catch (err) {
-        console.log(err);
-      }
+    const tick = async () => {
+      const pose = await poseDetectorRef.current.getPose(
+        camVideoElRef.current!
+      );
+      setPose(pose);
+
+      getPoseTimeoutRef.current = window.setTimeout(tick, intervalTimeout);
     };
 
-    const intervalTimeout = getIntervalTimeout();
-
-    getPoseIntervalRef.current = window.setInterval(
-      getPose,
-      //minimal value in case of empty interval field so app do not freeze
-      //browser/tab ;not the best way to do it;
-      intervalTimeout || 1000
-    );
+    tick();
   }, [
-    poseNet,
+    poseNetLoaded,
     running,
     mediaLoaded,
     sideModeSettings.getPoseIntervalInS,
     poseErrors.length,
     sideModeSettings.additional.onErrorRetry,
-    getIntervalTimeout,
+    intervalTimeout,
   ]);
 
   return (
@@ -153,10 +139,10 @@ const CamAndCanvas = () => {
             onLoadedMetadata={() => dispatch(setMediaLoaded(true))}
           />
           <PoseErrors errors={poseErrors} />
-          {running && (
+          {running && !!intervalTimeout && (
             <PoseCheckCountdown
               key={pose?.score}
-              seconds={getIntervalTimeout() / 1000}
+              seconds={intervalTimeout / 1000}
             />
           )}
         </>

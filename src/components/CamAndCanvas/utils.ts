@@ -6,6 +6,7 @@ export const getCameraPemission = async () => {
     await window.navigator.mediaDevices.getUserMedia({
       video: true,
     });
+
     return true;
   } catch (err) {
     console.log(err);

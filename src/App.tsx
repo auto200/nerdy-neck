@@ -1,5 +1,4 @@
 import { Box, Flex } from "@chakra-ui/react";
-import "@tensorflow/tfjs";
 import CamAndCanvas from "components/CamAndCanvas";
 import Controls from "components/Controls";
 import GithubLink from "components/GithubLink";
