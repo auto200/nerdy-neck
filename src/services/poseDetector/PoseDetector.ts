@@ -14,6 +14,9 @@ export class PoseDetector {
   private detector: TfPoseDetector | null = null;
 
   public async load() {
+    //TODO: make it possible to pass config object
+    if (this.detector) return;
+
     const config: MoveNetModelConfig = {
       modelType: movenet.modelType.SINGLEPOSE_LIGHTNING,
     };
