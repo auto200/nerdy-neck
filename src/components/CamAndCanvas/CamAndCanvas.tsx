@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PoseDetector } from "services/poseDetection/PoseDetector";
+import { PoseDetector } from "services/poseDetector/PoseDetector";
 import { selectAppState, selectSideModeSettings } from "store";
 import {
   setAppReady,
@@ -12,6 +12,7 @@ import {
 } from "store/slices/appStateSlice";
 import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
+import { POSE_ERROR } from "utils/enums";
 import {
   CamPermissionNotGranted,
   Canvas,
@@ -19,6 +20,8 @@ import {
   PoseErrors,
 } from "./components";
 import { getCameraPemission, getCams, getStream } from "./utils";
+
+const poseDetector = new PoseDetector();
 
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
@@ -28,11 +31,10 @@ const CamAndCanvas = () => {
 
   const [poseNetLoaded, setPoseNetLoaded] = useState(false);
   const [pose, setPose] = useState<Pose | null>(null);
-  const [poseErrors, setPoseErrors] = useState<string[]>([]);
+  const [poseErrors, setPoseErrors] = useState<POSE_ERROR[]>([]);
 
   const camVideoElRef = useRef<HTMLVideoElement>(null);
   const getPoseTimeoutRef = useRef<number>();
-  const poseDetectorRef = useRef(new PoseDetector());
 
   const intervalTimeout = useMemo(() => {
     if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
@@ -66,7 +68,7 @@ const CamAndCanvas = () => {
       }
 
       try {
-        await poseDetectorRef.current.load();
+        await poseDetector.load();
         setPoseNetLoaded(true);
       } catch (err) {
         setPoseNetLoaded(false);
@@ -100,9 +102,7 @@ const CamAndCanvas = () => {
     }
 
     const tick = async () => {
-      const pose = await poseDetectorRef.current.getPose(
-        camVideoElRef.current!
-      );
+      const pose = await poseDetector.getPose(camVideoElRef.current!);
       setPose(pose);
 
       getPoseTimeoutRef.current = window.setTimeout(tick, intervalTimeout);
