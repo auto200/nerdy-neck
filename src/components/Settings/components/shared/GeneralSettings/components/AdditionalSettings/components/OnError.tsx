@@ -1,11 +1,11 @@
 import { Collapse } from "@chakra-ui/react";
+import { NumberInput, Switch } from "components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectAdditional,
   setAdditionalOnErrorRetryIntervalInS,
   toggleAdditionalOnErrorRetry,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "../../../../shared";
 
 const OnError = () => {
   const additional = useSelector(selectAdditional);

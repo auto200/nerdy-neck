@@ -1,5 +1,5 @@
+import { NumberInput } from "components/shared";
 import React from "react";
-import { NumberInput } from "./NumberInput";
 
 export type CheckPoseIntervalInputProps = {
   value: number | string;

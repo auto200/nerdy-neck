@@ -5,7 +5,7 @@ import {
   selectGetPoseIntervalInS,
   setGetPoseIntervalInS,
 } from "store/slices/frontModeSettingsSlice";
-import { GeneralSettings } from "../GeneralSettings";
+import { GeneralSettings } from "../shared/GeneralSettings";
 import { ShoulderLevelMonitoring } from "./components";
 
 export const FrontModeSettings: React.FC = () => {

@@ -1,7 +1,9 @@
 import { Box } from "@chakra-ui/react";
 import React from "react";
-import { CheckPoseIntervalInput } from "../shared";
-import { CheckPoseIntervalInputProps } from "../shared/CheckPoseIntervalInput";
+import {
+  CheckPoseIntervalInput,
+  CheckPoseIntervalInputProps,
+} from "../../shared";
 import { AdditionalSettings } from "./components";
 
 type GeneralSettingsProps = {

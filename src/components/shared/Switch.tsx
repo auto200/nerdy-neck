@@ -7,8 +7,7 @@ import {
 type SwitchProps = {
   id: string;
   label: string;
-  [rest: string]: any;
-};
+} & any;
 
 export const Switch = ({ id, label, ...rest }: SwitchProps) => {
   return (

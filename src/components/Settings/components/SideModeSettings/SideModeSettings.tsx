@@ -5,7 +5,7 @@ import {
   selectGetPoseIntervalInS,
   setGetPoseIntervalInS,
 } from "store/slices/sideModeSettingsSlice";
-import { GeneralSettings } from "../GeneralSettings/GeneralSettings";
+import { GeneralSettings } from "../shared/GeneralSettings";
 import {
   BanKneesAndAnkles,
   BodySideSwitch,

@@ -1,4 +1,5 @@
 import { Collapse } from "@chakra-ui/react";
+import { NumberInput, Switch } from "components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectShoulderLevelMonitoring,
@@ -6,7 +7,6 @@ import {
   setShoulderLevelTolerance,
   toggleShoulderLevelMonitoring,
 } from "store/slices/frontModeSettingsSlice";
-import { NumberInput, Switch } from "../../shared";
 
 export const ShoulderLevelMonitoring = () => {
   const shoulderLevelMonitoring = useSelector(selectShoulderLevelMonitoring);
@@ -16,7 +16,7 @@ export const ShoulderLevelMonitoring = () => {
     <>
       <Switch
         id="elbow-switch"
-        label="Elbow angle monitoring"
+        label="Shoulder level monitoring"
         isChecked={shoulderLevelMonitoring.enabled}
         onChange={() => dispatch(toggleShoulderLevelMonitoring())}
       />

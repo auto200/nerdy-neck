@@ -7,6 +7,7 @@ import {
   Box,
   Divider,
 } from "@chakra-ui/react";
+import { Switch } from "components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectAdditional,
@@ -14,7 +15,6 @@ import {
   setAdditionalMinUpperBodyKeypointScore,
   toggleAdditionalSoundEnabled,
 } from "store/slices/sideModeSettingsSlice";
-import { Switch } from "../../../shared";
 import { ModelDetectionThreshold, OnError } from "./components";
 
 export const AdditionalSettings = () => {
