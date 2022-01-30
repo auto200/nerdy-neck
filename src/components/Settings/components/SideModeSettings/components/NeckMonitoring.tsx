@@ -6,8 +6,9 @@ import {
   setNeckTolerance,
   toggleNeckMonitoring,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "./shared";
-const NeckMonitoring = () => {
+import { NumberInput, Switch } from "../../shared";
+
+export const NeckMonitoring = () => {
   const neckMonitoring = useSelector(selectNeckMonitoring);
   const dispatch = useDispatch();
 
@@ -36,5 +37,3 @@ const NeckMonitoring = () => {
     </>
   );
 };
-
-export default NeckMonitoring;

@@ -11,7 +11,7 @@ import {
   toggleBodySide,
 } from "store/slices/sideModeSettingsSlice";
 
-const BodySideSwitch = () => {
+export const BodySideSwitch = () => {
   const bodySide = useSelector(selectBodySide);
   const dispatch = useDispatch();
 
@@ -48,5 +48,3 @@ const BodySideSwitch = () => {
     </FormControl>
   );
 };
-
-export default BodySideSwitch;

@@ -10,14 +10,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectAdditional,
-  setAdditionalMinLowerBodyKeypoinScore,
-  setAdditionalMinUpperBodyKeypoinScore,
+  setAdditionalMinLowerBodyKeypointScore,
+  setAdditionalMinUpperBodyKeypointScore,
   toggleAdditionalSoundEnabled,
 } from "store/slices/sideModeSettingsSlice";
-import { Switch } from "../shared";
+import { Switch } from "../../../shared";
 import { ModelDetectionThreshold, OnError } from "./components";
 
-const AdditionalSettings = () => {
+export const AdditionalSettings = () => {
   const additional = useSelector(selectAdditional);
   const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ const AdditionalSettings = () => {
               label="Upper body detection threshold"
               value={additional.minUpperBodyKeypointScore}
               onChange={(val) =>
-                dispatch(setAdditionalMinUpperBodyKeypoinScore(val))
+                dispatch(setAdditionalMinUpperBodyKeypointScore(val))
               }
             />
             <Divider my="2" />
@@ -56,7 +56,7 @@ const AdditionalSettings = () => {
               label="Lower body detection threshold"
               value={additional.minLowerBodyKeypointScore}
               onChange={(val) =>
-                dispatch(setAdditionalMinLowerBodyKeypoinScore(val))
+                dispatch(setAdditionalMinLowerBodyKeypointScore(val))
               }
             />
           </Box>
@@ -65,4 +65,3 @@ const AdditionalSettings = () => {
     </Accordion>
   );
 };
-export default AdditionalSettings;

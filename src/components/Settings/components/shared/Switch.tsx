@@ -4,13 +4,13 @@ import {
   Switch as ChakraSwitch,
 } from "@chakra-ui/react";
 
-interface Props {
+type SwitchProps = {
   id: string;
   label: string;
   [rest: string]: any;
-}
+};
 
-const Switch = ({ id, label, ...rest }: Props) => {
+export const Switch = ({ id, label, ...rest }: SwitchProps) => {
   return (
     <FormControl display="flex" alignItems="center" mt="6">
       <ChakraSwitch id={id} mr="1" {...rest} />
@@ -20,5 +20,3 @@ const Switch = ({ id, label, ...rest }: Props) => {
     </FormControl>
   );
 };
-
-export default Switch;

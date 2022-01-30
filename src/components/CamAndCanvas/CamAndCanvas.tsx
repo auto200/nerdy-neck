@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PoseDetector } from "services/poseDetector/PoseDetector";
+import { PoseDetectionService } from "services/PoseDetectionService";
 import { selectAppState, selectSideModeSettings } from "store";
 import {
   setAppReady,
@@ -19,9 +19,9 @@ import {
   PoseCheckCountdown,
   PoseErrors,
 } from "./components";
-import { getCameraPemission, getCams, getStream } from "./utils";
+import { getCameraPermission, getCams, getStream } from "./utils";
 
-const poseDetector = new PoseDetector();
+const poseDetectionService = new PoseDetectionService();
 
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
@@ -49,7 +49,7 @@ const CamAndCanvas = () => {
 
   useEffect(() => {
     const init = async () => {
-      const camPermissionGranted = await getCameraPemission();
+      const camPermissionGranted = await getCameraPermission();
       dispatch(setCamPermissionGranted(camPermissionGranted));
       if (!camPermissionGranted) {
         return;
@@ -68,7 +68,7 @@ const CamAndCanvas = () => {
       }
 
       try {
-        await poseDetector.load();
+        await poseDetectionService.load();
         setPoseNetLoaded(true);
       } catch (err) {
         setPoseNetLoaded(false);
@@ -102,7 +102,7 @@ const CamAndCanvas = () => {
     }
 
     const tick = async () => {
-      const pose = await poseDetector.getPose(camVideoElRef.current!);
+      const pose = await poseDetectionService.getPose(camVideoElRef.current!);
       setPose(pose);
 
       getPoseTimeoutRef.current = window.setTimeout(tick, intervalTimeout);

@@ -1,2 +1,3 @@
-export { default as NumberInput } from "./NumberInput";
-export { default as Switch } from "./Switch";
+export * from "./CheckPoseIntervalInput";
+export * from "./NumberInput";
+export * from "./Switch";

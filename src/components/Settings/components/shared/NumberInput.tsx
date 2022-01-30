@@ -8,7 +8,7 @@ import {
   NumberInputStepper,
 } from "@chakra-ui/react";
 
-interface Props {
+type NumberInputProps = {
   id: string;
   label: string;
   value: string | number;
@@ -16,9 +16,9 @@ interface Props {
   addDegreeSign?: boolean;
   stepper?: boolean;
   [rest: string]: any;
-}
+};
 
-const NumberInput = ({
+export const NumberInput = ({
   id,
   label,
   value,
@@ -26,7 +26,7 @@ const NumberInput = ({
   addDegreeSign = true,
   stepper = true,
   ...rest
-}: Props) => {
+}: NumberInputProps) => {
   return (
     <FormControl>
       <FormLabel htmlFor={id} m="0">
@@ -51,5 +51,3 @@ const NumberInput = ({
     </FormControl>
   );
 };
-
-export default NumberInput;

@@ -5,7 +5,7 @@ import {
   setAdditionalOnErrorRetryIntervalInS,
   toggleAdditionalOnErrorRetry,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "../../shared";
+import { NumberInput, Switch } from "../../../../shared";
 
 const OnError = () => {
   const additional = useSelector(selectAdditional);

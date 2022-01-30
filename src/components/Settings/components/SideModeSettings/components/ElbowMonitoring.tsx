@@ -6,9 +6,9 @@ import {
   setElbowTolerance,
   toggleElbowMonitoring,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "./shared";
+import { NumberInput, Switch } from "../../shared";
 
-const ElbowMonitoring = () => {
+export const ElbowMonitoring = () => {
   const elbowMonitoring = useSelector(selectElbowMonitoring);
   const dispatch = useDispatch();
 
@@ -37,5 +37,3 @@ const ElbowMonitoring = () => {
     </>
   );
 };
-
-export default ElbowMonitoring;
