@@ -21,7 +21,6 @@ const OnError = () => {
       />
       <Collapse in={additional.onErrorRetry.enabled}>
         <NumberInput
-          addDegreeSign={false}
           id="on-error-retry-interval"
           label="Retry interval (in sec)"
           value={additional.onErrorRetry.intervalInS || ""}

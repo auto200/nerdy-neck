@@ -38,7 +38,6 @@ export const CheckPoseIntervalInput: React.FC<
       id="check-pose-interval"
       label="Check pose interval (in sec)"
       value={getPoseIntervalInS || ""}
-      addDegreeSign={false}
       onChange={onChange}
     />
   );

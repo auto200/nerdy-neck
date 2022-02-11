@@ -81,7 +81,7 @@ export const AdditionalSettings = () => {
               value={additional.minUpperBodyKeypointScore}
               onChange={onMinUpperBodyKeypointScoreChange}
             />
-            {appMode === AppMode.FRONT && (
+            {appMode === AppMode.SIDE && (
               <>
                 <Divider my="2" />
                 <ModelDetectionThreshold
