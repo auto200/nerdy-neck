@@ -13,7 +13,6 @@ type NumberInputProps = {
   label: string;
   value: string | number;
   onChange: (valueAsNumber: number) => void;
-  addDegreeSign?: boolean;
   stepper?: boolean;
   [rest: string]: any;
 };
@@ -23,7 +22,6 @@ export const NumberInput = ({
   label,
   value,
   onChange,
-  addDegreeSign = true,
   stepper = true,
   ...rest
 }: NumberInputProps) => {
@@ -35,8 +33,9 @@ export const NumberInput = ({
       <ChakraNumberInput
         id={id}
         mr="1"
-        value={value + (addDegreeSign ? "°" : "")}
+        value={value}
         onChange={(_, numVal) => onChange(numVal)}
+        onBlur={() => !value && value !== 0 && onChange(0)}
         {...rest}
         min={0}
       >
