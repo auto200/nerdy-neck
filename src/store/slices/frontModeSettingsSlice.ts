@@ -14,6 +14,7 @@ interface FrontModeSettings {
       enabled: boolean;
     };
     minUpperBodyKeypointScore: number;
+    minLowerBodyKeypointScore: number;
   };
   shouldersLevelMonitoring: {
     enabled: boolean;
@@ -31,6 +32,7 @@ const initialFrontModeSettings: FrontModeSettings = {
       intervalInS: 5,
     },
     minUpperBodyKeypointScore: 0.6,
+    minLowerBodyKeypointScore: 0.6,
     sound: {
       enabled: false,
     },
@@ -72,6 +74,12 @@ const frontModeSettingsSlice = createSlice({
     ) => {
       state.additional.minUpperBodyKeypointScore = action.payload;
     },
+    setAdditionalMinLowerBodyKeypointScore: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      state.additional.minLowerBodyKeypointScore = action.payload;
+    },
 
     toggleShoulderLevelMonitoring: (state) => {
       state.shouldersLevelMonitoring.enabled =
@@ -95,6 +103,7 @@ export const {
   //settings (sharing logic, not actual state)
   toggleAdditionalSoundEnabled,
   setAdditionalMinUpperBodyKeypointScore,
+  setAdditionalMinLowerBodyKeypointScore,
   setAdditionalOnErrorRetryIntervalInS,
   toggleAdditionalOnErrorRetry,
   //specific
