@@ -24,13 +24,13 @@ export const ElbowMonitoring = () => {
         <NumberInput
           id="elbow-angle"
           label="Desired angle°"
-          value={elbowMonitoring.desiredAngle || ""}
+          value={elbowMonitoring.desiredAngle}
           onChange={(val) => dispatch(setElbowAngle(val))}
         />
         <NumberInput
           id="elbow-tolerance"
           label="Tolerance°"
-          value={elbowMonitoring.tolerance || ""}
+          value={elbowMonitoring.tolerance}
           onChange={(val) => dispatch(setElbowTolerance(val))}
         />
       </Collapse>

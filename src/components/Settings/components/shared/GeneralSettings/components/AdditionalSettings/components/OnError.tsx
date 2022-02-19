@@ -23,7 +23,7 @@ const OnError = () => {
         <NumberInput
           id="on-error-retry-interval"
           label="Retry interval (in sec)"
-          value={additional.onErrorRetry.intervalInS || ""}
+          value={additional.onErrorRetry.intervalInS}
           onChange={(val) => {
             dispatch(setAdditionalOnErrorRetryIntervalInS(val));
           }}

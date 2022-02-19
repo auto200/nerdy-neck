@@ -24,13 +24,13 @@ export const NeckMonitoring = () => {
         <NumberInput
           id="neck-angle"
           label="Desired angle°"
-          value={neckMonitoring.desiredAngle || ""}
+          value={neckMonitoring.desiredAngle}
           onChange={(val) => dispatch(setNeckDesiredAngle(val))}
         />
         <NumberInput
           id="neck-tolerance"
           label="Tolerance°"
-          value={neckMonitoring.tolerance || ""}
+          value={neckMonitoring.tolerance}
           onChange={(val) => dispatch(setNeckTolerance(val))}
         />
       </Collapse>

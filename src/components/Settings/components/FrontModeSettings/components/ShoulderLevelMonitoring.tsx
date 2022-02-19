@@ -24,13 +24,13 @@ export const ShoulderLevelMonitoring = () => {
         <NumberInput
           id="elbow-angle"
           label="Desired angle°"
-          value={shoulderLevelMonitoring.desiredAngle || ""}
+          value={shoulderLevelMonitoring.desiredAngle}
           onChange={(val) => dispatch(setShoulderLevelDesiredAngle(val))}
         />
         <NumberInput
           id="elbow-tolerance"
           label="Tolerance°"
-          value={shoulderLevelMonitoring.tolerance || ""}
+          value={shoulderLevelMonitoring.tolerance}
           onChange={(val) => dispatch(setShoulderLevelTolerance(val))}
         />
       </Collapse>
