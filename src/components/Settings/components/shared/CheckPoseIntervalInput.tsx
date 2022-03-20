@@ -1,28 +1,19 @@
 import { NumberInput } from "components/shared";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AppMode } from "store/enums";
-import { selectAppState } from "store/selectors";
-import {
-  selectGetPoseIntervalInS as frontSelectGetPoseIntervalInS,
-  setGetPoseIntervalInS as frontSetGetPoseIntervalInS,
-} from "store/slices/frontModeSettingsSlice";
-import {
-  selectGetPoseIntervalInS as sideSelectGetPoseIntervalInS,
-  setGetPoseIntervalInS as sideSetGetPoseIntervalInS,
-} from "store/slices/sideModeSettingsSlice";
+import { setGetPoseIntervalInS as frontSetGetPoseIntervalInS } from "store/slices/frontModeSettingsSlice";
+import { setGetPoseIntervalInS as sideSetGetPoseIntervalInS } from "store/slices/sideModeSettingsSlice";
+import { useSettings } from "utils/hooks/useSettings";
 
 export type CheckPoseIntervalInputProps = {};
 
 export const CheckPoseIntervalInput: React.FC<
   CheckPoseIntervalInputProps
 > = () => {
-  const { appMode } = useSelector(selectAppState);
-  const getPoseIntervalInS = useSelector(
-    appMode === AppMode.FRONT
-      ? frontSelectGetPoseIntervalInS
-      : sideSelectGetPoseIntervalInS
-  );
+  const { settings, appMode } = useSettings();
+
+  const getPoseIntervalInS = settings.getPoseIntervalInS;
 
   const onChange = (val: number) => {
     dispatch(

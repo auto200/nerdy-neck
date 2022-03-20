@@ -14,33 +14,33 @@ import {
   TEXT_MARGIN,
 } from "../../constants";
 
-export const handleNeckMonitoring = ({
+export const handleShoulderLevelMonitoring = ({
   ctx,
-  earAndShoulderKeypoints,
+  shoulderKeypoints,
   tolerance,
   desiredAngle,
 }: {
   ctx: CanvasRenderingContext2D;
-  earAndShoulderKeypoints: [Keypoint, Keypoint];
+  shoulderKeypoints: [Keypoint, Keypoint];
   tolerance: number;
   desiredAngle: number;
 }): POSE_ERROR | null => {
-  const earPos = keypointToPosition(earAndShoulderKeypoints[0]);
-  const shoulderPos = keypointToPosition(earAndShoulderKeypoints[1]);
+  const leftShoulderPos = keypointToPosition(shoulderKeypoints[0]);
+  const rightShoulderPos = keypointToPosition(shoulderKeypoints[1]);
 
-  const neckAngle = angleBetweenPoints(earPos, shoulderPos);
+  const neckAngle = angleBetweenPoints(leftShoulderPos, rightShoulderPos);
   const error = isNumberInTolerance(neckAngle, desiredAngle, tolerance)
     ? null
-    : POSE_ERROR.EAR_SHOULDER;
+    : POSE_ERROR.SHOULDERS_LEVEL;
   const lineColor = error ? ERROR_COLOR : KEYPOINT_COLOR;
 
-  drawLine(ctx, earPos, shoulderPos, lineColor);
+  drawLine(ctx, leftShoulderPos, rightShoulderPos, lineColor);
   placeTextBetweenTwoPoints({
     ctx,
     text: neckAngle.toString(),
     color: KEYPOINT_COLOR,
-    start: earPos,
-    end: shoulderPos,
+    start: leftShoulderPos,
+    end: rightShoulderPos,
     shiftX: TEXT_MARGIN,
     shiftY: TEXT_LINE_HEIGHT,
   });

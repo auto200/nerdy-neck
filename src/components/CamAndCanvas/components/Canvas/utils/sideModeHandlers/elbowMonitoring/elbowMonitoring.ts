@@ -22,17 +22,14 @@ export const handleElbowMonitoring = ({
   const elbowPos = keypointToPosition(elbowShoulderAndWristKeypoints[0]);
   const shoulderPos = keypointToPosition(elbowShoulderAndWristKeypoints[1]);
   const wristPos = keypointToPosition(elbowShoulderAndWristKeypoints[2]);
-  let lineColor = KEYPOINT_COLOR;
-  let error: POSE_ERROR | null = null;
 
   const elbowAngle =
     angleBetweenPoints(shoulderPos, elbowPos) +
     angleBetweenPoints(elbowPos, wristPos); // dunno why this mathematically works but looks ok, so yea ¯\_(ツ)_/¯
-
-  if (!isNumberInTolerance(elbowAngle, desiredAngle, tolerance)) {
-    lineColor = ERROR_COLOR;
-    error = POSE_ERROR.SHOULER_WRIST;
-  }
+  const error = isNumberInTolerance(elbowAngle, desiredAngle, tolerance)
+    ? null
+    : POSE_ERROR.SHOULDER_WRIST;
+  const lineColor = error ? ERROR_COLOR : KEYPOINT_COLOR;
 
   drawLine(ctx, elbowPos, wristPos, lineColor);
   drawLine(ctx, shoulderPos, elbowPos, lineColor);

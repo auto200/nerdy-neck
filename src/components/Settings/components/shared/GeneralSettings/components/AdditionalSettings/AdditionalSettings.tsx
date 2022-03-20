@@ -8,28 +8,27 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { Switch } from "components/shared";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAppState } from "store";
+import { useDispatch } from "react-redux";
 import { AppMode } from "store/enums";
 import {
-  selectAdditional as frontSelectAdditional,
   setAdditionalMinLowerBodyKeypointScore as frontSetAdditionalMinLowerBodyKeypointScore,
   setAdditionalMinUpperBodyKeypointScore as frontSetAdditionalMinUpperBodyKeypointScore,
   toggleAdditionalSoundEnabled as frontToggleAdditionalSoundEnabled,
 } from "store/slices/frontModeSettingsSlice";
 import {
-  selectAdditional as sideSelectAdditional,
   setAdditionalMinLowerBodyKeypointScore as sideSetAdditionalMinLowerBodyKeypointScore,
   setAdditionalMinUpperBodyKeypointScore as sideSetAdditionalMinUpperBodyKeypointScore,
   toggleAdditionalSoundEnabled as sideToggleAdditionalSoundEnabled,
 } from "store/slices/sideModeSettingsSlice";
+import { useSettings } from "utils/hooks/useSettings";
 import { ModelDetectionThreshold, OnError } from "./components";
 
 export const AdditionalSettings = () => {
-  const { appMode } = useSelector(selectAppState);
-  const additional = useSelector(
-    appMode === AppMode.FRONT ? frontSelectAdditional : sideSelectAdditional
-  );
+  const {
+    settings: { additional },
+    appMode,
+  } = useSettings();
+
   const dispatch = useDispatch();
 
   const onSoundEnabledChange = () => {

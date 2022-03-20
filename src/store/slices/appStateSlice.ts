@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "store";
 import { AppMode, SliceName } from "store/enums";
 import { Cam } from "utils/models";
 
@@ -56,3 +57,5 @@ export const {
 } = appStateSlice.actions;
 
 export default appStateSlice.reducer;
+
+export const selectAppMode = (state: RootState) => state.appState.appMode;

@@ -3,7 +3,7 @@ import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PoseDetectionService } from "services/PoseDetectionService";
-import { selectAppState, selectSideModeSettings } from "store";
+import { selectAppState } from "store";
 import {
   setAppReady,
   setCamPermissionGranted,
@@ -13,6 +13,7 @@ import {
 import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import { POSE_ERROR } from "utils/enums";
+import { useSettings } from "utils/hooks/useSettings";
 import {
   CamPermissionNotGranted,
   Canvas,
@@ -26,7 +27,7 @@ const poseDetectionService = new PoseDetectionService();
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
     useSelector(selectAppState);
-  const sideModeSettings = useSelector(selectSideModeSettings);
+  const { settings } = useSettings();
   const dispatch = useDispatch();
 
   const [poseNetLoaded, setPoseNetLoaded] = useState(false);
@@ -37,14 +38,14 @@ const CamAndCanvas = () => {
   const getPoseTimeoutRef = useRef<number>();
 
   const intervalTimeout = useMemo(() => {
-    if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
-      return sideModeSettings.additional.onErrorRetry.intervalInS * 1000;
+    if (settings.additional.onErrorRetry.enabled && poseErrors.length) {
+      return settings.additional.onErrorRetry.intervalInS * 1000;
     }
-    return sideModeSettings.getPoseIntervalInS * 1000;
+    return settings.getPoseIntervalInS * 1000;
   }, [
-    sideModeSettings.getPoseIntervalInS,
+    settings.getPoseIntervalInS,
     poseErrors.length,
-    sideModeSettings.additional.onErrorRetry,
+    settings.additional.onErrorRetry,
   ]);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ const CamAndCanvas = () => {
       }
       dispatch(setCams(cams));
 
-      if (!sideModeSettings.selectedCamId) {
+      if (!settings.selectedCamId) {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
@@ -89,10 +90,10 @@ const CamAndCanvas = () => {
   useEffect(() => {
     if (!camPermissionGranted || !camVideoElRef.current) return;
 
-    getStream(sideModeSettings.selectedCamId).then((stream) => {
+    getStream(settings.selectedCamId).then((stream) => {
       camVideoElRef.current!.srcObject = stream;
     });
-  }, [sideModeSettings.selectedCamId, camPermissionGranted]);
+  }, [settings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
     clearTimeout(getPoseTimeoutRef.current);
@@ -113,9 +114,9 @@ const CamAndCanvas = () => {
     poseNetLoaded,
     running,
     mediaLoaded,
-    sideModeSettings.getPoseIntervalInS,
+    settings.getPoseIntervalInS,
     poseErrors.length,
-    sideModeSettings.additional.onErrorRetry,
+    settings.additional.onErrorRetry,
     intervalTimeout,
   ]);
 

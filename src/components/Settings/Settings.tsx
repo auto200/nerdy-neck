@@ -6,10 +6,10 @@ import {
   Tabs,
   VStack,
 } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAppState } from "store";
+import { useDispatch } from "react-redux";
 import { AppMode } from "store/enums";
 import { setAppMode } from "store/slices/appStateSlice";
+import { useSettings } from "utils/hooks/useSettings";
 import { FrontModeSettings } from "./components/FrontModeSettings";
 import { SideModeSettings } from "./components/SideModeSettings";
 
@@ -20,7 +20,7 @@ const appModeToTabIndexMap = {
 
 const Settings = () => {
   const dispatch = useDispatch();
-  const { appMode } = useSelector(selectAppState);
+  const { appMode } = useSettings();
 
   return (
     <VStack p="5" pt="0" ml="2" w="400px">
