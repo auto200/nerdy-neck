@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "store";
+import { SliceName } from "store/enums";
 
 interface SideModeSettings {
   selectedCamId: string;
@@ -59,7 +60,7 @@ const initialSideModeSettings: SideModeSettings = {
 };
 
 const sideModeSettingsSlice = createSlice({
-  name: "sideModeSettings",
+  name: SliceName.sideModeSettings,
   initialState: initialSideModeSettings,
   reducers: {
     setSelectedCamId: (state, action: PayloadAction<string>) => {
@@ -85,13 +86,13 @@ const sideModeSettingsSlice = createSlice({
     ) => {
       state.additional.onErrorRetry.intervalInS = action.payload;
     },
-    setAdditionalMinUpperBodyKeypoinScore: (
+    setAdditionalMinUpperBodyKeypointScore: (
       state,
       action: PayloadAction<number>
     ) => {
       state.additional.minUpperBodyKeypointScore = action.payload;
     },
-    setAdditionalMinLowerBodyKeypoinScore: (
+    setAdditionalMinLowerBodyKeypointScore: (
       state,
       action: PayloadAction<number>
     ) => {
@@ -130,8 +131,8 @@ export const {
   toggleBodySide,
   setGetPoseIntervalInS,
   toggleAdditionalSoundEnabled,
-  setAdditionalMinLowerBodyKeypoinScore,
-  setAdditionalMinUpperBodyKeypoinScore,
+  setAdditionalMinLowerBodyKeypointScore,
+  setAdditionalMinUpperBodyKeypointScore,
   setAdditionalOnErrorRetryIntervalInS,
   toggleAdditionalOnErrorRetry,
   setNeckDesiredAngle,

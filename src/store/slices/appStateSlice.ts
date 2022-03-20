@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Cam } from "utils/interfaces";
+import { RootState } from "store";
+import { AppMode, SliceName } from "store/enums";
+import { Cam } from "utils/models";
 
 interface AppState {
   camPermissionGranted: boolean | null;
@@ -7,6 +9,7 @@ interface AppState {
   mediaLoaded: boolean;
   running: boolean;
   appReady: boolean;
+  appMode: AppMode;
 }
 
 const initialAppState: AppState = {
@@ -15,10 +18,11 @@ const initialAppState: AppState = {
   mediaLoaded: false,
   running: false,
   appReady: false,
+  appMode: AppMode.FRONT,
 };
 
 export const appStateSlice = createSlice({
-  name: "appState",
+  name: SliceName.appState,
   initialState: initialAppState,
   reducers: {
     setCamPermissionGranted: (state, action: PayloadAction<boolean | null>) => {
@@ -36,6 +40,9 @@ export const appStateSlice = createSlice({
     setAppReady: (state, action: PayloadAction<boolean>) => {
       state.appReady = action.payload;
     },
+    setAppMode: (state, action: PayloadAction<AppMode>) => {
+      state.appMode = action.payload;
+    },
   },
 });
 
@@ -46,6 +53,9 @@ export const {
   setCams,
   setMediaLoaded,
   setRunning,
+  setAppMode,
 } = appStateSlice.actions;
 
 export default appStateSlice.reducer;
+
+export const selectAppMode = (state: RootState) => state.appState.appMode;

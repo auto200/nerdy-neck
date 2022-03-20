@@ -2,8 +2,8 @@ import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PoseDetector } from "services/poseDetector/PoseDetector";
-import { selectAppState, selectSideModeSettings } from "store";
+import { PoseDetectionService } from "services/PoseDetectionService";
+import { selectAppState } from "store";
 import {
   setAppReady,
   setCamPermissionGranted,
@@ -13,20 +13,21 @@ import {
 import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import { POSE_ERROR } from "utils/enums";
+import { useSettings } from "utils/hooks/useSettings";
 import {
   CamPermissionNotGranted,
   Canvas,
   PoseCheckCountdown,
   PoseErrors,
 } from "./components";
-import { getCameraPemission, getCams, getStream } from "./utils";
+import { getCameraPermission, getCams, getStream } from "./utils";
 
-const poseDetector = new PoseDetector();
+const poseDetectionService = new PoseDetectionService();
 
 const CamAndCanvas = () => {
   const { camPermissionGranted, running, mediaLoaded } =
     useSelector(selectAppState);
-  const sideModeSettings = useSelector(selectSideModeSettings);
+  const { settings } = useSettings();
   const dispatch = useDispatch();
 
   const [poseNetLoaded, setPoseNetLoaded] = useState(false);
@@ -37,19 +38,19 @@ const CamAndCanvas = () => {
   const getPoseTimeoutRef = useRef<number>();
 
   const intervalTimeout = useMemo(() => {
-    if (sideModeSettings.additional.onErrorRetry.enabled && poseErrors.length) {
-      return sideModeSettings.additional.onErrorRetry.intervalInS * 1000;
+    if (settings.additional.onErrorRetry.enabled && poseErrors.length) {
+      return settings.additional.onErrorRetry.intervalInS * 1000;
     }
-    return sideModeSettings.getPoseIntervalInS * 1000;
+    return settings.getPoseIntervalInS * 1000;
   }, [
-    sideModeSettings.getPoseIntervalInS,
+    settings.getPoseIntervalInS,
     poseErrors.length,
-    sideModeSettings.additional.onErrorRetry,
+    settings.additional.onErrorRetry,
   ]);
 
   useEffect(() => {
     const init = async () => {
-      const camPermissionGranted = await getCameraPemission();
+      const camPermissionGranted = await getCameraPermission();
       dispatch(setCamPermissionGranted(camPermissionGranted));
       if (!camPermissionGranted) {
         return;
@@ -63,12 +64,12 @@ const CamAndCanvas = () => {
       }
       dispatch(setCams(cams));
 
-      if (!sideModeSettings.selectedCamId) {
+      if (!settings.selectedCamId) {
         dispatch(setSelectedCamId(cams[0].id));
       }
 
       try {
-        await poseDetector.load();
+        await poseDetectionService.load();
         setPoseNetLoaded(true);
       } catch (err) {
         setPoseNetLoaded(false);
@@ -89,10 +90,10 @@ const CamAndCanvas = () => {
   useEffect(() => {
     if (!camPermissionGranted || !camVideoElRef.current) return;
 
-    getStream(sideModeSettings.selectedCamId).then((stream) => {
+    getStream(settings.selectedCamId).then((stream) => {
       camVideoElRef.current!.srcObject = stream;
     });
-  }, [sideModeSettings.selectedCamId, camPermissionGranted]);
+  }, [settings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
     clearTimeout(getPoseTimeoutRef.current);
@@ -102,7 +103,7 @@ const CamAndCanvas = () => {
     }
 
     const tick = async () => {
-      const pose = await poseDetector.getPose(camVideoElRef.current!);
+      const pose = await poseDetectionService.getPose(camVideoElRef.current!);
       setPose(pose);
 
       getPoseTimeoutRef.current = window.setTimeout(tick, intervalTimeout);
@@ -113,9 +114,9 @@ const CamAndCanvas = () => {
     poseNetLoaded,
     running,
     mediaLoaded,
-    sideModeSettings.getPoseIntervalInS,
+    settings.getPoseIntervalInS,
     poseErrors.length,
-    sideModeSettings.additional.onErrorRetry,
+    settings.additional.onErrorRetry,
     intervalTimeout,
   ]);
 

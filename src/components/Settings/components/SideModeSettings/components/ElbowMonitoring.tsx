@@ -1,4 +1,5 @@
 import { Collapse } from "@chakra-ui/react";
+import { NumberInput, Switch } from "components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectElbowMonitoring,
@@ -6,9 +7,8 @@ import {
   setElbowTolerance,
   toggleElbowMonitoring,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "./shared";
 
-const ElbowMonitoring = () => {
+export const ElbowMonitoring = () => {
   const elbowMonitoring = useSelector(selectElbowMonitoring);
   const dispatch = useDispatch();
 
@@ -23,19 +23,17 @@ const ElbowMonitoring = () => {
       <Collapse in={elbowMonitoring.enabled}>
         <NumberInput
           id="elbow-angle"
-          label="Desired angle"
-          value={elbowMonitoring.desiredAngle || ""}
+          label="Desired angle°"
+          value={elbowMonitoring.desiredAngle}
           onChange={(val) => dispatch(setElbowAngle(val))}
         />
         <NumberInput
           id="elbow-tolerance"
-          label="Tolerance"
-          value={elbowMonitoring.tolerance || ""}
+          label="Tolerance°"
+          value={elbowMonitoring.tolerance}
           onChange={(val) => dispatch(setElbowTolerance(val))}
         />
       </Collapse>
     </>
   );
 };
-
-export default ElbowMonitoring;

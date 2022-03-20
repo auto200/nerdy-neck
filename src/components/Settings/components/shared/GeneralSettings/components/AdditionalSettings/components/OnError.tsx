@@ -1,14 +1,17 @@
 import { Collapse } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
+import { NumberInput, Switch } from "components/shared";
+import { useDispatch } from "react-redux";
 import {
-  selectAdditional,
   setAdditionalOnErrorRetryIntervalInS,
   toggleAdditionalOnErrorRetry,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "../../shared";
+import { useSettings } from "utils/hooks/useSettings";
 
 const OnError = () => {
-  const additional = useSelector(selectAdditional);
+  const {
+    settings: { additional },
+  } = useSettings();
+
   const dispatch = useDispatch();
 
   return (
@@ -21,10 +24,9 @@ const OnError = () => {
       />
       <Collapse in={additional.onErrorRetry.enabled}>
         <NumberInput
-          addDegreeSign={false}
           id="on-error-retry-interval"
           label="Retry interval (in sec)"
-          value={additional.onErrorRetry.intervalInS || ""}
+          value={additional.onErrorRetry.intervalInS}
           onChange={(val) => {
             dispatch(setAdditionalOnErrorRetryIntervalInS(val));
           }}

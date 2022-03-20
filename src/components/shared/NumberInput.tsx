@@ -7,36 +7,46 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
-interface Props {
+export type NumberInputProps = {
   id: string;
   label: string;
-  value: string | number;
+  value: number;
   onChange: (valueAsNumber: number) => void;
-  addDegreeSign?: boolean;
   stepper?: boolean;
   [rest: string]: any;
-}
+};
 
-const NumberInput = ({
+export const NumberInput = ({
   id,
   label,
   value,
   onChange,
-  addDegreeSign = true,
   stepper = true,
   ...rest
-}: Props) => {
+}: NumberInputProps) => {
+  const [localVal, setLocalVal] = useState<number | "">(value);
+
+  useEffect(() => {
+    if (localVal !== "") {
+      onChange(localVal);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localVal]);
+
   return (
     <FormControl>
-      <FormLabel htmlFor={id} m="0">
+      <FormLabel htmlFor={id} m="0" mt="2">
         {label}
       </FormLabel>
       <ChakraNumberInput
         id={id}
-        mr="1"
-        value={value + (addDegreeSign ? "°" : "")}
-        onChange={(_, numVal) => onChange(numVal)}
+        value={localVal}
+        onChange={(_, numVal) =>
+          setLocalVal(Number.isNaN(numVal) ? "" : numVal)
+        }
+        onBlur={() => localVal === "" && setLocalVal(0)}
         {...rest}
         min={0}
       >
@@ -51,5 +61,3 @@ const NumberInput = ({
     </FormControl>
   );
 };
-
-export default NumberInput;

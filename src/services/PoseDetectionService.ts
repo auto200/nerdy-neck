@@ -10,7 +10,7 @@ import {
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl";
 
-export class PoseDetector {
+export class PoseDetectionService {
   private detector: TfPoseDetector | null = null;
 
   public async load() {
@@ -30,13 +30,14 @@ export class PoseDetector {
     warmUpTensor.dispose();
   }
 
+  //TODO: pass `flipHorizontal`
   public async getPose(mediaInput: PoseDetectorInput): Promise<Pose | null> {
     if (!this.detector) {
       throw new Error("You need to load model first.");
     }
 
     try {
-      const pose = await this.detector.estimatePoses(mediaInput);
+      const pose = await this.detector.estimatePoses(mediaInput, {});
       return pose[0] ?? null;
     } catch (err) {
       console.log(err);

@@ -1,8 +1,11 @@
 import { combineReducers } from "redux";
+import { SliceName } from "./enums";
 import appStateSlice from "./slices/appStateSlice";
+import frontModeSettingsSlice from "./slices/frontModeSettingsSlice";
 import sideModeSettingsSlice from "./slices/sideModeSettingsSlice";
 
 export const rootReducer = combineReducers({
-  sideModeSettings: sideModeSettingsSlice,
-  appState: appStateSlice,
+  [SliceName.appState]: appStateSlice,
+  [SliceName.sideModeSettings]: sideModeSettingsSlice,
+  [SliceName.frontModeSettings]: frontModeSettingsSlice,
 });

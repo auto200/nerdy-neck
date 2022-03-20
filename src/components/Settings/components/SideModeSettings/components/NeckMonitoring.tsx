@@ -1,4 +1,5 @@
 import { Collapse } from "@chakra-ui/react";
+import { NumberInput, Switch } from "components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectNeckMonitoring,
@@ -6,8 +7,8 @@ import {
   setNeckTolerance,
   toggleNeckMonitoring,
 } from "store/slices/sideModeSettingsSlice";
-import { NumberInput, Switch } from "./shared";
-const NeckMonitoring = () => {
+
+export const NeckMonitoring = () => {
   const neckMonitoring = useSelector(selectNeckMonitoring);
   const dispatch = useDispatch();
 
@@ -22,19 +23,17 @@ const NeckMonitoring = () => {
       <Collapse in={neckMonitoring.enabled}>
         <NumberInput
           id="neck-angle"
-          label="Desired angle"
-          value={neckMonitoring.desiredAngle || ""}
+          label="Desired angle°"
+          value={neckMonitoring.desiredAngle}
           onChange={(val) => dispatch(setNeckDesiredAngle(val))}
         />
         <NumberInput
           id="neck-tolerance"
-          label="Tolerance"
-          value={neckMonitoring.tolerance || ""}
+          label="Tolerance°"
+          value={neckMonitoring.tolerance}
           onChange={(val) => dispatch(setNeckTolerance(val))}
         />
       </Collapse>
     </>
   );
 };
-
-export default NeckMonitoring;

@@ -1,10 +1,11 @@
 import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { selectSideModeSettings } from "store";
+import { AppMode } from "store/enums";
 import { POSE_ERROR } from "utils/enums";
+import { useSettings } from "utils/hooks/useSettings";
 import { drawPoint, getBodySideKeypoints, keypointToPosition } from "./utils";
-import { ERROR_COLOR, KEYPOINT_COLOR } from "./utils/constants";
+import { ERROR_COLOR, KEYPOINT_COLOR, UPPER_BODY } from "./utils/constants";
+import { handleShoulderLevelMonitoring } from "./utils/frontModeHandlers";
 import {
   handleElbowMonitoring,
   handleNeckMonitoring,
@@ -17,9 +18,14 @@ interface CanvasProps {
   setPoseErrors: React.Dispatch<React.SetStateAction<POSE_ERROR[]>>;
 }
 
-const Canvas = ({ pose, width, height, setPoseErrors }: CanvasProps) => {
+const Canvas: React.FC<CanvasProps> = ({
+  pose,
+  width,
+  height,
+  setPoseErrors,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sideModeSettings = useSelector(selectSideModeSettings);
+  const { appMode, sideModeSettings, frontModeSettings } = useSettings();
 
   useEffect(() => {
     if (!pose || !canvasRef.current) return;
@@ -30,96 +36,140 @@ const Canvas = ({ pose, width, height, setPoseErrors }: CanvasProps) => {
 
     const errors: POSE_ERROR[] = [];
 
-    const {
-      earAndShoulderKeypoints,
-      elbowShoulderAndWristKeypoints,
-      kneesAndAnklesKeypoints,
-    } = getBodySideKeypoints(pose, sideModeSettings.bodySide);
+    if (appMode === AppMode.SIDE) {
+      const {
+        earAndShoulderKeypoints,
+        elbowShoulderAndWristKeypoints,
+        kneesAndAnklesKeypoints,
+      } = getBodySideKeypoints(pose, sideModeSettings.bodySide);
 
-    const earAndShoulderVisible = earAndShoulderKeypoints.every(
-      ({ score }) =>
-        score && score >= sideModeSettings.additional.minUpperBodyKeypointScore
-    );
-    const elbowShoulderAndWristVisible = elbowShoulderAndWristKeypoints.every(
-      ({ score }) =>
-        score && score >= sideModeSettings.additional.minUpperBodyKeypointScore
-    );
-    const kneeOrAnkleVisible = kneesAndAnklesKeypoints.some(
-      ({ score }) =>
-        score && score >= sideModeSettings.additional.minLowerBodyKeypointScore
-    );
+      const earAndShoulderVisible = earAndShoulderKeypoints.every(
+        ({ score }) =>
+          score &&
+          score >= sideModeSettings.additional.minUpperBodyKeypointScore
+      );
+      const elbowShoulderAndWristVisible = elbowShoulderAndWristKeypoints.every(
+        ({ score }) =>
+          score &&
+          score >= sideModeSettings.additional.minUpperBodyKeypointScore
+      );
+      const kneeOrAnkleVisible = kneesAndAnklesKeypoints.some(
+        ({ score }) =>
+          score &&
+          score >= sideModeSettings.additional.minLowerBodyKeypointScore
+      );
 
-    /* eslint-disable no-lone-blocks */
-    //check for errors and draw lines between keypoints
-    {
-      if (sideModeSettings.neckMonitoring.enabled && earAndShoulderVisible) {
-        const { tolerance, desiredAngle } = sideModeSettings.neckMonitoring;
+      /* eslint-disable no-lone-blocks */
+      //check for errors and draw lines between keypoints
+      {
+        if (sideModeSettings.neckMonitoring.enabled && earAndShoulderVisible) {
+          const { tolerance, desiredAngle } = sideModeSettings.neckMonitoring;
 
-        const error = handleNeckMonitoring({
-          ctx,
-          earAndShoulderKeypoints,
-          tolerance,
-          desiredAngle,
-        });
+          const error = handleNeckMonitoring({
+            ctx,
+            earAndShoulderKeypoints,
+            tolerance,
+            desiredAngle,
+          });
 
-        if (error) {
-          errors.push(error);
+          if (error) {
+            errors.push(error);
+          }
+        }
+
+        if (
+          sideModeSettings.elbowMonitoring.enabled &&
+          elbowShoulderAndWristVisible
+        ) {
+          const { tolerance, desiredAngle } = sideModeSettings.elbowMonitoring;
+          const error = handleElbowMonitoring({
+            ctx,
+            elbowShoulderAndWristKeypoints,
+            tolerance,
+            desiredAngle,
+          });
+
+          if (error) {
+            errors.push(error);
+          }
+        }
+
+        if (sideModeSettings.banKneesAndAnkles && kneeOrAnkleVisible) {
+          errors.push(POSE_ERROR.KNEE_OR_ANKLE);
         }
       }
 
-      if (
-        sideModeSettings.elbowMonitoring.enabled &&
-        elbowShoulderAndWristVisible
-      ) {
-        const { tolerance, desiredAngle } = sideModeSettings.elbowMonitoring;
-        const error = handleElbowMonitoring({
-          ctx,
-          elbowShoulderAndWristKeypoints,
-          tolerance,
-          desiredAngle,
-        });
-
-        if (error) {
-          errors.push(error);
+      //draw keypoints last to place them on top of the lines
+      {
+        if (sideModeSettings.neckMonitoring.enabled && earAndShoulderVisible) {
+          earAndShoulderKeypoints.forEach((keypoint) =>
+            drawPoint(ctx, keypointToPosition(keypoint), KEYPOINT_COLOR)
+          );
         }
-      }
 
-      if (sideModeSettings.banKneesAndAnkles && kneeOrAnkleVisible) {
-        errors.push(POSE_ERROR.KNEE_OR_ANKLE);
+        if (
+          sideModeSettings.elbowMonitoring.enabled &&
+          elbowShoulderAndWristVisible
+        ) {
+          elbowShoulderAndWristKeypoints.forEach((keypoint) => {
+            drawPoint(ctx, keypointToPosition(keypoint), KEYPOINT_COLOR);
+          });
+        }
+
+        if (sideModeSettings.banKneesAndAnkles && kneeOrAnkleVisible) {
+          kneesAndAnklesKeypoints.forEach((keypoint) => {
+            if (
+              keypoint.score! >=
+              sideModeSettings.additional.minLowerBodyKeypointScore
+            ) {
+              drawPoint(ctx, keypointToPosition(keypoint), ERROR_COLOR);
+            }
+          });
+        }
       }
     }
 
-    //draw keypoints last to place them on top of the lines
-    {
-      if (sideModeSettings.neckMonitoring.enabled && earAndShoulderVisible) {
-        earAndShoulderKeypoints.forEach((keypoint) =>
-          drawPoint(ctx, keypointToPosition(keypoint), KEYPOINT_COLOR)
-        );
-      }
+    if (appMode === AppMode.FRONT) {
+      const leftShoulder = pose.keypoints[UPPER_BODY.left.shoulder];
+      const rightShoulder = pose.keypoints[UPPER_BODY.right.shoulder];
+      const leftShoulderVisible =
+        leftShoulder.score &&
+        leftShoulder.score >=
+          frontModeSettings.additional.minUpperBodyKeypointScore;
+      const rightShoulderVisible =
+        rightShoulder.score &&
+        rightShoulder.score >=
+          frontModeSettings.additional.minUpperBodyKeypointScore;
 
-      if (
-        sideModeSettings.elbowMonitoring.enabled &&
-        elbowShoulderAndWristVisible
-      ) {
-        elbowShoulderAndWristKeypoints.forEach((keypoint) => {
-          drawPoint(ctx, keypointToPosition(keypoint), KEYPOINT_COLOR);
+      if (leftShoulderVisible && rightShoulderVisible) {
+        const { tolerance, desiredAngle } =
+          frontModeSettings.shouldersLevelMonitoring;
+        const error = handleShoulderLevelMonitoring({
+          ctx,
+          shoulderKeypoints: [leftShoulder, rightShoulder],
+          tolerance,
+          desiredAngle,
         });
-      }
 
-      if (sideModeSettings.banKneesAndAnkles && kneeOrAnkleVisible) {
-        kneesAndAnklesKeypoints.forEach((keypoint) => {
-          if (
-            keypoint.score! >=
-            sideModeSettings.additional.minLowerBodyKeypointScore
-          ) {
-            drawPoint(ctx, keypointToPosition(keypoint), ERROR_COLOR);
-          }
-        });
+        drawPoint(ctx, keypointToPosition(leftShoulder), KEYPOINT_COLOR);
+        drawPoint(ctx, keypointToPosition(rightShoulder), KEYPOINT_COLOR);
+
+        if (error) {
+          errors.push(error);
+        }
       }
     }
 
     setPoseErrors(errors);
-  }, [pose, sideModeSettings, height, width, setPoseErrors]);
+  }, [
+    pose,
+    sideModeSettings,
+    height,
+    width,
+    setPoseErrors,
+    appMode,
+    frontModeSettings,
+  ]);
 
   return (
     <canvas

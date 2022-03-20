@@ -10,13 +10,14 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { SliceName } from "./enums";
 import { rootReducer } from "./rootReducer";
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  whitelist: ["sideModeSettings"],
+  whitelist: [SliceName.sideModeSettings, SliceName.frontModeSettings],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
