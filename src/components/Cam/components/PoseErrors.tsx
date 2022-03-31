@@ -7,7 +7,7 @@ interface Props {
   errors: string[];
 }
 
-const PoseErrors: React.FC<Props> = ({ errors }) => {
+export const PoseErrors: React.FC<Props> = ({ errors }) => {
   const {
     settings: {
       additional: { sound },
@@ -46,5 +46,3 @@ const PoseErrors: React.FC<Props> = ({ errors }) => {
     </Box>
   );
 };
-
-export default PoseErrors;

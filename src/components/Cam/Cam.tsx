@@ -1,5 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
+import Canvas from "components/Canvas";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PoseDetectionService } from "services/PoseDetectionService";
@@ -8,7 +9,6 @@ import {
   setAppReady,
   setCamPermissionGranted,
   setCams,
-  setMediaLoaded,
 } from "store/slices/appStateSlice";
 import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
@@ -16,7 +16,6 @@ import { POSE_ERROR } from "utils/enums";
 import { useSettings } from "utils/hooks/useSettings";
 import {
   CamPermissionNotGranted,
-  Canvas,
   PoseCheckCountdown,
   PoseErrors,
 } from "./components";
@@ -24,15 +23,16 @@ import { getCameraPermission, getCams, getStream } from "./utils";
 
 const poseDetectionService = new PoseDetectionService();
 
-const CamAndCanvas = () => {
-  const { camPermissionGranted, running, mediaLoaded } =
+export const Cam = () => {
+  const { camPermissionGranted, running, appReady } =
     useSelector(selectAppState);
   const { settings } = useSettings();
   const dispatch = useDispatch();
 
-  const [poseNetLoaded, setPoseNetLoaded] = useState(false);
   const [pose, setPose] = useState<Pose | null>(null);
   const [poseErrors, setPoseErrors] = useState<POSE_ERROR[]>([]);
+  const [poseNetLoaded, setPoseNetLoaded] = useState(false);
+  const [mediaLoaded, setMediaLoaded] = useState(false);
 
   const camVideoElRef = useRef<HTMLVideoElement>(null);
   const getPoseTimeoutRef = useRef<number>();
@@ -49,7 +49,7 @@ const CamAndCanvas = () => {
   ]);
 
   useEffect(() => {
-    const init = async () => {
+    (async () => {
       const camPermissionGranted = await getCameraPermission();
       dispatch(setCamPermissionGranted(camPermissionGranted));
       if (!camPermissionGranted) {
@@ -58,7 +58,7 @@ const CamAndCanvas = () => {
 
       const cams = await getCams();
       if (cams.length === 0) {
-        //handle case when there are no cams
+        //TODO: handle case when there are no cams
         console.log("no camera devices detected");
         return;
       }
@@ -74,46 +74,45 @@ const CamAndCanvas = () => {
       } catch (err) {
         setPoseNetLoaded(false);
       }
-    };
-    init();
+    })();
     //eslint-disable-next-line
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
-    if (camPermissionGranted && poseNetLoaded) {
+    if (camPermissionGranted && poseNetLoaded && mediaLoaded) {
       dispatch(setAppReady(true));
-    } else {
-      dispatch(setAppReady(false));
+      return;
     }
-  }, [camPermissionGranted, poseNetLoaded, dispatch]);
+    dispatch(setAppReady(false));
+  }, [camPermissionGranted, poseNetLoaded, mediaLoaded, dispatch]);
 
   useEffect(() => {
     if (!camPermissionGranted || !camVideoElRef.current) return;
 
-    getStream(settings.selectedCamId).then((stream) => {
-      camVideoElRef.current!.srcObject = stream;
-    });
+    getStream(settings.selectedCamId).then(
+      (stream) => (camVideoElRef.current!.srcObject = stream)
+    );
   }, [settings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
     clearTimeout(getPoseTimeoutRef.current);
 
-    if (!running || !poseNetLoaded || !camVideoElRef.current || !mediaLoaded) {
+    if (!running || !appReady || !camVideoElRef.current) {
       return;
     }
 
-    const tick = async () => {
+    const getPose = async () => {
+      if (!appReady) return;
       const pose = await poseDetectionService.getPose(camVideoElRef.current!);
       setPose(pose);
 
-      getPoseTimeoutRef.current = window.setTimeout(tick, intervalTimeout);
+      getPoseTimeoutRef.current = window.setTimeout(getPose, intervalTimeout);
     };
 
-    tick();
+    getPose();
   }, [
-    poseNetLoaded,
+    appReady,
     running,
-    mediaLoaded,
     settings.getPoseIntervalInS,
     poseErrors.length,
     settings.additional.onErrorRetry,
@@ -136,8 +135,8 @@ const CamAndCanvas = () => {
             ref={camVideoElRef}
             width={CAM_WIDTH}
             height={CAM_HEIGHT}
-            onLoadStart={() => dispatch(setMediaLoaded(false))}
-            onLoadedMetadata={() => dispatch(setMediaLoaded(true))}
+            onLoadStart={() => setMediaLoaded(false)}
+            onLoadedMetadata={() => setMediaLoaded(true)}
           />
           <PoseErrors errors={poseErrors} />
           {running && !!intervalTimeout && (
@@ -151,5 +150,3 @@ const CamAndCanvas = () => {
     </Box>
   );
 };
-
-export default CamAndCanvas;

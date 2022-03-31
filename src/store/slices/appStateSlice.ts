@@ -6,7 +6,6 @@ import { Cam } from "utils/models";
 interface AppState {
   camPermissionGranted: boolean | null;
   cams: Cam[];
-  mediaLoaded: boolean;
   running: boolean;
   appReady: boolean;
   appMode: AppMode;
@@ -15,7 +14,6 @@ interface AppState {
 const initialAppState: AppState = {
   camPermissionGranted: null,
   cams: [],
-  mediaLoaded: false,
   running: false,
   appReady: false,
   appMode: AppMode.FRONT,
@@ -30,9 +28,6 @@ export const appStateSlice = createSlice({
     },
     setCams: (state, action: PayloadAction<Cam[]>) => {
       state.cams = action.payload;
-    },
-    setMediaLoaded: (state, action: PayloadAction<boolean>) => {
-      state.mediaLoaded = action.payload;
     },
     setRunning: (state, action: PayloadAction<boolean>) => {
       state.running = action.payload;
@@ -51,7 +46,6 @@ export const {
   setCamPermissionGranted,
   setAppReady,
   setCams,
-  setMediaLoaded,
   setRunning,
   setAppMode,
 } = appStateSlice.actions;

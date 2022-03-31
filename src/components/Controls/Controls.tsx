@@ -1,12 +1,15 @@
 import { Button, Flex, Select } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAppState, selectSideModeSettings } from "store";
+import { selectAppState } from "store";
 import { setRunning } from "store/slices/appStateSlice";
-import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
+import { useSettings } from "utils/hooks/useSettings";
 
 const Controls = () => {
   const { cams, appReady, running } = useSelector(selectAppState);
-  const { selectedCamId } = useSelector(selectSideModeSettings);
+  const {
+    settings: { selectedCamId },
+    actions: { setSelectedCamId },
+  } = useSettings();
   const dispatch = useDispatch();
 
   return (

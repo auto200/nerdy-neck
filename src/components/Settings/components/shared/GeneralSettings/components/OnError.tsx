@@ -7,7 +7,7 @@ import {
 } from "store/slices/sideModeSettingsSlice";
 import { useSettings } from "utils/hooks/useSettings";
 
-const OnError = () => {
+export const OnError = () => {
   const {
     settings: { additional },
   } = useSettings();
@@ -35,5 +35,3 @@ const OnError = () => {
     </>
   );
 };
-
-export default OnError;

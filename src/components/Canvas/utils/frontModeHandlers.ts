@@ -1,18 +1,14 @@
 import { Keypoint } from "@tensorflow-models/pose-detection";
 import { POSE_ERROR } from "utils/enums";
 import {
-  angleBetweenPoints,
-  drawLine,
-  isNumberInTolerance,
-  keypointToPosition,
-  placeTextBetweenTwoPoints,
-} from "../..";
-import {
   ERROR_COLOR,
   KEYPOINT_COLOR,
   TEXT_LINE_HEIGHT,
   TEXT_MARGIN,
-} from "../../constants";
+} from "./constants";
+import { drawLine, placeTextBetweenTwoPoints } from "./drawUtils";
+import { angleBetweenPoints, isNumberInTolerance } from "./mathUtils";
+import { keypointToPosition } from "./transformUtils";
 
 export const handleShoulderLevelMonitoring = ({
   ctx,

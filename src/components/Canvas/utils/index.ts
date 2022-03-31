@@ -1,4 +1,4 @@
-export * from "./canvasUtils";
-export * from "./mathUtils";
+export * from "./drawUtils";
+export * from "./frontModeHandlers";
 export * from "./sideModeHandlers";
 export * from "./transformUtils";

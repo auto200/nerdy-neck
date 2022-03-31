@@ -5,7 +5,7 @@ interface Props {
   seconds: number;
 }
 
-const SecToPoseCheck: React.FC<Props> = ({ seconds }) => {
+export const PoseCheckCountdown: React.FC<Props> = ({ seconds }) => {
   const [secToPoseCheck, setSecToPoseCheck] = useState(seconds);
   const endTsRef = useRef(0);
 
@@ -38,5 +38,3 @@ const SecToPoseCheck: React.FC<Props> = ({ seconds }) => {
     </Box>
   );
 };
-
-export default SecToPoseCheck;

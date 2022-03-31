@@ -1,5 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react";
-import CamAndCanvas from "components/CamAndCanvas";
+import { Cam } from "components/Cam";
 import Controls from "components/Controls";
 import GithubLink from "components/GithubLink";
 import HardwareAccelerationNotice from "components/HardwareAccelerationNotice";
@@ -12,7 +12,7 @@ const App: React.FC = () => {
       <Flex flexWrap="wrap">
         <GithubLink />
         <Box>
-          <CamAndCanvas />
+          <Cam />
           <Controls />
           <HardwareAccelerationNotice />
         </Box>

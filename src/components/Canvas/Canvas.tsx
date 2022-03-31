@@ -3,13 +3,15 @@ import { useEffect, useRef } from "react";
 import { AppMode } from "store/enums";
 import { POSE_ERROR } from "utils/enums";
 import { useSettings } from "utils/hooks/useSettings";
-import { drawPoint, getBodySideKeypoints, keypointToPosition } from "./utils";
-import { ERROR_COLOR, KEYPOINT_COLOR, UPPER_BODY } from "./utils/constants";
-import { handleShoulderLevelMonitoring } from "./utils/frontModeHandlers";
 import {
+  drawPoint,
+  getBodySideKeypoints,
   handleElbowMonitoring,
   handleNeckMonitoring,
-} from "./utils/sideModeHandlers";
+  handleShoulderLevelMonitoring,
+  keypointToPosition,
+} from "./utils";
+import { ERROR_COLOR, KEYPOINT_COLOR, UPPER_BODY } from "./utils/constants";
 
 interface CanvasProps {
   pose: Pose | null;

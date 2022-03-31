@@ -3,7 +3,7 @@ import { ReactComponent as CamErrorImg } from "assets/cam-error.svg";
 import grantPermissionImg from "assets/grant-permission.png";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 
-const CamPermissionNotGranted: React.FC = () => {
+export const CamPermissionNotGranted: React.FC = () => {
   return (
     <Box pos="relative" width={CAM_WIDTH} height={CAM_HEIGHT}>
       <Image as={CamErrorImg} width="full" height="full" opacity="0.5" />
@@ -20,5 +20,3 @@ const CamPermissionNotGranted: React.FC = () => {
     </Box>
   );
 };
-
-export default CamPermissionNotGranted;

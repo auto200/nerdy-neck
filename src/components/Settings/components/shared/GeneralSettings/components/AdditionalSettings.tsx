@@ -10,47 +10,31 @@ import {
 import { Switch } from "components/shared";
 import { useDispatch } from "react-redux";
 import { AppMode } from "store/enums";
-import {
-  setAdditionalMinLowerBodyKeypointScore as frontSetAdditionalMinLowerBodyKeypointScore,
-  setAdditionalMinUpperBodyKeypointScore as frontSetAdditionalMinUpperBodyKeypointScore,
-  toggleAdditionalSoundEnabled as frontToggleAdditionalSoundEnabled,
-} from "store/slices/frontModeSettingsSlice";
-import {
-  setAdditionalMinLowerBodyKeypointScore as sideSetAdditionalMinLowerBodyKeypointScore,
-  setAdditionalMinUpperBodyKeypointScore as sideSetAdditionalMinUpperBodyKeypointScore,
-  toggleAdditionalSoundEnabled as sideToggleAdditionalSoundEnabled,
-} from "store/slices/sideModeSettingsSlice";
 import { useSettings } from "utils/hooks/useSettings";
-import { ModelDetectionThreshold, OnError } from "./components";
+import { ModelDetectionThreshold } from "./ModelDetectionThreshold";
+import { OnError } from "./OnError";
 
 export const AdditionalSettings = () => {
   const {
     settings: { additional },
     appMode,
+    actions: {
+      setMinLowerBodyKeypointScore,
+      setMinUpperBodyKeypointScore,
+      toggleSoundEnabled,
+    },
   } = useSettings();
 
   const dispatch = useDispatch();
 
   const onSoundEnabledChange = () => {
-    dispatch(
-      appMode === AppMode.FRONT
-        ? frontToggleAdditionalSoundEnabled()
-        : sideToggleAdditionalSoundEnabled()
-    );
+    dispatch(toggleSoundEnabled());
   };
   const onMinUpperBodyKeypointScoreChange = (val: number) => {
-    dispatch(
-      appMode === AppMode.FRONT
-        ? frontSetAdditionalMinUpperBodyKeypointScore(val)
-        : sideSetAdditionalMinUpperBodyKeypointScore(val)
-    );
+    dispatch(setMinUpperBodyKeypointScore(val));
   };
   const onMinLowerBodyKeypointScoreChange = (val: number) => {
-    dispatch(
-      appMode === AppMode.FRONT
-        ? frontSetAdditionalMinLowerBodyKeypointScore(val)
-        : sideSetAdditionalMinLowerBodyKeypointScore(val)
-    );
+    dispatch(setMinLowerBodyKeypointScore(val));
   };
 
   return (

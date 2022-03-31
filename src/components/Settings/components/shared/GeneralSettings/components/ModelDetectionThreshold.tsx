@@ -14,7 +14,7 @@ interface Props {
   onChange: (value: number) => void;
 }
 
-const ModelDetectionThreshold = ({
+export const ModelDetectionThreshold = ({
   tooltip,
   label,
   value,
@@ -46,5 +46,3 @@ const ModelDetectionThreshold = ({
     </>
   );
 };
-
-export default ModelDetectionThreshold;

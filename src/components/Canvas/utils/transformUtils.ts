@@ -1,6 +1,6 @@
 import { Keypoint, Pose } from "@tensorflow-models/pose-detection";
 import { Vector2D } from "@tensorflow-models/pose-detection/dist/posenet/types";
-import { LOWER_BODY, UPPER_BODY } from "../constants";
+import { LOWER_BODY, UPPER_BODY } from "./constants";
 
 export const keypointToPosition = (keypoint: Keypoint): Vector2D => {
   return { x: keypoint.x, y: keypoint.y };

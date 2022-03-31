@@ -1,7 +1,7 @@
 import { Heading } from "@chakra-ui/react";
 import React from "react";
 import { GeneralSettings } from "../shared/GeneralSettings";
-import { ShoulderLevelMonitoring } from "./components";
+import { ShoulderLevelMonitoring } from "./ShoulderLevelMonitoring";
 
 export const FrontModeSettings: React.FC = () => {
   return (
