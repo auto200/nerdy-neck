@@ -1,15 +1,15 @@
 import { Collapse } from "@chakra-ui/react";
 import { NumberInput, Switch } from "components/shared";
 import { useDispatch } from "react-redux";
-import {
-  setAdditionalOnErrorRetryIntervalInS,
-  toggleAdditionalOnErrorRetry,
-} from "store/slices/sideModeSettingsSlice";
 import { useSettings } from "utils/hooks/useSettings";
 
 export const OnError = () => {
   const {
     settings: { additional },
+    actions: {
+      toggleAdditionalOnErrorRetry,
+      setAdditionalOnErrorRetryIntervalInS,
+    },
   } = useSettings();
 
   const dispatch = useDispatch();

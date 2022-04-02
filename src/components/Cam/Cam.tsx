@@ -10,7 +10,6 @@ import {
   setCamPermissionGranted,
   setCams,
 } from "store/slices/appStateSlice";
-import { setSelectedCamId } from "store/slices/sideModeSettingsSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
 import { POSE_ERROR } from "utils/enums";
 import { useSettings } from "utils/hooks/useSettings";
@@ -26,7 +25,10 @@ const poseDetectionService = new PoseDetectionService();
 export const Cam = () => {
   const { camPermissionGranted, running, appReady } =
     useSelector(selectAppState);
-  const { settings } = useSettings();
+  const {
+    settings,
+    actions: { setSelectedCamId },
+  } = useSettings();
   const dispatch = useDispatch();
 
   const [pose, setPose] = useState<Pose | null>(null);

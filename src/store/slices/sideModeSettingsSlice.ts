@@ -127,14 +127,18 @@ const sideModeSettingsSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  //core
+
   setSelectedCamId,
-  toggleBodySide,
   setGetPoseIntervalInS,
+  //additional
   toggleAdditionalSoundEnabled,
   setAdditionalMinLowerBodyKeypointScore,
   setAdditionalMinUpperBodyKeypointScore,
   setAdditionalOnErrorRetryIntervalInS,
   toggleAdditionalOnErrorRetry,
+  //specific
+  toggleBodySide,
   setNeckDesiredAngle,
   setNeckTolerance,
   toggleNeckMonitoring,

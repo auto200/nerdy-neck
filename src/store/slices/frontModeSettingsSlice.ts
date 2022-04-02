@@ -99,8 +99,7 @@ export const {
   //core
   setSelectedCamId,
   setGetPoseIntervalInS,
-  //TODO: additional -- how about abstracting those and sharing with side mode
-  //settings (sharing logic, not actual state)
+  //additional
   toggleAdditionalSoundEnabled,
   setAdditionalMinUpperBodyKeypointScore,
   setAdditionalMinLowerBodyKeypointScore,
