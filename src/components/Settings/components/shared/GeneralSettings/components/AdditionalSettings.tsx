@@ -19,22 +19,22 @@ export const AdditionalSettings = () => {
     settings: { additional },
     appMode,
     actions: {
-      setMinLowerBodyKeypointScore,
-      setMinUpperBodyKeypointScore,
-      toggleSoundEnabled,
+      setAdditionalMinLowerBodyKeypointScore,
+      setAdditionalMinUpperBodyKeypointScore,
+      toggleAdditionalSoundEnabled,
     },
   } = useSettings();
 
   const dispatch = useDispatch();
 
   const onSoundEnabledChange = () => {
-    dispatch(toggleSoundEnabled());
+    dispatch(toggleAdditionalSoundEnabled());
   };
   const onMinUpperBodyKeypointScoreChange = (val: number) => {
-    dispatch(setMinUpperBodyKeypointScore(val));
+    dispatch(setAdditionalMinUpperBodyKeypointScore(val));
   };
   const onMinLowerBodyKeypointScoreChange = (val: number) => {
-    dispatch(setMinLowerBodyKeypointScore(val));
+    dispatch(setAdditionalMinLowerBodyKeypointScore(val));
   };
 
   return (
