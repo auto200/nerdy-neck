@@ -1,6 +1,8 @@
 import { Box } from "@chakra-ui/react";
 import badPostureSound from "assets/on-error-sound.mp3";
 import { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { selectAppState } from "store";
 import { useSettings } from "utils/hooks/useSettings";
 
 interface Props {
@@ -13,11 +15,12 @@ export const PoseErrors: React.FC<Props> = ({ errors }) => {
       additional: { sound },
     },
   } = useSettings();
+  const { running } = useSelector(selectAppState);
 
   const audioRef = useRef(new Audio(badPostureSound));
 
   useEffect(() => {
-    if (errors.length === 0) return;
+    if (errors.length === 0 || !running) return;
 
     if (!sound.enabled && !audioRef.current.paused) {
       audioRef.current.pause();
@@ -28,7 +31,7 @@ export const PoseErrors: React.FC<Props> = ({ errors }) => {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
     }
-  }, [errors, sound.enabled]);
+  }, [errors, sound.enabled, running]);
 
   return (
     <Box pos="absolute" top="0" left="2">
