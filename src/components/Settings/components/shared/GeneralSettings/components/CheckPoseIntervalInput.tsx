@@ -3,11 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useSettings } from "utils/hooks/useSettings";
 
-export type CheckPoseIntervalInputProps = {};
-
-export const CheckPoseIntervalInput: React.FC<
-  CheckPoseIntervalInputProps
-> = () => {
+export const CheckPoseIntervalInput: React.FC = () => {
   const {
     settings,
     actions: { setGetPoseIntervalInS },

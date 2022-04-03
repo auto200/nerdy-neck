@@ -1,11 +1,8 @@
 import { Box } from "@chakra-ui/react";
 import React from "react";
-import { CheckPoseIntervalInput } from "../../shared";
-import { AdditionalSettings } from "./components";
+import { CheckPoseIntervalInput, AdditionalSettings } from "./components";
 
-type GeneralSettingsProps = {};
-
-export const GeneralSettings: React.FC<GeneralSettingsProps> = () => {
+export const GeneralSettings: React.FC = () => {
   return (
     <Box border="1px solid gray" borderRadius="md" p="3">
       <CheckPoseIntervalInput />
