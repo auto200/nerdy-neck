@@ -1,10 +1,14 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Image } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
+import frontHintImg from "assets/front-angle-hint.jpg";
+import sideHintImg from "assets/side-angle-hint.jpg";
 import Canvas from "components/Canvas";
+import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PoseDetectionService } from "services/PoseDetectionService";
 import { selectAppState } from "store";
+import { AppMode } from "store/enums";
 import {
   setAppReady,
   setCamPermissionGranted,
@@ -23,7 +27,7 @@ import { getCameraPermission, getCams, getStream } from "./utils";
 const poseDetectionService = new PoseDetectionService();
 
 export const Cam = () => {
-  const { camPermissionGranted, running, appReady } =
+  const { camPermissionGranted, running, appReady, appMode } =
     useSelector(selectAppState);
   const {
     settings,
@@ -126,6 +130,18 @@ export const Cam = () => {
       {camPermissionGranted === false && <CamPermissionNotGranted />}
       {camPermissionGranted && (
         <>
+          {!running && (
+            <Image
+              as={motion.img}
+              key={appMode}
+              src={appMode === AppMode.FRONT ? frontHintImg : sideHintImg}
+              pos="absolute"
+              initial={{ opacity: 0.9 }}
+              animate={{ opacity: 0 }}
+              transition="4s"
+              h="full"
+            />
+          )}
           <Canvas
             pose={pose}
             width={CAM_WIDTH}
@@ -141,7 +157,7 @@ export const Cam = () => {
             onLoadedMetadata={() => setMediaLoaded(true)}
           />
           <PoseErrors errors={poseErrors} />
-          {running && !!intervalTimeout && (
+          {running && intervalTimeout > 1 && (
             <PoseCheckCountdown
               key={pose?.score}
               seconds={intervalTimeout / 1000}
