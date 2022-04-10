@@ -39,7 +39,7 @@ const initialFrontModeSettings: FrontModeSettings = {
   },
   shouldersLevelMonitoring: {
     enabled: true,
-    desiredAngle: 0,
+    desiredAngle: 90,
     tolerance: 3,
   },
 };
