@@ -15,20 +15,17 @@ export const ShoulderLevelMonitoring = () => {
   return (
     <>
       <Switch
-        id="elbow-switch"
         label="Shoulder level monitoring"
         isChecked={shoulderLevelMonitoring.enabled}
         onChange={() => dispatch(toggleShoulderLevelMonitoring())}
       />
       <Collapse in={shoulderLevelMonitoring.enabled}>
         <NumberInput
-          id="elbow-angle"
           label="Desired angle°"
           value={shoulderLevelMonitoring.desiredAngle}
           onChange={(val) => dispatch(setShoulderLevelDesiredAngle(val))}
         />
         <NumberInput
-          id="elbow-tolerance"
           label="Tolerance°"
           value={shoulderLevelMonitoring.tolerance}
           onChange={(val) => dispatch(setShoulderLevelTolerance(val))}

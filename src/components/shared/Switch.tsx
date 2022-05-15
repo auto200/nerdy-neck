@@ -2,20 +2,18 @@ import {
   FormControl,
   FormLabel,
   Switch as ChakraSwitch,
+  SwitchProps as ChakraSwitchProps,
 } from "@chakra-ui/react";
 
 type SwitchProps = {
-  id: string;
   label: string;
-} & any;
+} & ChakraSwitchProps;
 
-export const Switch = ({ id, label, ...rest }: SwitchProps) => {
+export const Switch = ({ label, ...rest }: SwitchProps) => {
   return (
     <FormControl display="flex" alignItems="center" mt="6">
-      <ChakraSwitch id={id} mr="1" {...rest} />
-      <FormLabel htmlFor={id} m="0">
-        {label}
-      </FormLabel>
+      <ChakraSwitch mr="1" {...rest} />
+      <FormLabel m="0">{label}</FormLabel>
     </FormControl>
   );
 };

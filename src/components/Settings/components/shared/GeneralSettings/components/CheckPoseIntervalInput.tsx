@@ -18,7 +18,6 @@ export const CheckPoseIntervalInput: React.FC = () => {
   const dispatch = useDispatch();
   return (
     <NumberInput
-      id="check-pose-interval"
       label="Check pose interval (in sec)"
       value={getPoseIntervalInS}
       onChange={onChange}

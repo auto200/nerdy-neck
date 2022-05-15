@@ -15,20 +15,17 @@ export const NeckMonitoring = () => {
   return (
     <>
       <Switch
-        id="neck-monitoring-switch"
         label="Neck angle monitoring"
         isChecked={neckMonitoring.enabled}
         onChange={() => dispatch(toggleNeckMonitoring())}
       />
       <Collapse in={neckMonitoring.enabled}>
         <NumberInput
-          id="neck-angle"
           label="Desired angle°"
           value={neckMonitoring.desiredAngle}
           onChange={(val) => dispatch(setNeckDesiredAngle(val))}
         />
         <NumberInput
-          id="neck-tolerance"
           label="Tolerance°"
           value={neckMonitoring.tolerance}
           onChange={(val) => dispatch(setNeckTolerance(val))}

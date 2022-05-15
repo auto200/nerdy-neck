@@ -11,7 +11,6 @@ export const BanKneesAndAnkles = () => {
 
   return (
     <Switch
-      id="ban-knee-and-ankle-switch"
       label="Ban knees and ankles"
       isChecked={banKneesAndAnkles}
       onChange={() => dispatch(toggleBanKneesAndAnkles())}

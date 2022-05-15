@@ -17,14 +17,12 @@ export const OnError = () => {
   return (
     <>
       <Switch
-        id="on-error-retry-switch"
         label="On error interval"
         isChecked={additional.onErrorRetry.enabled}
         onChange={() => dispatch(toggleAdditionalOnErrorRetry())}
       />
       <Collapse in={additional.onErrorRetry.enabled}>
         <NumberInput
-          id="on-error-retry-interval"
           label="Retry interval (in sec)"
           value={additional.onErrorRetry.intervalInS}
           onChange={(val) => {

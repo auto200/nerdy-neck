@@ -15,20 +15,17 @@ export const ElbowMonitoring = () => {
   return (
     <>
       <Switch
-        id="elbow-switch"
         label="Elbow angle monitoring"
         isChecked={elbowMonitoring.enabled}
         onChange={() => dispatch(toggleElbowMonitoring())}
       />
       <Collapse in={elbowMonitoring.enabled}>
         <NumberInput
-          id="elbow-angle"
           label="Desired angle°"
           value={elbowMonitoring.desiredAngle}
           onChange={(val) => dispatch(setElbowAngle(val))}
         />
         <NumberInput
-          id="elbow-tolerance"
           label="Tolerance°"
           value={elbowMonitoring.tolerance}
           onChange={(val) => dispatch(setElbowTolerance(val))}

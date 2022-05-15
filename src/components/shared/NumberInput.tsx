@@ -5,21 +5,19 @@ import {
   NumberIncrementStepper,
   NumberInput as ChakraNumberInput,
   NumberInputField,
+  NumberInputProps as ChakraNumberInputProps,
   NumberInputStepper,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 export type NumberInputProps = {
-  id: string;
   label: string;
   value: number;
   onChange: (valueAsNumber: number) => void;
   stepper?: boolean;
-  [rest: string]: any;
-};
+} & Omit<ChakraNumberInputProps, "value" | "onChange">;
 
 export const NumberInput = ({
-  id,
   label,
   value,
   onChange,
@@ -37,18 +35,17 @@ export const NumberInput = ({
 
   return (
     <FormControl>
-      <FormLabel htmlFor={id} m="0" mt="2">
+      <FormLabel m="0" mt="2">
         {label}
       </FormLabel>
       <ChakraNumberInput
-        id={id}
         value={localVal}
         onChange={(_, numVal) =>
           setLocalVal(Number.isNaN(numVal) ? "" : numVal)
         }
         onBlur={() => localVal === "" && setLocalVal(0)}
-        {...rest}
         min={0}
+        {...rest}
       >
         <NumberInputField />
         {stepper && (

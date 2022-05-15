@@ -17,15 +17,12 @@ export const BodySideSwitch = () => {
 
   return (
     <FormControl my={6}>
-      <FormLabel htmlFor="body-side-switch" m="0">
-        Body side
-      </FormLabel>
+      <FormLabel m="0">Body side</FormLabel>
       <Box>
         <chakra.span color={bodySide === "left" ? "blue.200" : ""}>
           Left
         </chakra.span>
         <ChakraSwitch
-          id="body-side-switch"
           mx={2}
           isChecked={bodySide === "right"}
           onChange={() => dispatch(toggleBodySide())}

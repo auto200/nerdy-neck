@@ -52,7 +52,6 @@ export const AdditionalSettings = () => {
           <Box>
             <OnError />
             <Switch
-              id="sound-enabled-switch"
               label="On error sound"
               isChecked={additional.sound.enabled}
               onChange={onSoundEnabledChange}
