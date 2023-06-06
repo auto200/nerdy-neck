@@ -1,9 +1,9 @@
 import { Box, Button, Flex, Select, Tooltip } from "@chakra-ui/react";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAppState } from "store";
+import { selectAppState } from "store/index";
 import { setRunning } from "store/slices/appStateSlice";
 import { useSettings } from "utils/hooks/useSettings";
-import { AiOutlineInfoCircle } from "react-icons/ai";
 import HardwareAccelerationNotice from "./HardwareAccelerationNotice";
 
 const Controls = () => {

@@ -2,20 +2,18 @@ import { Box, Image } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
 import frontHintImg from "assets/front-angle-hint.jpg";
 import sideHintImg from "assets/side-angle-hint.jpg";
-import Canvas from "components/Canvas";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PoseDetectionService } from "services/PoseDetectionService";
-import { selectAppState } from "store";
 import { AppMode } from "store/enums";
+import { selectAppState } from "store/index";
 import {
   setAppReady,
   setCamPermissionGranted,
   setCams,
 } from "store/slices/appStateSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
-import { POSE_ERROR } from "utils/enums";
 import { useSettings } from "utils/hooks/useSettings";
 import {
   CamPermissionNotGranted,
@@ -23,6 +21,9 @@ import {
   PoseErrors,
 } from "./components";
 import { getCameraPermission, getCams, getStream } from "./utils";
+
+import Canvas from "components/Canvas/Canvas";
+import { POSE_ERROR } from "utils/enums";
 
 const poseDetectionService = new PoseDetectionService();
 
@@ -63,6 +64,7 @@ export const Cam = () => {
       }
 
       const cams = await getCams();
+
       if (cams.length === 0) {
         //TODO: handle case when there are no cams
         console.log("no camera devices detected");
@@ -78,6 +80,7 @@ export const Cam = () => {
         await poseDetectionService.load();
         setPoseNetLoaded(true);
       } catch (err) {
+        console.log(err);
         setPoseNetLoaded(false);
       }
     })();
@@ -93,11 +96,11 @@ export const Cam = () => {
   }, [camPermissionGranted, poseNetLoaded, mediaLoaded, dispatch]);
 
   useEffect(() => {
-    if (!camPermissionGranted || !camVideoElRef.current) return;
-
-    getStream(settings.selectedCamId).then(
-      (stream) => (camVideoElRef.current!.srcObject = stream)
-    );
+    (async () => {
+      if (!camPermissionGranted || !camVideoElRef.current) return;
+      const stream = await getStream(settings.selectedCamId);
+      camVideoElRef.current.srcObject = stream;
+    })();
   }, [settings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
@@ -108,8 +111,8 @@ export const Cam = () => {
     }
 
     const getPose = async () => {
-      if (!appReady) return;
-      const pose = await poseDetectionService.getPose(camVideoElRef.current!);
+      if (!appReady || !camVideoElRef.current) return;
+      const pose = await poseDetectionService.getPose(camVideoElRef.current);
       setPose(pose);
 
       getPoseTimeoutRef.current = window.setTimeout(getPose, intervalTimeout);
