@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react";
 import badPostureSound from "assets/on-error-sound.mp3";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import { selectAppState } from "store";
+import { selectAppState } from "store/index";
 import { useSettings } from "utils/hooks/useSettings";
 
 interface Props {

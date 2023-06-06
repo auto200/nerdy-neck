@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "store";
 import { AppMode, SliceName } from "store/enums";
+import { RootState } from "store/index";
 import { Cam } from "utils/models";
 
 interface AppState {
