@@ -50,7 +50,7 @@ const PanicButton = () => {
               onClick={() => {
                 setWipingData(true);
                 window.localStorage.clear();
-                setTimeout(() => {
+                window.setTimeout(() => {
                   window.location.reload();
                 }, 1000);
               }}

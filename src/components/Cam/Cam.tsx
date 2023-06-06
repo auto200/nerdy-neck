@@ -1,4 +1,4 @@
-import { Box, Image } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Pose } from "@tensorflow-models/pose-detection";
 import frontHintImg from "assets/front-angle-hint.jpg";
 import sideHintImg from "assets/side-angle-hint.jpg";
@@ -104,9 +104,11 @@ export const Cam = () => {
   }, [settings.selectedCamId, camPermissionGranted]);
 
   useEffect(() => {
-    clearTimeout(getPoseTimeoutRef.current);
+    window.clearTimeout(getPoseTimeoutRef.current);
 
     if (!running || !appReady || !camVideoElRef.current) {
+      setPose(null);
+      setPoseErrors([]);
       return;
     }
 
@@ -133,18 +135,17 @@ export const Cam = () => {
       {camPermissionGranted === false && <CamPermissionNotGranted />}
       {camPermissionGranted && (
         <>
-          {!running && (
-            <Image
-              as={motion.img}
-              key={appMode}
-              src={appMode === AppMode.FRONT ? frontHintImg : sideHintImg}
-              pos="absolute"
-              initial={{ opacity: 0.9 }}
-              animate={{ opacity: 0 }}
-              transition="4s"
-              h="full"
-            />
-          )}
+          <motion.img
+            viewport={{
+              once: true,
+            }}
+            key={appMode}
+            src={appMode === AppMode.FRONT ? frontHintImg : sideHintImg}
+            initial={{ opacity: 0.9, position: "absolute", height: "100%" }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 3.5 }}
+          />
+
           <Canvas
             pose={pose}
             width={CAM_WIDTH}

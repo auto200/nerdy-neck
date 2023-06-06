@@ -30,11 +30,15 @@ const Canvas: React.FC<CanvasProps> = ({
   const { appMode, sideModeSettings, frontModeSettings } = useSettings();
 
   useEffect(() => {
-    if (!pose || !canvasRef.current) return;
+    if (!canvasRef.current) return;
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
     ctx.clearRect(0, 0, width, height);
+
+    if (!pose) {
+      return;
+    }
 
     const errors: POSE_ERROR[] = [];
 
