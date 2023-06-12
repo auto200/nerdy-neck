@@ -1,7 +1,7 @@
 import { NumberInput } from "@components/shared";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useSettings } from "@utils/hooks/useSettings";
+import { useSettings } from "@hooks/useSettings";
 
 export const CheckPoseIntervalInput: React.FC = () => {
   const {

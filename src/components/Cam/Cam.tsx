@@ -13,7 +13,7 @@ import {
   setCams,
 } from "@store/slices/appStateSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "@utils/constants";
-import { useSettings } from "@utils/hooks/useSettings";
+import { useSettings } from "@hooks/useSettings";
 import {
   CamPermissionNotGranted,
   PoseCheckCountdown,

@@ -9,7 +9,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppMode } from "@store/enums";
 import { setAppMode } from "@store/slices/appStateSlice";
-import { useSettings } from "@utils/hooks/useSettings";
+import { useSettings } from "@hooks/useSettings";
 import { FrontModeSettings } from "./components/FrontModeSettings";
 import { SideModeSettings } from "./components/SideModeSettings";
 

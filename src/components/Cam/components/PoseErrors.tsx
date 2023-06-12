@@ -3,7 +3,7 @@ import badPostureSound from "@assets/on-error-sound.mp3";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectAppState } from "@store/index";
-import { useSettings } from "@utils/hooks/useSettings";
+import { useSettings } from "@hooks/useSettings";
 
 interface Props {
   errors: string[];

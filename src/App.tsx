@@ -5,7 +5,7 @@ import GithubLink from "@components/GithubLink";
 import { InitialLoader } from "@components/InitialLoader";
 import PanicButton from "@components/PanicButton";
 import Settings from "@components/Settings";
-import { usePoseDetector } from "@utils/hooks/usePoseDetector";
+import { usePoseDetector } from "@hooks/usePoseDetector";
 
 const App: React.FC = () => {
   const poseDetector = usePoseDetector();

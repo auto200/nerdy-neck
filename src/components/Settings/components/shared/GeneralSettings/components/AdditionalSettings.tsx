@@ -10,7 +10,7 @@ import {
 import { Switch } from "@components/shared";
 import { useDispatch } from "react-redux";
 import { AppMode } from "@store/enums";
-import { useSettings } from "@utils/hooks/useSettings";
+import { useSettings } from "@hooks/useSettings";
 import { ModelDetectionThreshold } from "./ModelDetectionThreshold";
 import { OnError } from "./OnError";
 
