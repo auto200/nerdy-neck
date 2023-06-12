@@ -7,34 +7,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppMode } from "@store/enums";
 import { selectAppState } from "@store/index";
-import {
-  setAppReady,
-  setCamPermissionGranted,
-  setCams,
-} from "@store/slices/appStateSlice";
+import { setAppReady } from "@store/slices/appStateSlice";
 import { CAM_HEIGHT, CAM_WIDTH } from "@utils/constants";
 import { useSettings } from "@hooks/useSettings";
-import {
-  CamPermissionNotGranted,
-  PoseCheckCountdown,
-  PoseErrors,
-} from "./components";
-import { getCameraPermission, getCams, getStream } from "./utils";
+import { PoseCheckCountdown, PoseErrors } from "./components";
 
 import Canvas from "@components/Canvas/Canvas";
 import { POSE_ERROR } from "@utils/enums";
 
 type CamProps = {
   getPose: (mediaInput: PoseDetectorInput) => Promise<Pose | null>;
+  stream: MediaProvider | null;
 };
 
-export const Cam = ({ getPose }: CamProps) => {
-  const { camPermissionGranted, running, appReady, appMode } =
-    useSelector(selectAppState);
-  const {
-    settings,
-    actions: { setSelectedCamId },
-  } = useSettings();
+export const Cam = ({ getPose, stream }: CamProps) => {
+  const { running, appReady, appMode } = useSelector(selectAppState);
+  const { settings } = useSettings();
   const dispatch = useDispatch();
 
   const [pose, setPose] = useState<Pose | null>(null);
@@ -56,44 +44,18 @@ export const Cam = ({ getPose }: CamProps) => {
   ]);
 
   useEffect(() => {
-    (async () => {
-      const camPermissionGranted = await getCameraPermission();
-      dispatch(setCamPermissionGranted(camPermissionGranted));
-      if (!camPermissionGranted) {
-        return;
-      }
-
-      const cams = await getCams();
-
-      if (cams.length === 0) {
-        //TODO: handle case when there are no cams
-        console.log("no camera devices detected");
-        return;
-      }
-      dispatch(setCams(cams));
-
-      if (!settings.selectedCamId) {
-        dispatch(setSelectedCamId(cams[0].id));
-      }
-    })();
-    //eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    if (camPermissionGranted && mediaLoaded) {
+    if (stream && mediaLoaded) {
       dispatch(setAppReady(true));
       return;
     }
+
     dispatch(setAppReady(false));
-  }, [camPermissionGranted, mediaLoaded, dispatch]);
+  }, [stream, mediaLoaded, dispatch]);
 
   useEffect(() => {
-    (async () => {
-      if (!camPermissionGranted || !camVideoElRef.current) return;
-      const stream = await getStream(settings.selectedCamId);
-      camVideoElRef.current.srcObject = stream;
-    })();
-  }, [settings.selectedCamId, camPermissionGranted]);
+    if (!stream || !camVideoElRef.current) return;
+    camVideoElRef.current.srcObject = stream;
+  }, [stream]);
 
   useEffect(() => {
     window.clearTimeout(getPoseTimeoutRef.current);
@@ -128,8 +90,7 @@ export const Cam = ({ getPose }: CamProps) => {
 
   return (
     <Box pos="relative" minW={CAM_WIDTH} minH={CAM_HEIGHT}>
-      {camPermissionGranted === false && <CamPermissionNotGranted />}
-      {camPermissionGranted && (
+      {stream && (
         <>
           <motion.img
             viewport={{

@@ -1,19 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppMode, SliceName } from "@store/enums";
 import { RootState } from "@store/index";
-import { Cam } from "@utils/models";
 
 interface AppState {
-  camPermissionGranted: boolean | null;
-  cams: Cam[];
   running: boolean;
   appReady: boolean;
   appMode: AppMode;
 }
 
 const initialAppState: AppState = {
-  camPermissionGranted: null,
-  cams: [],
   running: false,
   appReady: false,
   appMode: AppMode.FRONT,
@@ -23,12 +18,6 @@ export const appStateSlice = createSlice({
   name: SliceName.appState,
   initialState: initialAppState,
   reducers: {
-    setCamPermissionGranted: (state, action: PayloadAction<boolean | null>) => {
-      state.camPermissionGranted = action.payload;
-    },
-    setCams: (state, action: PayloadAction<Cam[]>) => {
-      state.cams = action.payload;
-    },
     setRunning: (state, action: PayloadAction<boolean>) => {
       state.running = action.payload;
     },
@@ -42,13 +31,7 @@ export const appStateSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {
-  setCamPermissionGranted,
-  setAppReady,
-  setCams,
-  setRunning,
-  setAppMode,
-} = appStateSlice.actions;
+export const { setAppReady, setRunning, setAppMode } = appStateSlice.actions;
 
 export default appStateSlice.reducer;
 
