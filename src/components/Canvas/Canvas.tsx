@@ -125,8 +125,9 @@ const Canvas: React.FC<CanvasProps> = ({
         if (sideModeSettings.banKneesAndAnkles && kneeOrAnkleVisible) {
           kneesAndAnklesKeypoints.forEach((keypoint) => {
             if (
-              keypoint.score! >=
-              sideModeSettings.additional.minLowerBodyKeypointScore
+              keypoint.score &&
+              keypoint.score >=
+                sideModeSettings.additional.minLowerBodyKeypointScore
             ) {
               drawPoint(ctx, keypointToPosition(keypoint), ERROR_COLOR);
             }
@@ -150,6 +151,7 @@ const Canvas: React.FC<CanvasProps> = ({
       if (leftShoulderVisible && rightShoulderVisible) {
         const { tolerance, desiredAngle } =
           frontModeSettings.shouldersLevelMonitoring;
+
         const error = handleShoulderLevelMonitoring({
           ctx,
           shoulderKeypoints: [leftShoulder, rightShoulder],

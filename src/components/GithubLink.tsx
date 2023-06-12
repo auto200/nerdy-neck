@@ -1,10 +1,11 @@
 import { Link } from "@chakra-ui/react";
 import { FaGithub } from "react-icons/fa";
+import { GITHUB_LINK } from "utils/constants";
 
 const GithubLink = () => {
   return (
     <Link
-      href="https://github.com/auto200/nerdy-neck"
+      href={GITHUB_LINK}
       target="_blank"
       pos="absolute"
       top="0"

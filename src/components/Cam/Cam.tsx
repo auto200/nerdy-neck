@@ -1,11 +1,10 @@
 import { Box } from "@chakra-ui/react";
-import { Pose } from "@tensorflow-models/pose-detection";
+import { Pose, PoseDetectorInput } from "@tensorflow-models/pose-detection";
 import frontHintImg from "assets/front-angle-hint.jpg";
 import sideHintImg from "assets/side-angle-hint.jpg";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PoseDetectionService } from "services/PoseDetectionService";
 import { AppMode } from "store/enums";
 import { selectAppState } from "store/index";
 import {
@@ -25,9 +24,11 @@ import { getCameraPermission, getCams, getStream } from "./utils";
 import Canvas from "components/Canvas/Canvas";
 import { POSE_ERROR } from "utils/enums";
 
-const poseDetectionService = new PoseDetectionService();
+type CamProps = {
+  getPose: (mediaInput: PoseDetectorInput) => Promise<Pose | null>;
+};
 
-export const Cam = () => {
+export const Cam = ({ getPose }: CamProps) => {
   const { camPermissionGranted, running, appReady, appMode } =
     useSelector(selectAppState);
   const {
@@ -38,13 +39,12 @@ export const Cam = () => {
 
   const [pose, setPose] = useState<Pose | null>(null);
   const [poseErrors, setPoseErrors] = useState<POSE_ERROR[]>([]);
-  const [poseNetLoaded, setPoseNetLoaded] = useState(false);
   const [mediaLoaded, setMediaLoaded] = useState(false);
 
   const camVideoElRef = useRef<HTMLVideoElement>(null);
   const getPoseTimeoutRef = useRef<number>();
 
-  const intervalTimeout = useMemo(() => {
+  const intervalTimeoutMS = useMemo(() => {
     if (settings.additional.onErrorRetry.enabled && poseErrors.length) {
       return settings.additional.onErrorRetry.intervalInS * 1000;
     }
@@ -75,25 +75,17 @@ export const Cam = () => {
       if (!settings.selectedCamId) {
         dispatch(setSelectedCamId(cams[0].id));
       }
-
-      try {
-        await poseDetectionService.load();
-        setPoseNetLoaded(true);
-      } catch (err) {
-        console.log(err);
-        setPoseNetLoaded(false);
-      }
     })();
     //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (camPermissionGranted && poseNetLoaded && mediaLoaded) {
+    if (camPermissionGranted && mediaLoaded) {
       dispatch(setAppReady(true));
       return;
     }
     dispatch(setAppReady(false));
-  }, [camPermissionGranted, poseNetLoaded, mediaLoaded, dispatch]);
+  }, [camPermissionGranted, mediaLoaded, dispatch]);
 
   useEffect(() => {
     (async () => {
@@ -112,22 +104,26 @@ export const Cam = () => {
       return;
     }
 
-    const getPose = async () => {
+    const analyzePose = async () => {
       if (!appReady || !camVideoElRef.current) return;
-      const pose = await poseDetectionService.getPose(camVideoElRef.current);
+      const pose = await getPose(camVideoElRef.current);
       setPose(pose);
 
-      getPoseTimeoutRef.current = window.setTimeout(getPose, intervalTimeout);
+      getPoseTimeoutRef.current = window.setTimeout(
+        analyzePose,
+        intervalTimeoutMS
+      );
     };
 
-    getPose();
+    analyzePose();
   }, [
     appReady,
     running,
     settings.getPoseIntervalInS,
     poseErrors.length,
     settings.additional.onErrorRetry,
-    intervalTimeout,
+    intervalTimeoutMS,
+    getPose,
   ]);
 
   return (
@@ -161,10 +157,10 @@ export const Cam = () => {
             onLoadedMetadata={() => setMediaLoaded(true)}
           />
           <PoseErrors errors={poseErrors} />
-          {running && intervalTimeout > 1 && (
+          {running && intervalTimeoutMS > 1 && (
             <PoseCheckCountdown
               key={pose?.score}
-              seconds={intervalTimeout / 1000}
+              seconds={intervalTimeoutMS / 1000}
             />
           )}
         </>
