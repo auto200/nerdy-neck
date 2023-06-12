@@ -1,5 +1,5 @@
-import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
-import { Cam } from "utils/models";
+import { CAM_HEIGHT, CAM_WIDTH } from "@utils/constants";
+import { Cam } from "@utils/models";
 
 export const getCameraPermission = async () => {
   try {

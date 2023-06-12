@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SliceName } from "store/enums";
-import { RootState } from "store/index";
+import { SliceName } from "@store/enums";
+import { RootState } from "@store/index";
 
 interface FrontModeSettings {
   selectedCamId: string;

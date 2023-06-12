@@ -1,6 +1,6 @@
 import { Link } from "@chakra-ui/react";
 import { FaGithub } from "react-icons/fa";
-import { GITHUB_LINK } from "utils/constants";
+import { GITHUB_LINK } from "@utils/constants";
 
 const GithubLink = () => {
   return (

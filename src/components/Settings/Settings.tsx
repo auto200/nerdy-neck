@@ -7,9 +7,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
-import { AppMode } from "store/enums";
-import { setAppMode } from "store/slices/appStateSlice";
-import { useSettings } from "utils/hooks/useSettings";
+import { AppMode } from "@store/enums";
+import { setAppMode } from "@store/slices/appStateSlice";
+import { useSettings } from "@utils/hooks/useSettings";
 import { FrontModeSettings } from "./components/FrontModeSettings";
 import { SideModeSettings } from "./components/SideModeSettings";
 

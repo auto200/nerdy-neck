@@ -1,7 +1,7 @@
 import { Collapse } from "@chakra-ui/react";
-import { NumberInput, Switch } from "components/shared";
+import { NumberInput, Switch } from "@components/shared";
 import { useDispatch } from "react-redux";
-import { useSettings } from "utils/hooks/useSettings";
+import { useSettings } from "@utils/hooks/useSettings";
 
 export const OnError = () => {
   const {

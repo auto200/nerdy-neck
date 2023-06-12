@@ -7,10 +7,10 @@ import {
   Box,
   Divider,
 } from "@chakra-ui/react";
-import { Switch } from "components/shared";
+import { Switch } from "@components/shared";
 import { useDispatch } from "react-redux";
-import { AppMode } from "store/enums";
-import { useSettings } from "utils/hooks/useSettings";
+import { AppMode } from "@store/enums";
+import { useSettings } from "@utils/hooks/useSettings";
 import { ModelDetectionThreshold } from "./ModelDetectionThreshold";
 import { OnError } from "./OnError";
 

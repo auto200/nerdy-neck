@@ -1,12 +1,12 @@
 import { Collapse } from "@chakra-ui/react";
-import { NumberInput, Switch } from "components/shared";
+import { NumberInput, Switch } from "@components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectShoulderLevelMonitoring,
   setShoulderLevelDesiredAngle,
   setShoulderLevelTolerance,
   toggleShoulderLevelMonitoring,
-} from "store/slices/frontModeSettingsSlice";
+} from "@store/slices/frontModeSettingsSlice";
 
 export const ShoulderLevelMonitoring = () => {
   const shoulderLevelMonitoring = useSelector(selectShoulderLevelMonitoring);

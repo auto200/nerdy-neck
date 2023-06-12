@@ -6,7 +6,7 @@ import {
   toggleAdditionalSoundEnabled,
   toggleAdditionalOnErrorRetry,
   setAdditionalOnErrorRetryIntervalInS,
-} from "store/slices/frontModeSettingsSlice";
+} from "@store/slices/frontModeSettingsSlice";
 import { CommonActions } from "./useSettings";
 
 export const frontModeActions: CommonActions = {

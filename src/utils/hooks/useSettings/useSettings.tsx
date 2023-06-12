@@ -3,9 +3,9 @@ import {
   ActionCreatorWithPayload,
 } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { AppMode } from "store/enums";
-import { selectFrontModeSettings, selectSideModeSettings } from "store/index";
-import { selectAppMode } from "store/slices/appStateSlice";
+import { AppMode } from "@store/enums";
+import { selectFrontModeSettings, selectSideModeSettings } from "@store/index";
+import { selectAppMode } from "@store/slices/appStateSlice";
 import { frontModeActions } from "./frontModeActions";
 import { sideModeActions } from "./sideModeActions";
 

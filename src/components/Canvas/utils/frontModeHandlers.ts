@@ -1,5 +1,5 @@
 import { Keypoint } from "@tensorflow-models/pose-detection";
-import { POSE_ERROR } from "utils/enums";
+import { POSE_ERROR } from "@utils/enums";
 import {
   ERROR_COLOR,
   KEYPOINT_COLOR,

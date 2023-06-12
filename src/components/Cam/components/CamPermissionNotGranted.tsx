@@ -1,7 +1,7 @@
 import { Box, Center, Heading, Image } from "@chakra-ui/react";
-import { ReactComponent as CamErrorImg } from "assets/cam-error.svg";
-import grantPermissionImg from "assets/grant-permission.png";
-import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
+import { ReactComponent as CamErrorImg } from "@assets/cam-error.svg";
+import grantPermissionImg from "@assets/grant-permission.png";
+import { CAM_HEIGHT, CAM_WIDTH } from "@utils/constants";
 
 export const CamPermissionNotGranted: React.FC = () => {
   return (

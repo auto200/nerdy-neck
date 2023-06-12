@@ -1,9 +1,9 @@
-import { Switch } from "components/shared";
+import { Switch } from "@components/shared";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectBanKneesAndAnkles,
   toggleBanKneesAndAnkles,
-} from "store/slices/sideModeSettingsSlice";
+} from "@store/slices/sideModeSettingsSlice";
 
 export const BanKneesAndAnkles = () => {
   const banKneesAndAnkles = useSelector(selectBanKneesAndAnkles);

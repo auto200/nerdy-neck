@@ -1,19 +1,19 @@
 import { Box } from "@chakra-ui/react";
 import { Pose, PoseDetectorInput } from "@tensorflow-models/pose-detection";
-import frontHintImg from "assets/front-angle-hint.jpg";
-import sideHintImg from "assets/side-angle-hint.jpg";
+import frontHintImg from "@assets/front-angle-hint.jpg";
+import sideHintImg from "@assets/side-angle-hint.jpg";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppMode } from "store/enums";
-import { selectAppState } from "store/index";
+import { AppMode } from "@store/enums";
+import { selectAppState } from "@store/index";
 import {
   setAppReady,
   setCamPermissionGranted,
   setCams,
-} from "store/slices/appStateSlice";
-import { CAM_HEIGHT, CAM_WIDTH } from "utils/constants";
-import { useSettings } from "utils/hooks/useSettings";
+} from "@store/slices/appStateSlice";
+import { CAM_HEIGHT, CAM_WIDTH } from "@utils/constants";
+import { useSettings } from "@utils/hooks/useSettings";
 import {
   CamPermissionNotGranted,
   PoseCheckCountdown,
@@ -21,8 +21,8 @@ import {
 } from "./components";
 import { getCameraPermission, getCams, getStream } from "./utils";
 
-import Canvas from "components/Canvas/Canvas";
-import { POSE_ERROR } from "utils/enums";
+import Canvas from "@components/Canvas/Canvas";
+import { POSE_ERROR } from "@utils/enums";
 
 type CamProps = {
   getPose: (mediaInput: PoseDetectorInput) => Promise<Pose | null>;

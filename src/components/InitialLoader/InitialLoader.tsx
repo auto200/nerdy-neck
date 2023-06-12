@@ -9,7 +9,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { GITHUB_ISSUES_LINK } from "utils/constants";
+import { GITHUB_ISSUES_LINK } from "@utils/constants";
 
 import { MdError } from "react-icons/md";
 

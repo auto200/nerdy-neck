@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectBodySide,
   toggleBodySide,
-} from "store/slices/sideModeSettingsSlice";
+} from "@store/slices/sideModeSettingsSlice";
 
 export const BodySideSwitch = () => {
   const bodySide = useSelector(selectBodySide);

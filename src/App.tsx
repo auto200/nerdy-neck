@@ -1,11 +1,11 @@
 import { Box, Flex } from "@chakra-ui/react";
-import { Cam } from "components/Cam";
-import Controls from "components/Controls";
-import GithubLink from "components/GithubLink";
-import { InitialLoader } from "components/InitialLoader";
-import PanicButton from "components/PanicButton";
-import Settings from "components/Settings";
-import { usePoseDetector } from "utils/hooks/usePoseDetector";
+import { Cam } from "@components/Cam";
+import Controls from "@components/Controls";
+import GithubLink from "@components/GithubLink";
+import { InitialLoader } from "@components/InitialLoader";
+import PanicButton from "@components/PanicButton";
+import Settings from "@components/Settings";
+import { usePoseDetector } from "@utils/hooks/usePoseDetector";
 
 const App: React.FC = () => {
   const poseDetector = usePoseDetector();

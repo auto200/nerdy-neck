@@ -1,8 +1,8 @@
 import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useRef } from "react";
-import { AppMode } from "store/enums";
-import { POSE_ERROR } from "utils/enums";
-import { useSettings } from "utils/hooks/useSettings";
+import { AppMode } from "@store/enums";
+import { POSE_ERROR } from "@utils/enums";
+import { useSettings } from "@utils/hooks/useSettings";
 import {
   drawPoint,
   getBodySideKeypoints,

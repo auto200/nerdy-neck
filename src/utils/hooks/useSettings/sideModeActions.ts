@@ -6,7 +6,7 @@ import {
   toggleAdditionalSoundEnabled,
   toggleAdditionalOnErrorRetry,
   setAdditionalOnErrorRetryIntervalInS,
-} from "store/slices/sideModeSettingsSlice";
+} from "@store/slices/sideModeSettingsSlice";
 import { CommonActions } from "./useSettings";
 
 export const sideModeActions: CommonActions = {
